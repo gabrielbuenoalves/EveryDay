@@ -1,30 +1,45 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:every_day/main.dart';
+import 'package:every_day/app/di/app_dependencies.dart';
+import 'package:every_day/app/every_day_app.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('mostra o feed de hoje e navega pelas abas', (tester) async {
+    await tester.pumpWidget(
+      EveryDayApp(dependencies: AppDependencies.bootstrap()),
+    );
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Hoje'), findsOneWidget);
+    expect(find.text('Salmos 28–30'), findsWidgets);
+    expect(find.text('Feed'), findsOneWidget);
+    expect(find.text('Estante'), findsOneWidget);
+    expect(find.text('Grupos'), findsOneWidget);
+    expect(find.text('Perfil'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    await tester.tap(find.text('Estante'));
+    await tester.pumpAndSettle();
+    expect(find.text('ANTIGO TESTAMENTO'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('Grupos'));
+    await tester.pumpAndSettle();
+    expect(find.text('Salmos em 30 dias'), findsOneWidget);
+
+    await tester.tap(find.text('Perfil'));
+    await tester.pumpAndSettle();
+    expect(find.text('nesta semana'), findsWidgets);
+  });
+
+  testWidgets('abre o registro de leitura pelo botão central', (tester) async {
+    await tester.pumpWidget(
+      EveryDayApp(dependencies: AppDependencies.bootstrap()),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Registrar leitura'), findsOneWidget);
   });
 }
