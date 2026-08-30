@@ -5,12 +5,18 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/proto.dart';
 import '../../domain/entities/reading_group.dart';
 import '../../domain/usecases/get_groups.dart';
+import '../widgets/direct_reading_sheet.dart';
 import 'group_detail_page.dart';
 
 class GroupsPage extends StatefulWidget {
-  const GroupsPage({super.key, this.pastor = false});
+  const GroupsPage({
+    super.key,
+    this.pastor = false,
+    bool? canDirect,
+  }) : canDirect = canDirect ?? pastor;
 
   final bool pastor;
+  final bool canDirect;
 
   @override
   State<GroupsPage> createState() => _GroupsPageState();
@@ -35,83 +41,22 @@ class _GroupsPageState extends State<GroupsPage> {
   }
 
   Future<void> _directReading(ReadingGroup group) async {
-    final titleCtrl = TextEditingController();
-    final passagesCtrl = TextEditingController();
-    final saved = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.slate900,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            16 + MediaQuery.viewInsetsOf(context).bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              MiniLabel(group.name),
-              const SizedBox(height: 6),
-              const Text(
-                'Direcionar leitura',
-                style: TextStyle(
-                  color: AppColors.slate100,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: titleCtrl,
-                decoration: const InputDecoration(hintText: 'Título do plano'),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: passagesCtrl,
-                minLines: 4,
-                maxLines: 8,
-                decoration: const InputDecoration(
-                  hintText: 'Uma passagem por linha\nSalmos 23\nJoão 14',
-                ),
-              ),
-              const SizedBox(height: 12),
-              EmberButton(
-                label: 'Enviar ao grupo',
-                expand: true,
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
-            ],
-          ),
+    final sent = await showDirectReadingSheet(
+      context,
+      groupName: group.name,
+      onSubmit: ({required title, required passages}) {
+        return AppScope.of(context).createGroupPlan(
+          groupId: group.id,
+          title: title,
+          passages: passages,
         );
       },
     );
-    final title = titleCtrl.text.trim();
-    final passages = passagesCtrl.text
-        .split(RegExp(r'[\n,]'))
-        .map((item) => item.trim())
-        .where((item) => item.isNotEmpty)
-        .toList();
-    titleCtrl.dispose();
-    passagesCtrl.dispose();
-    if (saved != true || passages.isEmpty || !mounted) return;
-    try {
-      await AppScope.of(context).createGroupPlan(
-        groupId: group.id,
-        title: title.isEmpty ? 'Leitura do grupo' : title,
-        passages: passages,
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Leitura enviada a ${group.name}')),
-      );
-      await _load(AppScope.of(context).getGroups);
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
-    }
+    if (!sent || !mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Leitura enviada a ${group.name}')),
+    );
+    await _load(AppScope.of(context).getGroups);
   }
 
   @override
@@ -155,6 +100,7 @@ class _GroupsPageState extends State<GroupsPage> {
                                 builder: (_) => GroupDetailPage(
                                   group: group,
                                   pastor: widget.pastor,
+                                  canDirect: widget.canDirect,
                                 ),
                               ),
                             );
@@ -193,7 +139,22 @@ class _GroupsPageState extends State<GroupsPage> {
                               ),
                               const SizedBox(height: 13),
                               EmberProgress(value: group.weekProgress),
-                              if (widget.pastor) ...[
+                              if (group.inviteCode != null &&
+                                  group.inviteCode!.isNotEmpty &&
+                                  widget.canDirect) ...[
+                                const SizedBox(height: 12),
+                                const MiniLabel('Código do grupo'),
+                                const SizedBox(height: 4),
+                                Text(
+                                  group.inviteCode!,
+                                  style: const TextStyle(
+                                    color: AppColors.slate100,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 2,
+                                  ),
+                                ),
+                              ],
+                              if (widget.canDirect) ...[
                                 const SizedBox(height: 12),
                                 EmberButton(
                                   label: 'Direcionar leitura',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/time_ago.dart';
 import '../../../../core/widgets/proto.dart';
 import '../../domain/entities/feed_home.dart';
 
@@ -20,7 +21,7 @@ class CarePlanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = plan.readings.length;
     final done = plan.doneCount;
-    final next = plan.readings.indexWhere((item) => !item.completed);
+    final next = plan.readings.indexWhere((item) => !item.isDone);
     return ProtoCard(
       challenge: true,
       child: Column(
@@ -78,6 +79,63 @@ class CarePlanCard extends StatelessWidget {
   }
 }
 
+class ArchivedPlanCard extends StatelessWidget {
+  const ArchivedPlanCard({super.key, required this.plan, required this.onOpen});
+
+  final MemberCarePlan plan;
+  final VoidCallback onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final minutes = plan.sessionMinutes;
+    final when = plan.archivedAt;
+    return ProtoCard(
+      child: InkWell(
+        onTap: onOpen,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MiniLabel(
+              [
+                'Arquivado',
+                if (minutes != null) '$minutes min',
+                if (when != null) timeAgo(when),
+              ].join(' · '),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              plan.title,
+              style: const TextStyle(
+                color: AppColors.slate100,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            if (plan.takeaway != null && plan.takeaway!.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                plan.takeaway!,
+                style: const TextStyle(
+                  color: AppColors.slate300,
+                  fontSize: 12,
+                  height: 1.4,
+                ),
+              ),
+            ],
+            const SizedBox(height: 8),
+            Text(
+              plan.readings.isEmpty
+                  ? plan.sourceLabel
+                  : '${plan.doneCount} de ${plan.readings.length} passagens',
+              style: const TextStyle(color: AppColors.slate400, fontSize: 11),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ReadingRow extends StatelessWidget {
   const _ReadingRow({
     required this.index,
@@ -92,7 +150,7 @@ class _ReadingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: item.completed ? const Color(0x3322C55E) : AppColors.slate800,
+      color: item.isDone ? const Color(0x3322C55E) : AppColors.slate800,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -102,9 +160,9 @@ class _ReadingRow extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                item.completed ? Icons.check_circle : Icons.menu_book_outlined,
+                item.isDone ? Icons.check_circle : Icons.menu_book_outlined,
                 size: 18,
-                color: item.completed
+                color: item.isDone
                     ? const Color(0xFF4ADE80)
                     : AppColors.ember,
               ),
@@ -116,7 +174,7 @@ class _ReadingRow extends StatelessWidget {
                     color: AppColors.slate100,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    decoration: item.completed
+                    decoration: item.isDone
                         ? TextDecoration.lineThrough
                         : null,
                   ),

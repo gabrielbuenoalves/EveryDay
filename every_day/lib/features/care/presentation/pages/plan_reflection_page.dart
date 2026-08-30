@@ -41,11 +41,11 @@ Future<bool> finishDirectedPlan(
     context,
     planTitle: plan.title,
     minutes: time,
-    commentTitle: plan.pastoral
+    commentTitle: plan.isPastoral
         ? 'Comentário para o pastor'
         : 'Comentário',
     onSubmit: (reflection) async {
-      if (plan.pastoral) {
+      if (plan.isPastoral) {
         await deps.completeCarePlan(planId: plan.id, reflection: reflection);
       } else {
         final groupId = plan.groupId;

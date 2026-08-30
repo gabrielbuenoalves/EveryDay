@@ -16,7 +16,7 @@ class BibleBook {
   final int readChapters;
 
   bool get isCompleted => readChapters >= chapters;
-  bool get isInProgress => readChapters > 0 && !isCompleted;
+  bool get isInProgress => readChapters > 0 && isCompleted == false;
   double get progress => chapters == 0 ? 0 : (readChapters / chapters).clamp(0, 1);
 }
 

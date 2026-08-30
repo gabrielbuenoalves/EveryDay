@@ -20,6 +20,7 @@ class PassageComment {
 
 abstract interface class PlansRepository {
   Future<List<MemberCarePlan>> listMyPlans();
+  Future<List<MemberCarePlan>> listArchivedPlans();
   Future<List<PassageComment>> listComments({
     required String groupId,
     required String passageLabel,

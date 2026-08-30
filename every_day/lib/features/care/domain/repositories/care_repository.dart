@@ -26,4 +26,8 @@ abstract interface class CareRepository {
     required PlanReflection reflection,
   });
   Future<List<CarePlanInsight>> listReflections({String? userId});
+  Future<MemberEngagement> listEngagement(String userId);
+  Future<ChurchPulse> listChurchPulse();
+  Future<List<MoodCheckin>> listMemberCheckins(String userId);
+  Future<MemberAiReport> generateMemberBriefing(String userId);
 }

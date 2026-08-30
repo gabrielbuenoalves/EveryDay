@@ -9,7 +9,6 @@ import '../../features/groups/presentation/pages/groups_page.dart';
 import '../../features/members/presentation/pages/members_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/reading/presentation/pages/reading_tab.dart';
-import '../../features/reading/presentation/widgets/create_post_sheet.dart';
 import '../di/app_scope.dart';
 import 'app_bottom_nav.dart';
 import 'app_nav_scope.dart';
@@ -105,7 +104,7 @@ class _AppShellState extends State<AppShell> {
             children: [
               FeedPage(pastor: _pastor),
               if (!_pastor) const ReadingTab(),
-              GroupsPage(pastor: _pastor),
+              GroupsPage(pastor: _pastor, canDirect: _role.canLead),
               if (_pastor) const CareInboxPage(asTab: true),
               if (_pastor) const MembersPage(),
               const ProfilePage(),
@@ -140,10 +139,6 @@ class _AppShellState extends State<AppShell> {
   }
 
   void _onSelect(String id) {
-    if (id == 'create') {
-      showCreatePostSheet(context, pastor: _pastor);
-      return;
-    }
     setState(() => _currentId = id);
     if (_pastor &&
         (id == 'notices' ||

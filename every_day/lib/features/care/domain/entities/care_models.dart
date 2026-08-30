@@ -192,6 +192,66 @@ class CarePlanInsight {
   }
 }
 
+class MemberEngagement {
+  const MemberEngagement({
+    required this.minutesTotal,
+    required this.minutesWeek,
+    required this.readingCount,
+    required this.readingCountWeek,
+    required this.commentCount,
+    required this.commentCountWeek,
+    required this.checkinCount,
+    required this.plansCompleted,
+    required this.activeDaysWeek,
+    this.lastReadAt,
+    this.lastPassage,
+  });
+
+  final int minutesTotal;
+  final int minutesWeek;
+  final int readingCount;
+  final int readingCountWeek;
+  final int commentCount;
+  final int commentCountWeek;
+  final int checkinCount;
+  final int plansCompleted;
+  final int activeDaysWeek;
+  final DateTime? lastReadAt;
+  final String? lastPassage;
+}
+
+class ChurchPulse {
+  const ChurchPulse({
+    required this.minutesWeek,
+    required this.readingsWeek,
+    required this.commentsWeek,
+    required this.completionsWeek,
+  });
+
+  final int minutesWeek;
+  final int readingsWeek;
+  final int commentsWeek;
+  final int completionsWeek;
+}
+
+class MemberAiReport {
+  const MemberAiReport({
+    required this.summary,
+    required this.prayerAttention,
+    required this.readingPulse,
+    required this.nextStep,
+    required this.urgency,
+  });
+
+  final String summary;
+  final String prayerAttention;
+  final String readingPulse;
+  final String nextStep;
+  final String urgency;
+
+  bool get needsAttention => urgency == 'high' || urgency == 'critical';
+}
+
 const kReceptionChoices = <({String id, String label})>[
   (id: 'paz', label: 'Paz'),
   (id: 'consolo', label: 'Consolo'),

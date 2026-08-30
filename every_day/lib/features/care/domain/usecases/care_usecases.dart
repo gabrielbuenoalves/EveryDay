@@ -101,6 +101,43 @@ class GetCareReflections {
 
   final CareRepository _repository;
 
+  CareRepository get repository => _repository;
+
   Future<List<CarePlanInsight>> call({String? userId}) =>
       _repository.listReflections(userId: userId);
+}
+
+class GetMemberEngagement {
+  const GetMemberEngagement(this._repository);
+
+  final CareRepository _repository;
+
+  Future<MemberEngagement> call(String userId) =>
+      _repository.listEngagement(userId);
+}
+
+class GetChurchPulse {
+  const GetChurchPulse(this._repository);
+
+  final CareRepository _repository;
+
+  Future<ChurchPulse> call() => _repository.listChurchPulse();
+}
+
+class GetMemberCheckins {
+  const GetMemberCheckins(this._repository);
+
+  final CareRepository _repository;
+
+  Future<List<MoodCheckin>> call(String userId) =>
+      _repository.listMemberCheckins(userId);
+}
+
+class GenerateMemberBriefing {
+  const GenerateMemberBriefing(this._repository);
+
+  final CareRepository _repository;
+
+  Future<MemberAiReport> call(String userId) =>
+      _repository.generateMemberBriefing(userId);
 }

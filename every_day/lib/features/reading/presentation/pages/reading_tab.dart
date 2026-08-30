@@ -25,6 +25,7 @@ class _ReadingTabState extends State<ReadingTab> {
   String _query = '';
   List<BibleBook> _books = completeBible();
   List<MemberCarePlan> _plans = const [];
+  List<MemberCarePlan> _archived = const [];
 
   @override
   void didChangeDependencies() {
@@ -38,9 +39,13 @@ class _ReadingTabState extends State<ReadingTab> {
     final deps = AppScope.of(context);
     var initials = 'ED';
     var plans = <MemberCarePlan>[];
+    var archived = <MemberCarePlan>[];
     final progress = <String, int>{};
     try {
       plans = await deps.getMyPlans();
+    } catch (_) {}
+    try {
+      archived = await deps.getArchivedPlans();
     } catch (_) {}
     try {
       initials = (await deps.getProfile()).initials;
@@ -55,6 +60,7 @@ class _ReadingTabState extends State<ReadingTab> {
       _loading = false;
       _initials = initials;
       _plans = plans;
+      _archived = archived;
       _books = completeBible(progress: progress);
     });
   }
@@ -72,12 +78,12 @@ class _ReadingTabState extends State<ReadingTab> {
       playlist: plan.playlist,
       index: index,
       completedLabels: plan.completedLabels,
-      daily: plan.pastoral,
-      planId: plan.pastoral ? plan.id : null,
+      daily: plan.isPastoral,
+      planId: plan.isPastoral ? plan.id : null,
       planTitle: plan.title,
       groupId: plan.groupId,
       readingPlanId: plan.readingPlanId,
-      allowArchive: !plan.archived,
+      allowArchive: !plan.isArchived,
     );
     if (changed && mounted) await _load();
   }
@@ -109,6 +115,10 @@ class _ReadingTabState extends State<ReadingTab> {
               title: 'Planos',
               initials: _initials,
             ),
+            ProtoSection(
+              title: 'Em andamento',
+              trailing: '${_plans.length}',
+            ),
             if (_plans.isEmpty)
               const ProtoCard(
                 child: Text(
@@ -121,7 +131,7 @@ class _ReadingTabState extends State<ReadingTab> {
                 CarePlanCard(
                   plan: plan,
                   onOpen: (index) => _openPlan(plan, index),
-                  onFinish: plan.isComplete && !plan.archived
+                  onFinish: plan.isComplete && !plan.isArchived
                       ? () async {
                           final archived = await finishDirectedPlan(
                             context,
@@ -130,6 +140,25 @@ class _ReadingTabState extends State<ReadingTab> {
                           if (archived && mounted) await _load();
                         }
                       : null,
+                ),
+                const SizedBox(height: 8),
+              ],
+            ProtoSection(
+              title: 'Arquivados',
+              trailing: '${_archived.length}',
+            ),
+            if (_archived.isEmpty)
+              const ProtoCard(
+                child: Text(
+                  'Quando você encerrar um plano, ele sai da lista ativa e fica aqui.',
+                  style: TextStyle(color: AppColors.slate300),
+                ),
+              )
+            else
+              for (final plan in _archived) ...[
+                ArchivedPlanCard(
+                  plan: plan,
+                  onOpen: () => _openPlan(plan, 0),
                 ),
                 const SizedBox(height: 8),
               ],

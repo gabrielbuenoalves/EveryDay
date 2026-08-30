@@ -1072,20 +1072,26 @@ begin
     if passage is null then
       continue;
     end if;
-    insert into public.plan_days (plan_id, day, passage_label, book, start_chapter, end_chapter)
+      insert into public.plan_days (plan_id, day, passage_label, book, start_chapter, end_chapter)
     values (
       pid,
       current_date + (i - 1),
       passage,
-      trim(regexp_replace(passage, '\s+\d+.*$', '')),
+      coalesce(nullif(trim(regexp_replace(passage, '\s+\d+.*$', '')), ''), 'Bíblia'),
       coalesce(nullif(substring(passage from '\s(\d+)'), '')::int, 1),
       coalesce(nullif(substring(passage from '\s(\d+)'), '')::int, 1)
     );
   end loop;
 
-  insert into public.group_reading_plans (group_id, plan_id)
+    insert into public.group_reading_plans (group_id, plan_id)
   values (p_group_id, pid)
   on conflict do nothing;
+
+  if not exists (select 1 from public.plan_days where plan_id = pid) then
+    delete from public.group_reading_plans where plan_id = pid;
+    delete from public.reading_plans where id = pid;
+    raise exception 'passages required';
+  end if;
 
   update public.groups
   set plan_id = pid, plan_label = coalesce(nullif(trim(p_title), ''), plan_label)

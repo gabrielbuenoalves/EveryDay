@@ -12,6 +12,7 @@ import '../../features/groups/domain/usecases/get_groups.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/usecases/get_profile.dart';
 import '../../features/plans/data/plans_repository_impl.dart';
+import '../../features/plans/domain/repositories/plans_repository.dart';
 import '../../features/plans/domain/usecases/plans_usecases.dart';
 import '../../features/reading/data/repositories/bible_repository_impl.dart';
 import '../../features/reading/data/repositories/reading_repository_impl.dart';
@@ -42,12 +43,6 @@ class AppDependencies {
     required this.completeCarePlan,
     required this.getCareReflections,
     required this.getMyPlans,
-    required this.listPlanComments,
-    required this.addPlanComment,
-    required this.createGroupPlan,
-    required this.completeGroupPlan,
-    required this.listGroupPlans,
-    required this.minutesForPassages,
     required this.feedReload,
   });
 
@@ -67,13 +62,25 @@ class AppDependencies {
   final CompleteCarePlan completeCarePlan;
   final GetCareReflections getCareReflections;
   final GetMyPlans getMyPlans;
-  final ListPlanComments listPlanComments;
-  final AddPlanComment addPlanComment;
-  final CreateGroupPlan createGroupPlan;
-  final CompleteGroupPlan completeGroupPlan;
-  final ListGroupPlans listGroupPlans;
-  final MinutesForPassages minutesForPassages;
   final FeedReload feedReload;
+
+  PlansRepository get plans => getMyPlans.repository;
+
+  GetArchivedPlans get getArchivedPlans => GetArchivedPlans(plans);
+  ListPlanComments get listPlanComments => ListPlanComments(plans);
+  AddPlanComment get addPlanComment => AddPlanComment(plans);
+  CreateGroupPlan get createGroupPlan => CreateGroupPlan(plans);
+  CompleteGroupPlan get completeGroupPlan => CompleteGroupPlan(plans);
+  ListGroupPlans get listGroupPlans => ListGroupPlans(plans);
+  MinutesForPassages get minutesForPassages => MinutesForPassages(plans);
+  GetMemberEngagement get getMemberEngagement =>
+      GetMemberEngagement(getCareReflections.repository);
+  GetChurchPulse get getChurchPulse =>
+      GetChurchPulse(getCareReflections.repository);
+  GetMemberCheckins get getMemberCheckins =>
+      GetMemberCheckins(getCareReflections.repository);
+  GenerateMemberBriefing get generateMemberBriefing =>
+      GenerateMemberBriefing(getCareReflections.repository);
 
   factory AppDependencies.fromSupabase(SupabaseClient client) {
     final care = CareRepositoryImpl(client);
@@ -95,12 +102,6 @@ class AppDependencies {
       completeCarePlan: CompleteCarePlan(care),
       getCareReflections: GetCareReflections(care),
       getMyPlans: GetMyPlans(plans),
-      listPlanComments: ListPlanComments(plans),
-      addPlanComment: AddPlanComment(plans),
-      createGroupPlan: CreateGroupPlan(plans),
-      completeGroupPlan: CompleteGroupPlan(plans),
-      listGroupPlans: ListGroupPlans(plans),
-      minutesForPassages: MinutesForPassages(plans),
       feedReload: FeedReload(),
     );
   }

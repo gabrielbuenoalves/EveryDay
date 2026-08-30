@@ -50,12 +50,6 @@ AppDependencies testDependencies({
     completeCarePlan: CompleteCarePlan(care),
     getCareReflections: GetCareReflections(care),
     getMyPlans: GetMyPlans(plans),
-    listPlanComments: ListPlanComments(plans),
-    addPlanComment: AddPlanComment(plans),
-    createGroupPlan: CreateGroupPlan(plans),
-    completeGroupPlan: CompleteGroupPlan(plans),
-    listGroupPlans: ListGroupPlans(plans),
-    minutesForPassages: MinutesForPassages(plans),
     feedReload: FeedReload(),
   );
 }
@@ -170,6 +164,23 @@ class _FakePlans implements PlansRepository {
   @override
   Future<List<MemberCarePlan>> listMyPlans() async => [
     _samplePlan(planDone: planDone),
+  ];
+
+  @override
+  Future<List<MemberCarePlan>> listArchivedPlans() async => [
+    MemberCarePlan(
+      id: 'arch-1',
+      title: 'Leitura arquivada',
+      readings: [
+        CareReading(
+          reading: DailyReading.fromLabel('Salmos 1'),
+          completed: true,
+        ),
+      ],
+      archived: true,
+      sessionMinutes: 6,
+      takeaway: 'Ficou a paz',
+    ),
   ];
 
   @override
@@ -376,4 +387,45 @@ class _FakeCare implements CareRepository {
   @override
   Future<List<CarePlanInsight>> listReflections({String? userId}) async =>
       const [];
+
+  @override
+  Future<MemberEngagement> listEngagement(String userId) async {
+    return const MemberEngagement(
+      minutesTotal: 96,
+      minutesWeek: 42,
+      readingCount: 12,
+      readingCountWeek: 5,
+      commentCount: 3,
+      commentCountWeek: 1,
+      checkinCount: 4,
+      plansCompleted: 2,
+      activeDaysWeek: 4,
+      lastPassage: 'Salmos 23',
+    );
+  }
+
+  @override
+  Future<ChurchPulse> listChurchPulse() async {
+    return const ChurchPulse(
+      minutesWeek: 120,
+      readingsWeek: 18,
+      commentsWeek: 7,
+      completionsWeek: 3,
+    );
+  }
+
+  @override
+  Future<List<MoodCheckin>> listMemberCheckins(String userId) async => const [];
+
+  @override
+  Future<MemberAiReport> generateMemberBriefing(String userId) async {
+    return const MemberAiReport(
+      summary:
+          'Lucas tem lido com regularidade nesta semana e deixou um quiz de compreensão razoável.',
+      prayerAttention: 'Nenhum pedido de oração recente.',
+      readingPulse: '42 min nesta semana · última passagem Salmos 23.',
+      nextStep: 'Afirme a constância e avance com calma na próxima leitura.',
+      urgency: 'low',
+    );
+  }
 }

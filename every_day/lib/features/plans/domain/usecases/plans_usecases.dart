@@ -8,7 +8,17 @@ class GetMyPlans {
 
   final PlansRepository _repository;
 
+  PlansRepository get repository => _repository;
+
   Future<List<MemberCarePlan>> call() => _repository.listMyPlans();
+}
+
+class GetArchivedPlans {
+  const GetArchivedPlans(this._repository);
+
+  final PlansRepository _repository;
+
+  Future<List<MemberCarePlan>> call() => _repository.listArchivedPlans();
 }
 
 class ListPlanComments {

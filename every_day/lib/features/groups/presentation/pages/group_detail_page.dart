@@ -2,23 +2,25 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/di/app_scope.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/time_ago.dart';
 import '../../../../core/widgets/proto.dart';
 import '../../../care/presentation/pages/plan_reflection_page.dart';
 import '../../../feed/domain/entities/feed_home.dart';
 import '../../../feed/presentation/widgets/care_plan_card.dart';
 import '../../../reading/presentation/pages/reading_page.dart';
 import '../../domain/entities/reading_group.dart';
+import '../widgets/direct_reading_sheet.dart';
 
 class GroupDetailPage extends StatefulWidget {
   const GroupDetailPage({
     super.key,
     required this.group,
     this.pastor = false,
-  });
+    bool? canDirect,
+  }) : canDirect = canDirect ?? pastor;
 
   final ReadingGroup group;
   final bool pastor;
+  final bool canDirect;
 
   @override
   State<GroupDetailPage> createState() => _GroupDetailPageState();
@@ -59,11 +61,11 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       index: index,
       completedLabels: plan.completedLabels,
       daily: false,
-      planId: plan.pastoral ? plan.id : null,
+      planId: plan.isPastoral ? plan.id : null,
       planTitle: plan.title,
       groupId: plan.groupId,
       readingPlanId: plan.readingPlanId,
-      allowArchive: !plan.archived,
+      allowArchive: !plan.isArchived,
     );
     if (changed && mounted) await _load();
   }
@@ -75,8 +77,8 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final active = _plans.where((plan) => !plan.archived).toList();
-    final done = _plans.where((plan) => plan.archived).toList();
+    final active = _plans.where((plan) => !plan.isArchived).toList();
+    final done = _plans.where((plan) => plan.isArchived).toList();
     return Scaffold(
       backgroundColor: AppColors.slate900,
       appBar: AppBar(title: Text(widget.group.name)),
@@ -111,10 +113,25 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                           fontSize: 12,
                         ),
                       ),
+                      if (widget.canDirect &&
+                          widget.group.inviteCode != null &&
+                          widget.group.inviteCode!.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        const MiniLabel('Código do grupo'),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.group.inviteCode!,
+                          style: const TextStyle(
+                            color: AppColors.slate100,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
-                if (widget.pastor) ...[
+                if (widget.canDirect) ...[
                   const SizedBox(height: 12),
                   EmberButton(
                     label: 'Direcionar leitura',
@@ -155,7 +172,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                   )
                 else
                   for (final plan in done) ...[
-                    _CompletedPlanCard(
+                    ArchivedPlanCard(
                       plan: plan,
                       onOpen: () => _openPlan(plan, 0),
                     ),
@@ -167,137 +184,21 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
   }
 
   Future<void> _directReading() async {
-    final titleCtrl = TextEditingController();
-    final passagesCtrl = TextEditingController();
-    final saved = await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: AppColors.slate900,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.fromLTRB(
-            16,
-            16,
-            16,
-            16 + MediaQuery.viewInsetsOf(context).bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              MiniLabel(widget.group.name),
-              const SizedBox(height: 6),
-              const Text(
-                'Direcionar leitura',
-                style: TextStyle(
-                  color: AppColors.slate100,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: titleCtrl,
-                decoration: const InputDecoration(hintText: 'Título do plano'),
-              ),
-              const SizedBox(height: 8),
-              TextField(
-                controller: passagesCtrl,
-                minLines: 4,
-                maxLines: 8,
-                decoration: const InputDecoration(
-                  hintText: 'Uma passagem por linha\nSalmos 23\nJoão 14',
-                ),
-              ),
-              const SizedBox(height: 12),
-              EmberButton(
-                label: 'Enviar ao grupo',
-                expand: true,
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
-            ],
-          ),
+    final sent = await showDirectReadingSheet(
+      context,
+      groupName: widget.group.name,
+      onSubmit: ({required title, required passages}) {
+        return AppScope.of(context).createGroupPlan(
+          groupId: widget.group.id,
+          title: title,
+          passages: passages,
         );
       },
     );
-    final title = titleCtrl.text.trim();
-    final passages = passagesCtrl.text
-        .split(RegExp(r'[\n,]'))
-        .map((item) => item.trim())
-        .where((item) => item.isNotEmpty)
-        .toList();
-    titleCtrl.dispose();
-    passagesCtrl.dispose();
-    if (saved != true || passages.isEmpty || !mounted) return;
-    try {
-      await AppScope.of(context).createGroupPlan(
-        groupId: widget.group.id,
-        title: title.isEmpty ? 'Leitura do grupo' : title,
-        passages: passages,
-      );
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Leitura enviada a ${widget.group.name}')),
-      );
-      await _load();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
-    }
-  }
-}
-
-class _CompletedPlanCard extends StatelessWidget {
-  const _CompletedPlanCard({required this.plan, required this.onOpen});
-
-  final MemberCarePlan plan;
-  final VoidCallback onOpen;
-
-  @override
-  Widget build(BuildContext context) {
-    final minutes = plan.sessionMinutes;
-    final when = plan.archivedAt;
-    return ProtoCard(
-      child: InkWell(
-        onTap: onOpen,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MiniLabel(
-              [
-                'Concluída',
-                if (minutes != null) '$minutes min',
-                if (when != null) timeAgo(when),
-              ].join(' · '),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              plan.title,
-              style: const TextStyle(
-                color: AppColors.slate100,
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            if (plan.takeaway != null && plan.takeaway!.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                plan.takeaway!,
-                style: const TextStyle(
-                  color: AppColors.slate300,
-                  fontSize: 12,
-                  height: 1.4,
-                ),
-              ),
-            ],
-            const SizedBox(height: 8),
-            Text(
-              '${plan.doneCount} de ${plan.readings.length} passagens',
-              style: const TextStyle(color: AppColors.slate400, fontSize: 11),
-            ),
-          ],
-        ),
-      ),
+    if (!sent || !mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Leitura enviada a ${widget.group.name}')),
     );
+    await _load();
   }
 }

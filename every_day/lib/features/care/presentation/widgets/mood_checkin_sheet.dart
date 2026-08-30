@@ -164,11 +164,15 @@ class _FeelingDialogState extends State<_FeelingDialog> {
     var prayer = '';
     var whatsapp = false;
     if (feeling.needsPrayer && mounted) {
-      final result = await showDialog<_PrayerResult>(
+      final result = await showModalBottomSheet<_PrayerResult>(
         context: context,
-        barrierDismissible: false,
+        isScrollControlled: true,
+        backgroundColor: AppColors.slate850,
         barrierColor: const Color(0xCC0F172A),
-        builder: (context) => const _PrayerDialog(),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+        ),
+        builder: (context) => const _PrayerSheet(),
       );
       if (result != null) {
         prayer = result.text;
@@ -269,14 +273,14 @@ class _PrayerResult {
   final bool whatsapp;
 }
 
-class _PrayerDialog extends StatefulWidget {
-  const _PrayerDialog();
+class _PrayerSheet extends StatefulWidget {
+  const _PrayerSheet();
 
   @override
-  State<_PrayerDialog> createState() => _PrayerDialogState();
+  State<_PrayerSheet> createState() => _PrayerSheetState();
 }
 
-class _PrayerDialogState extends State<_PrayerDialog> {
+class _PrayerSheetState extends State<_PrayerSheet> {
   final _text = TextEditingController();
   var _whatsapp = false;
 
@@ -289,111 +293,128 @@ class _PrayerDialogState extends State<_PrayerDialog> {
   @override
   Widget build(BuildContext context) {
     final crisis = containsCrisisLanguage(_text.text);
-    return Dialog(
-      backgroundColor: AppColors.slate850,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(22),
-        side: const BorderSide(color: AppColors.slate700),
-      ),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: 18,
-          right: 18,
-          top: 18,
-          bottom: 18 + MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+    final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18, 12, 18, 16 + keyboard),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.slate500,
+                borderRadius: BorderRadius.circular(99),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
+          const Row(
             children: [
-              const Row(
-                children: [
-                  Text('😟', style: TextStyle(fontSize: 28)),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Pedido de oração',
-                      style: TextStyle(
-                        color: AppColors.slate100,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+              Text('😟', style: TextStyle(fontSize: 28)),
+              SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Pedido de oração',
+                  style: TextStyle(
+                    color: AppColors.slate100,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Obrigado por compartilhar seu sentimento! Vamos orar juntos! Se desejar, compartilhe seu pedido de oração para que possamos orar por você.',
-                style: TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _text,
-                maxLines: 4,
-                onChanged: (_) => setState(() {}),
-                decoration: const InputDecoration(
-                  hintText: 'Escreva seu pedido de oração...',
-                ),
-              ),
-              if (crisis) ...[
-                const SizedBox(height: 8),
-                const Text(
-                  'Vamos priorizar este pedido. Você não está sozinho.',
-                  style: TextStyle(color: AppColors.ember, fontWeight: FontWeight.w700, fontSize: 12),
-                ),
-              ],
-              const SizedBox(height: 8),
-              SwitchListTile(
-                value: _whatsapp,
-                onChanged: (value) => setState(() => _whatsapp = value),
-                contentPadding: EdgeInsets.zero,
-                activeThumbColor: AppColors.slate950,
-                activeTrackColor: AppColors.ember,
-                title: const Text(
-                  'Permitir contato via WhatsApp',
-                  style: TextStyle(color: AppColors.slate100, fontSize: 13, fontWeight: FontWeight.w700),
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: FilledButton(
-                  onPressed: () => Navigator.pop(
-                    context,
-                    _PrayerResult(text: _text.text.trim(), whatsapp: _whatsapp),
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.ember,
-                    foregroundColor: AppColors.slate950,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                  child: const Text('Enviar', style: TextStyle(fontWeight: FontWeight.w800)),
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(
-                    context,
-                    const _PrayerResult(text: '', whatsapp: false),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.slate100,
-                    side: const BorderSide(color: AppColors.slate500),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
-                  child: const Text('Não, obrigado', style: TextStyle(fontWeight: FontWeight.w800)),
                 ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 10),
+          const Text(
+            'Obrigado por compartilhar seu sentimento! Vamos orar juntos! Se desejar, escreva um pedido curto.',
+            style: TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _text,
+            minLines: 3,
+            maxLines: 4,
+            keyboardType: TextInputType.multiline,
+            textInputAction: TextInputAction.newline,
+            onChanged: (_) => setState(() {}),
+            decoration: const InputDecoration(
+              hintText: 'Escreva seu pedido de oração...',
+              isDense: true,
+            ),
+          ),
+          if (crisis) ...[
+            const SizedBox(height: 8),
+            const Text(
+              'Vamos priorizar este pedido. Você não está sozinho.',
+              style: TextStyle(
+                color: AppColors.ember,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              ),
+            ),
+          ],
+          SwitchListTile(
+            value: _whatsapp,
+            onChanged: (value) => setState(() => _whatsapp = value),
+            contentPadding: EdgeInsets.zero,
+            activeThumbColor: AppColors.slate950,
+            activeTrackColor: AppColors.ember,
+            title: const Text(
+              'Permitir contato via WhatsApp',
+              style: TextStyle(
+                color: AppColors.slate100,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: FilledButton(
+              onPressed: () => Navigator.pop(
+                context,
+                _PrayerResult(text: _text.text.trim(), whatsapp: _whatsapp),
+              ),
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.ember,
+                foregroundColor: AppColors.slate950,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'Enviar',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: OutlinedButton(
+              onPressed: () => Navigator.pop(
+                context,
+                const _PrayerResult(text: '', whatsapp: false),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.slate100,
+                side: const BorderSide(color: AppColors.slate500),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'Não, obrigado',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

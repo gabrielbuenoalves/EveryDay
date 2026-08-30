@@ -38,6 +38,9 @@ void main() {
     await tester.tap(find.text('Planos'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Salmos 28–30'), findsWidgets);
+    expect(find.text('Em andamento'), findsOneWidget);
+    expect(find.text('Arquivados'), findsOneWidget);
+    expect(find.text('Leitura arquivada'), findsOneWidget);
 
     await tester.tap(find.text('Grupos'));
     await tester.pumpAndSettle();
@@ -48,16 +51,23 @@ void main() {
     expect(find.text('Você'), findsOneWidget);
   });
 
-  testWidgets('abre o registro de leitura pelo botão central', (tester) async {
+  testWidgets('não mostra o botão central de criar publicação', (tester) async {
     await tester.pumpWidget(
       EveryDayApp(dependencies: testDependencies(), skipAuth: true),
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Criar'));
-    await tester.pumpAndSettle();
+    expect(find.text('Criar'), findsNothing);
+    expect(find.text('Criar publicação'), findsNothing);
 
-    expect(find.text('Criar publicação'), findsOneWidget);
+    await tester.pumpWidget(
+      EveryDayApp(
+        dependencies: testDependencies(role: UserRole.pastor),
+        skipAuth: true,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Criar'), findsNothing);
   });
 
   testWidgets('abre o texto da leitura do pastor', (tester) async {
@@ -192,10 +202,38 @@ void main() {
     expect(find.text('PERFIL DO PASTOR'), findsOneWidget);
     expect(find.text('IGREJA VINCULADA'), findsOneWidget);
     expect(find.text('Avisos'), findsOneWidget);
+    expect(find.text('Grupos da igreja'), findsOneWidget);
+    expect(
+      find.text('CÓDIGO DO GRUPO', skipOffstage: false),
+      findsWidgets,
+    );
+    expect(find.text('GRUPO1', skipOffstage: false), findsWidgets);
+    expect(
+      find.text('Direcionar leitura', skipOffstage: false),
+      findsWidgets,
+    );
     expect(find.text('NOTIFICAÇÕES'), findsNothing);
     expect(find.text('IGREJA'), findsOneWidget);
     expect(find.text('PERFIL DO MEMBRO'), findsNothing);
     expect(find.text('PERFIL DO LÍDER'), findsNothing);
+  });
+
+  testWidgets('pastor vê tempo, comentários e engajamento em Membros', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      EveryDayApp(
+        dependencies: testDependencies(role: UserRole.pastor),
+        skipAuth: true,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Membros'));
+    await tester.pumpAndSettle();
+    expect(find.text('120 min'), findsOneWidget);
+    expect(find.text('COMENTÁRIOS'), findsOneWidget);
+    expect(find.text('18'), findsOneWidget);
   });
 
   testWidgets('pastor abre a aba de notificações', (tester) async {

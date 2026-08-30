@@ -19,7 +19,6 @@ List<NavDestination> navForPastor(bool pastor, {int careBadge = 0}) {
     return [
       const NavDestination(id: 'home', label: 'Home'),
       const NavDestination(id: 'groups', label: 'Grupos'),
-      const NavDestination(id: 'create', label: 'Criar', create: true),
       NavDestination(id: 'notices', label: 'Avisos', badge: careBadge),
       const NavDestination(id: 'members', label: 'Membros'),
       const NavDestination(id: 'profile', label: 'Perfil'),
@@ -28,7 +27,6 @@ List<NavDestination> navForPastor(bool pastor, {int careBadge = 0}) {
   return const [
     NavDestination(id: 'home', label: 'Home'),
     NavDestination(id: 'plans', label: 'Planos'),
-    NavDestination(id: 'create', label: 'Criar', create: true),
     NavDestination(id: 'groups', label: 'Grupos'),
     NavDestination(id: 'profile', label: 'Perfil'),
   ];

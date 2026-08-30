@@ -194,38 +194,44 @@ class CareRepositoryImpl implements CareRepository {
 
   @override
   Future<List<CarePlanInsight>> listReflections({String? userId}) async {
-    final filter = _client
-        .from('care_plan_reflections')
-        .select(
-          'id, plan_id, user_id, comment_text, takeaway, understanding, reception, minutes, created_at',
-        );
-    final rows = await (userId == null
-            ? filter.order('created_at', ascending: false).limit(40)
-            : filter
-                .eq('user_id', userId)
-                .order('created_at', ascending: false)
-                .limit(40));
-    if (rows.isEmpty) return const [];
+    final names = <String, String>{};
+    List<dynamic> rows = const [];
+    try {
+      final filter = _client
+          .from('care_plan_reflections')
+          .select(
+            'id, plan_id, user_id, comment_text, takeaway, understanding, reception, minutes, created_at',
+          );
+      rows = await (userId == null
+          ? filter.order('created_at', ascending: false).limit(40)
+          : filter
+              .eq('user_id', userId)
+              .order('created_at', ascending: false)
+              .limit(40));
+    } catch (_) {}
 
     final userIds = rows.map((row) => row['user_id'] as String).toSet().toList();
     final planIds = rows.map((row) => row['plan_id'] as String).toSet().toList();
 
-    final names = <String, String>{};
-    final profileRows = await _client
-        .from('profiles')
-        .select('id, display_name')
-        .inFilter('id', userIds);
-    for (final profile in profileRows) {
-      names[profile['id'] as String] = profile['display_name'] as String;
+    if (userIds.isNotEmpty) {
+      final profileRows = await _client
+          .from('profiles')
+          .select('id, display_name')
+          .inFilter('id', userIds);
+      for (final profile in profileRows) {
+        names[profile['id'] as String] = profile['display_name'] as String;
+      }
     }
 
     final titles = <String, String>{};
-    final planRows = await _client
-        .from('care_plans')
-        .select('id, title')
-        .inFilter('id', planIds);
-    for (final plan in planRows) {
-      titles[plan['id'] as String] = plan['title'] as String;
+    if (planIds.isNotEmpty) {
+      final planRows = await _client
+          .from('care_plans')
+          .select('id, title')
+          .inFilter('id', planIds);
+      for (final plan in planRows) {
+        titles[plan['id'] as String] = plan['title'] as String;
+      }
     }
 
     return [
@@ -236,14 +242,258 @@ class CareRepositoryImpl implements CareRepository {
           userId: row['user_id'] as String,
           memberName: names[row['user_id'] as String] ?? 'Membro',
           planTitle: titles[row['plan_id'] as String] ?? 'Leitura de cuidado',
-          understanding: row['understanding'] as int,
-          reception: row['reception'] as String,
-          minutes: row['minutes'] as int,
+          understanding: row['understanding'] as int? ?? 3,
+          reception: row['reception'] as String? ?? 'paz',
+          minutes: row['minutes'] as int? ?? 1,
           completedAt: DateTime.parse(row['created_at'] as String).toLocal(),
           comment: row['comment_text'] as String?,
           takeaway: row['takeaway'] as String?,
         ),
+      ...await _groupInsights(userId: userId, names: names),
+    ]..sort((a, b) => b.completedAt.compareTo(a.completedAt));
+  }
+
+  Future<List<CarePlanInsight>> _groupInsights({
+    required String? userId,
+    required Map<String, String> names,
+  }) async {
+    try {
+      final filter = _client.from('group_plan_completions').select(
+        'id, plan_id, user_id, comment_text, takeaway, understanding, reception, minutes, created_at',
+      );
+      final rows = await (userId == null
+          ? filter.order('created_at', ascending: false).limit(40)
+          : filter
+              .eq('user_id', userId)
+              .order('created_at', ascending: false)
+              .limit(40));
+      if (rows.isEmpty) return const [];
+
+      final userIds = rows.map((row) => row['user_id'] as String).toSet().toList();
+      final planIds = rows.map((row) => row['plan_id'] as String).toSet().toList();
+
+      if (userId == null) {
+        final profileRows = await _client
+            .from('profiles')
+            .select('id, display_name')
+            .inFilter('id', userIds);
+        for (final profile in profileRows) {
+          names[profile['id'] as String] = profile['display_name'] as String;
+        }
+      }
+
+      final titles = <String, String>{};
+      final planRows = await _client
+          .from('reading_plans')
+          .select('id, title')
+          .inFilter('id', planIds);
+      for (final plan in planRows) {
+        titles[plan['id'] as String] = plan['title'] as String;
+      }
+
+      return [
+        for (final row in rows)
+          CarePlanInsight(
+            id: row['id'] as String,
+            planId: row['plan_id'] as String,
+            userId: row['user_id'] as String,
+            memberName: names[row['user_id'] as String] ?? 'Membro',
+            planTitle: titles[row['plan_id'] as String] ?? 'Leitura do grupo',
+            understanding: row['understanding'] as int? ?? 3,
+            reception: row['reception'] as String? ?? 'paz',
+            minutes: row['minutes'] as int? ?? 1,
+            completedAt: DateTime.parse(row['created_at'] as String).toLocal(),
+            comment: row['comment_text'] as String?,
+            takeaway: row['takeaway'] as String?,
+          ),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  @override
+  Future<MemberEngagement> listEngagement(String userId) async {
+    final weekStart = DateTime.now().toUtc().subtract(const Duration(days: 7));
+    final logs = await _safeSelect(
+      () => _client
+          .from('reading_logs')
+          .select('minutes, passage_label, occurred_at')
+          .eq('user_id', userId),
+    );
+    final groupComments = await _safeSelect(
+      () => _client
+          .from('group_passage_comments')
+          .select('id, created_at')
+          .eq('user_id', userId),
+    );
+    final feedComments = await _safeSelect(
+      () => _client.from('comments').select('id, created_at').eq('user_id', userId),
+    );
+    final checkins = await _safeSelect(
+      () => _client.from('mood_checkins').select('id').eq('user_id', userId),
+    );
+    final groupDone = await _safeSelect(
+      () => _client
+          .from('group_plan_completions')
+          .select('id')
+          .eq('user_id', userId),
+    );
+    final careDone = await _safeSelect(
+      () => _client
+          .from('care_plan_reflections')
+          .select('id')
+          .eq('user_id', userId),
+    );
+
+    var minutesTotal = 0;
+    var minutesWeek = 0;
+    var readingCountWeek = 0;
+    final activeDays = <String>{};
+    DateTime? lastReadAt;
+    String? lastPassage;
+    for (final log in logs) {
+      final minutes = (log['minutes'] as int?) ?? 0;
+      minutesTotal += minutes;
+      final when = _asDate(log['occurred_at']);
+      if (when != null && !when.isBefore(weekStart)) {
+        minutesWeek += minutes;
+        readingCountWeek += 1;
+        activeDays.add(when.toIso8601String().substring(0, 10));
+      }
+      if (when != null && (lastReadAt == null || when.isAfter(lastReadAt))) {
+        lastReadAt = when;
+        lastPassage = (log['passage_label'] as String?)?.trim();
+      }
+    }
+
+    var commentCountWeek = 0;
+    for (final row in [...groupComments, ...feedComments]) {
+      final when = _asDate(row['created_at']);
+      if (when != null && !when.isBefore(weekStart)) commentCountWeek += 1;
+    }
+
+    return MemberEngagement(
+      minutesTotal: minutesTotal,
+      minutesWeek: minutesWeek,
+      readingCount: logs.length,
+      readingCountWeek: readingCountWeek,
+      commentCount: groupComments.length + feedComments.length,
+      commentCountWeek: commentCountWeek,
+      checkinCount: checkins.length,
+      plansCompleted: groupDone.length + careDone.length,
+      activeDaysWeek: activeDays.length,
+      lastReadAt: lastReadAt?.toLocal(),
+      lastPassage: lastPassage == null || lastPassage.isEmpty ? null : lastPassage,
+    );
+  }
+
+  @override
+  Future<ChurchPulse> listChurchPulse() async {
+    final weekStart = DateTime.now().toUtc().subtract(const Duration(days: 7));
+    final since = weekStart.toIso8601String();
+    final logs = await _safeSelect(
+      () => _client
+          .from('reading_logs')
+          .select('minutes')
+          .gte('occurred_at', since),
+    );
+    final groupComments = await _safeSelect(
+      () => _client
+          .from('group_passage_comments')
+          .select('id')
+          .gte('created_at', since),
+    );
+    final feedComments = await _safeSelect(
+      () => _client.from('comments').select('id').gte('created_at', since),
+    );
+    final groupDone = await _safeSelect(
+      () => _client
+          .from('group_plan_completions')
+          .select('id')
+          .gte('created_at', since),
+    );
+    final careDone = await _safeSelect(
+      () => _client
+          .from('care_plan_reflections')
+          .select('id')
+          .gte('created_at', since),
+    );
+    var minutesWeek = 0;
+    for (final log in logs) {
+      minutesWeek += (log['minutes'] as int?) ?? 0;
+    }
+    return ChurchPulse(
+      minutesWeek: minutesWeek,
+      readingsWeek: logs.length,
+      commentsWeek: groupComments.length + feedComments.length,
+      completionsWeek: groupDone.length + careDone.length,
+    );
+  }
+
+  @override
+  Future<List<MoodCheckin>> listMemberCheckins(String userId) async {
+    final rows = await _safeSelect(
+      () => _client
+          .from('mood_checkins')
+          .select('id, score, day, status, crisis, body')
+          .eq('user_id', userId)
+          .order('day', ascending: false)
+          .limit(12),
+    );
+    return [
+      for (final row in rows)
+        MoodCheckin(
+          id: row['id'] as String,
+          score: row['score'] as int? ?? 3,
+          day: DateTime.tryParse('${row['day']}') ?? DateTime.now(),
+          status: careStatusFrom(row['status'] as String?),
+          crisis: row['crisis'] as bool? ?? false,
+          body: row['body'] as String?,
+        ),
     ];
+  }
+
+  @override
+  Future<MemberAiReport> generateMemberBriefing(String userId) async {
+    final response = await _client.functions.invoke(
+      'analyze-member',
+      body: {'user_id': userId},
+    );
+    if (response.status >= 400) {
+      throw StateError('analyze-member failed: ${response.status}');
+    }
+    final data = Map<String, dynamic>.from(response.data as Map);
+    final summary = (data['summary'] as String?)?.trim() ?? '';
+    if (summary.isEmpty) {
+      throw StateError('empty briefing');
+    }
+    return MemberAiReport(
+      summary: summary,
+      prayerAttention: (data['prayer_attention'] as String?)?.trim() ?? '',
+      readingPulse: (data['reading_pulse'] as String?)?.trim() ?? '',
+      nextStep: (data['next_step'] as String?)?.trim() ?? '',
+      urgency: (data['urgency'] as String?)?.trim() ?? 'medium',
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> _safeSelect(
+    Future<List<dynamic>> Function() query,
+  ) async {
+    try {
+      final rows = await query();
+      return [
+        for (final row in rows)
+          if (row is Map) Map<String, dynamic>.from(row),
+      ];
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  DateTime? _asDate(Object? value) {
+    if (value == null) return null;
+    return DateTime.tryParse('$value')?.toUtc();
   }
 
   List<String> _stringList(Object? raw) {

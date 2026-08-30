@@ -73,6 +73,8 @@ class CareReading {
   final bool completed;
 
   String get passageLabel => reading.passageLabel;
+
+  bool get isDone => completed == true;
 }
 
 class MemberCarePlan {
@@ -104,17 +106,21 @@ class MemberCarePlan {
   final String? takeaway;
   final DateTime? archivedAt;
 
-  int get doneCount => readings.where((item) => item.completed).length;
+  int get doneCount => readings.where((item) => item.isDone).length;
 
   List<DailyReading> get playlist =>
       readings.map((item) => item.reading).toList();
 
   Set<String> get completedLabels => {
     for (final item in readings)
-      if (item.completed) item.passageLabel,
+      if (item.isDone) item.passageLabel,
   };
 
   bool get isComplete => readings.isNotEmpty && doneCount == readings.length;
+
+  bool get isArchived => archived == true;
+
+  bool get isPastoral => pastoral != false;
 }
 
 class FeedHome {

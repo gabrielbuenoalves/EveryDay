@@ -20,31 +20,61 @@ class PlansRepositoryImpl implements PlansRepository {
         .from('reading_logs')
         .select('passage_label')
         .eq('user_id', uid);
-    final done = <String>{
-      for (final log in logs)
-        (log['passage_label'] as String).trim().toLowerCase(),
-    };
+    final done = _doneLabels(logs);
 
     final plans = <MemberCarePlan>[];
-    plans.addAll(await _carePlans(uid, done));
+    plans.addAll(await _carePlans(uid, done, archived: false));
     try {
       plans.addAll(await _groupPlans(uid, done, includeArchived: false));
     } catch (_) {}
     return plans;
   }
 
-  Future<List<MemberCarePlan>> _carePlans(String uid, Set<String> done) async {
+  @override
+  Future<List<MemberCarePlan>> listArchivedPlans() async {
+    final uid = _client.auth.currentUser?.id;
+    if (uid == null) throw StateError('not authenticated');
+
+    final logs = await _client
+        .from('reading_logs')
+        .select('passage_label')
+        .eq('user_id', uid);
+    final done = _doneLabels(logs);
+
+    final plans = <MemberCarePlan>[];
+    plans.addAll(await _carePlans(uid, done, archived: true));
+    try {
+      plans.addAll(
+        (await _groupPlans(uid, done, includeArchived: true))
+            .where((plan) => plan.isArchived),
+      );
+    } catch (_) {}
+    plans.sort((a, b) {
+      final left = a.archivedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final right = b.archivedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return right.compareTo(left);
+    });
+    return plans;
+  }
+
+  Future<List<MemberCarePlan>> _carePlans(
+    String uid,
+    Set<String> done, {
+    required bool archived,
+  }) async {
     final rows = await _client
         .from('care_plans')
-        .select('id, title, message')
+        .select('id, title, message, status, archived_at')
         .eq('user_id', uid)
-        .eq('status', 'active')
+        .eq('status', archived ? 'archived' : 'active')
         .order('created_at', ascending: false);
+    final reflections = archived ? await _careReflections(uid) : const <String, Map<String, dynamic>>{};
     final result = <MemberCarePlan>[];
     for (final row in rows) {
       final readings = await _readingsForCare(row['id'] as String, done);
-      if (readings.isEmpty) continue;
+      if (readings.isEmpty && !archived) continue;
       final title = (row['title'] as String?)?.trim();
+      final meta = reflections[row['id'] as String];
       result.add(
         MemberCarePlan(
           id: row['id'] as String,
@@ -53,6 +83,12 @@ class PlansRepositoryImpl implements PlansRepository {
               : title,
           message: (row['message'] as String?)?.trim(),
           readings: readings,
+          archived: archived,
+          sessionMinutes: _asInt(meta?['minutes']),
+          takeaway: (meta?['takeaway'] as String?)?.trim(),
+          archivedAt: row['archived_at'] == null
+              ? null
+              : DateTime.parse(row['archived_at'] as String).toLocal(),
         ),
       );
     }
@@ -145,7 +181,7 @@ class PlansRepositoryImpl implements PlansRepository {
           .maybeSingle();
       if (plan == null) continue;
       final readings = await _readingsForChurchPlan(planId, done);
-      if (readings.isEmpty) continue;
+      if (readings.isEmpty && !archived) continue;
       result.add(
         MemberCarePlan(
           id: key,
@@ -158,7 +194,7 @@ class PlansRepositoryImpl implements PlansRepository {
           readingPlanId: planId,
           pastoral: false,
           archived: archived,
-          sessionMinutes: meta?['minutes'] as int?,
+          sessionMinutes: _asInt(meta?['minutes']),
           takeaway: (meta?['takeaway'] as String?)?.trim(),
           archivedAt: meta?['created_at'] == null
               ? null
@@ -197,7 +233,8 @@ class PlansRepositoryImpl implements PlansRepository {
     final seen = <String>{};
     final readings = <CareReading>[];
     for (final raw in days) {
-      final day = Map<String, dynamic>.from(raw as Map);
+      if (raw is! Map) continue;
+      final day = Map<String, dynamic>.from(raw);
       final label = (day['passage_label'] as String? ?? '').trim();
       final key = label.toLowerCase();
       if (label.isEmpty || !seen.add(key)) continue;
@@ -206,14 +243,42 @@ class PlansRepositoryImpl implements PlansRepository {
           reading: DailyReading.fromLabel(
             label,
             book: day['book'] as String?,
-            startChapter: day['start_chapter'] as int?,
-            endChapter: day['end_chapter'] as int?,
+            startChapter: _asInt(day['start_chapter']),
+            endChapter: _asInt(day['end_chapter']),
           ),
           completed: done.contains(key),
         ),
       );
     }
     return readings;
+  }
+
+  Future<Map<String, Map<String, dynamic>>> _careReflections(String uid) async {
+    final byPlan = <String, Map<String, dynamic>>{};
+    try {
+      final rows = await _client
+          .from('care_plan_reflections')
+          .select('plan_id, takeaway, minutes, created_at')
+          .eq('user_id', uid);
+      for (final row in rows) {
+        byPlan[row['plan_id'] as String] = Map<String, dynamic>.from(row);
+      }
+    } catch (_) {}
+    return byPlan;
+  }
+
+  Set<String> _doneLabels(List<dynamic> logs) {
+    return {
+      for (final log in logs)
+        if ((log['passage_label'] as String?)?.trim().isNotEmpty == true)
+          (log['passage_label'] as String).trim().toLowerCase(),
+    };
+  }
+
+  int? _asInt(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse('$value');
   }
 
   @override
@@ -296,10 +361,7 @@ class PlansRepositoryImpl implements PlansRepository {
         .from('reading_logs')
         .select('passage_label')
         .eq('user_id', uid);
-    final done = <String>{
-      for (final log in logs)
-        (log['passage_label'] as String).trim().toLowerCase(),
-    };
+    final done = _doneLabels(logs);
     final group = await _client
         .from('groups')
         .select('id, name, plan_id, plan_label')

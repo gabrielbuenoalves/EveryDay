@@ -18,6 +18,7 @@ class MembersPage extends StatefulWidget {
 class _MembersPageState extends State<MembersPage> {
   List<ReadingGroup> _groups = const [];
   List<CareInboxItem> _careItems = const [];
+  ChurchPulse? _pulse;
   var _query = '';
   var _started = false;
 
@@ -36,10 +37,20 @@ class _MembersPageState extends State<MembersPage> {
     try {
       careItems = await deps.getCareInbox();
     } catch (_) {}
+    var pulse = const ChurchPulse(
+      minutesWeek: 0,
+      readingsWeek: 0,
+      commentsWeek: 0,
+      completionsWeek: 0,
+    );
+    try {
+      pulse = await deps.getChurchPulse();
+    } catch (_) {}
     if (!mounted) return;
     setState(() {
       _groups = groups;
       _careItems = careItems;
+      _pulse = pulse;
     });
   }
 
@@ -81,6 +92,10 @@ class _MembersPageState extends State<MembersPage> {
             crossAxisSpacing: 9,
             childAspectRatio: 1.4,
             children: [
+              _MiniMetric('Tempo', '${_pulse?.minutesWeek ?? 0} min', 'leitura nesta semana'),
+              _MiniMetric('Leituras', '${_pulse?.readingsWeek ?? 0}', 'registros na semana'),
+              _MiniMetric('Comentários', '${_pulse?.commentsWeek ?? 0}', 'no plano e no feed'),
+              _MiniMetric('Planos', '${_pulse?.completionsWeek ?? 0}', 'encerrados na semana'),
               _MiniMetric('Ativos', '$active', 'nos últimos 7 dias'),
               _MiniMetric('Precisam de atenção', '$attention', 'sem atividade recente'),
               _MiniMetric(
@@ -103,8 +118,11 @@ class _MembersPageState extends State<MembersPage> {
           const SizedBox(height: 7),
           TextField(
             onChanged: (value) => setState(() => _query = value),
+            maxLines: 1,
+            textInputAction: TextInputAction.search,
             decoration: const InputDecoration(
               hintText: 'Nome ou grupo',
+              isDense: true,
             ),
           ),
           const SizedBox(height: 12),
@@ -115,15 +133,22 @@ class _MembersPageState extends State<MembersPage> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(13),
                 onTap: () async {
-                  final insights = await AppScope.of(context).getCareReflections(
+                  final deps = AppScope.of(context);
+                  final insights = await deps.getCareReflections(
                     userId: entry.$1.id,
                   );
+                  MemberEngagement? engagement;
+                  try {
+                    engagement = await deps.getMemberEngagement(entry.$1.id);
+                  } catch (_) {}
                   if (!context.mounted) return;
                   await Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => MemberInsightsPage(
+                        memberId: entry.$1.id,
                         memberName: entry.$1.displayName,
                         insights: insights,
+                        engagement: engagement,
                       ),
                     ),
                   );

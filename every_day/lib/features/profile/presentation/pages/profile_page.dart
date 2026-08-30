@@ -6,6 +6,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_avatar.dart';
 import '../../../../core/widgets/proto.dart';
 import '../../../groups/domain/entities/reading_group.dart';
+import '../../../groups/presentation/pages/group_detail_page.dart';
+import '../../../groups/presentation/widgets/direct_reading_sheet.dart';
 import '../../../shelf/domain/entities/bible_book.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/usecases/get_profile.dart';
@@ -425,6 +427,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 13),
                 EmberProgress(value: group.weekProgress == 0 ? 0.12 : group.weekProgress),
+                const SizedBox(height: 12),
+                EmberButton(
+                  label: 'Direcionar leitura',
+                  onPressed: () => _directReading(group),
+                ),
                 if (group.inviteCode != null && group.inviteCode!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const MiniLabel('Código do grupo'),
@@ -559,6 +566,70 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
+      ProtoSection(
+        title: 'Grupos da igreja',
+        trailing: '${_groups.length}',
+      ),
+      if (_groups.isEmpty)
+        const ProtoCard(
+          child: Text(
+            'Quando houver grupos, você direciona a leitura daqui também.',
+            style: TextStyle(color: AppColors.slate300),
+          ),
+        )
+      else
+        for (final group in _groups) ...[
+          ProtoCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MiniLabel(participationLabel(group.weekProgress)),
+                const SizedBox(height: 6),
+                Text(
+                  group.name,
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${group.memberCount} pessoas · ${(group.weekProgress * 100).round()}% acompanhando o desafio',
+                  style: const TextStyle(color: AppColors.slate300, fontSize: 11),
+                ),
+                const SizedBox(height: 13),
+                EmberProgress(value: group.weekProgress == 0 ? 0.12 : group.weekProgress),
+                if (group.inviteCode != null && group.inviteCode!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const MiniLabel('Código do grupo'),
+                  const SizedBox(height: 4),
+                  Text(
+                    group.inviteCode!,
+                    style: const TextStyle(
+                      color: AppColors.slate100,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                EmberButton(
+                  label: 'Direcionar leitura',
+                  expand: true,
+                  onPressed: () => _directReading(group),
+                ),
+                const SizedBox(height: 8),
+                EmberButton(
+                  label: 'Ver grupo',
+                  expand: true,
+                  onPressed: () => _openGroup(group, pastor: true),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
       const SizedBox(height: 10),
       ProtoCard(
         child: Column(
@@ -588,6 +659,38 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     ];
+  }
+
+  Future<void> _directReading(ReadingGroup group) async {
+    final sent = await showDirectReadingSheet(
+      context,
+      groupName: group.name,
+      onSubmit: ({required title, required passages}) {
+        return AppScope.of(context).createGroupPlan(
+          groupId: group.id,
+          title: title,
+          passages: passages,
+        );
+      },
+    );
+    if (!sent || !mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Leitura enviada a ${group.name}')),
+    );
+    await _load(AppScope.of(context).getProfile);
+  }
+
+  Future<void> _openGroup(ReadingGroup group, {required bool pastor}) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute(
+        builder: (_) => GroupDetailPage(
+          group: group,
+          pastor: pastor,
+          canDirect: true,
+        ),
+      ),
+    );
+    if (mounted) await _load(AppScope.of(context).getProfile);
   }
 
   Future<void> _editMember() async {
