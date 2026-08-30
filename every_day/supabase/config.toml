@@ -1,0 +1,17 @@
+project_id = "everyday"
+
+[auth]
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+
+[functions.analyze-checkin]
+verify_jwt = true
+
+[functions.bible-passage]
+verify_jwt = true
+
+[functions.youversion-session]
+verify_jwt = false

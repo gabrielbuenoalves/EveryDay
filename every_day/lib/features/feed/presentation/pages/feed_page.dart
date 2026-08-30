@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/di/app_scope.dart';
-import '../../../../core/domain/daily_reading.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../reading/presentation/pages/reading_page.dart';
+import '../../../../core/utils/time_ago.dart';
+import '../../../../core/widgets/app_avatar.dart';
+import '../../../../core/widgets/proto.dart';
+import '../../../care/domain/entities/care_models.dart';
+import '../../../care/presentation/widgets/care_notice.dart';
+import '../../../groups/domain/entities/reading_group.dart';
+import '../../../profile/domain/entities/user_profile.dart';
 import '../../domain/entities/feed_home.dart';
 import '../controllers/feed_controller.dart';
-import '../widgets/daily_reading_card.dart';
-import '../widgets/feed_cards.dart';
-import '../widgets/feed_header.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+  const FeedPage({super.key, this.pastor = false});
+
+  final bool pastor;
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -19,13 +23,47 @@ class FeedPage extends StatefulWidget {
 
 class _FeedPageState extends State<FeedPage> {
   FeedController? _controller;
+  List<ReadingGroup> _groups = const [];
+  UserProfile? _profile;
+  List<CareInboxItem> _careItems = const [];
+  Object? _careError;
+  var _extrasStarted = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _controller ??= FeedController(
       getFeedHome: AppScope.of(context).getFeedHome,
+      reload: AppScope.of(context).feedReload,
     )..load();
+    if (_extrasStarted) return;
+    _extrasStarted = true;
+    _loadExtras();
+  }
+
+  Future<void> _loadExtras() async {
+    final deps = AppScope.of(context);
+    try {
+      final groups = await deps.getGroups();
+      final profile = await deps.getProfile();
+      if (!mounted) return;
+      setState(() {
+        _groups = groups;
+        _profile = profile;
+      });
+    } catch (_) {}
+    if (!widget.pastor) return;
+    try {
+      final care = await deps.getCareInbox();
+      if (!mounted) return;
+      setState(() {
+        _careItems = care;
+        _careError = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _careError = e);
+    }
   }
 
   @override
@@ -37,42 +75,55 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    if (controller == null) {
-      return const SizedBox.shrink();
-    }
+    if (controller == null) return const SizedBox.shrink();
 
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
         final home = controller.home;
-
         return SafeArea(
           bottom: false,
           child: Column(
             children: [
-              FeedHeader(streakDays: home?.streakDays ?? 0),
+              AppScreenHeader(
+                kicker: weekdayDateKicker(),
+                title: widget.pastor
+                    ? 'Central da Igreja'
+                    : 'Olá, ${_profile?.firstName ?? 'você'}',
+                initials: _profile?.initials ?? 'ED',
+              ),
               Expanded(
                 child: controller.loading && home == null
                     ? const Center(
                         child: CircularProgressIndicator(
-                          color: AppColors.orange,
+                          color: AppColors.ember,
                         ),
                       )
-                    : ListView(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
-                        children: [
-                          if (home != null) ...[
-                            DailyReadingCard(
-                              reading: home.dailyReading,
-                              onRead: () => _openReading(home.dailyReading),
-                            ),
-                            const SizedBox(height: 14),
-                            for (final item in home.items) ...[
-                              _FeedItemView(item: item),
-                              const SizedBox(height: 14),
-                            ],
+                    : RefreshIndicator(
+                        color: AppColors.ember,
+                        onRefresh: () async {
+                          await controller.load();
+                          await _loadExtras();
+                        },
+                        child: ListView(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                          children: [
+                            if (controller.error != null)
+                              Text(
+                                '${controller.error}',
+                                style: const TextStyle(color: AppColors.ember),
+                              ),
+                            if (home != null)
+                              widget.pastor
+                                  ? _PastorHome(
+                                      home: home,
+                                      groups: _groups,
+                                      careItems: _careItems,
+                                      careError: _careError,
+                                    )
+                                  : _MemberHome(home: home, groups: _groups),
                           ],
-                        ],
+                        ),
                       ),
               ),
             ],
@@ -81,27 +132,263 @@ class _FeedPageState extends State<FeedPage> {
       },
     );
   }
+}
 
-  void _openReading(DailyReading reading) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ReadingPage(reading: reading),
+class _MemberHome extends StatelessWidget {
+  const _MemberHome({required this.home, required this.groups});
+
+  final FeedHome home;
+  final List<ReadingGroup> groups;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (groups.isNotEmpty) ...[
+          ProtoSection(
+            title: 'Meus grupos',
+            trailing:
+                '${groups.length} ${groups.length == 1 ? 'grupo' : 'grupos'}',
+          ),
+          SizedBox(
+            height: 108,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.zero,
+              itemCount: groups.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final group = groups[index];
+                return GroupChip(
+                  name: group.name,
+                  memberCount: group.memberCount,
+                );
+              },
+            ),
+          ),
+        ],
+        const ProtoSection(title: 'Do seu círculo', trailing: 'Hoje'),
+        if (home.items.isEmpty)
+          const Text(
+            'Nenhuma leitura no feed ainda.',
+            style: TextStyle(color: AppColors.slate400),
+          ),
+        for (final item in home.items) ...[
+          _PostCard(
+            item: item,
+            groupHint: groups.isEmpty ? null : groups.first.name,
+          ),
+          const SizedBox(height: 10),
+        ],
+      ],
+    );
+  }
+}
+
+class _PastorHome extends StatelessWidget {
+  const _PastorHome({
+    required this.home,
+    required this.groups,
+    required this.careItems,
+    this.careError,
+  });
+
+  final FeedHome home;
+  final List<ReadingGroup> groups;
+  final List<CareInboxItem> careItems;
+  final Object? careError;
+
+  @override
+  Widget build(BuildContext context) {
+    final people = {
+      for (final group in groups)
+        for (final member in group.members) member.id,
+    }.length;
+    final community = people == 0 ? home.items.length + 1 : people;
+    final avg = groups.isEmpty
+        ? 0.0
+        : groups.map((group) => group.weekProgress).reduce((a, b) => a + b) /
+              groups.length;
+    final interactions = home.items.fold<int>(
+      0,
+      (sum, item) => sum + item.highFives + item.comments,
+    );
+    final activeGroups = groups
+        .where((group) => group.weekProgress >= 0.4)
+        .length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CareNoticeTeaser(items: careItems, error: careError),
+        const SizedBox(height: 10),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 9,
+          crossAxisSpacing: 9,
+          childAspectRatio: 1.45,
+          children: [
+            _MetricCard('Comunidade', '$community', 'pessoas conectadas'),
+            _MetricCard(
+              'Grupos',
+              '${groups.length}',
+              '$activeGroups ativos nesta semana',
+            ),
+            _MetricCard(
+              'Leituras',
+              '${(avg * 100).round()}%',
+              'participação semanal',
+            ),
+            _MetricCard('Interações', '$interactions', 'nos últimos 7 dias'),
+          ],
+        ),
+        const ProtoSection(title: 'Visão da semana', trailing: 'Participação'),
+        ProtoCard(
+          child: WeekBars(
+            heights: const [0.48, 0.70, 0.56, 0.82, 0.67, 0.91, 0.76],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MetricCard extends StatelessWidget {
+  const _MetricCard(this.label, this.value, this.hint);
+
+  final String label;
+  final String value;
+  final String hint;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProtoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MiniLabel(label),
+          const SizedBox(height: 5),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.slate100,
+              fontSize: 25,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -1,
+            ),
+          ),
+          Text(
+            hint,
+            style: const TextStyle(color: AppColors.slate400, fontSize: 9),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _FeedItemView extends StatelessWidget {
-  const _FeedItemView({required this.item});
+class _PostCard extends StatefulWidget {
+  const _PostCard({required this.item, this.groupHint});
 
   final FeedItem item;
+  final String? groupHint;
+
+  @override
+  State<_PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<_PostCard> {
+  var _liked = false;
 
   @override
   Widget build(BuildContext context) {
-    return switch (item) {
-      final BookCompletedFeedItem completed => CompletionFeedCard(item: completed),
-      final ReadingProgressFeedItem progress => ProgressFeedCard(item: progress),
-      final StreakAchievementFeedItem streak => StreakFeedCard(item: streak),
+    final item = widget.item;
+    final body = switch (item) {
+      final BookCompletedFeedItem completed =>
+        completed.quote ?? 'Terminou ${completed.bookName}.',
+      final ReadingProgressFeedItem progress =>
+        'Leu ${progress.passageLabel} · ${progress.readingMinutes} min',
+      final StreakAchievementFeedItem streak =>
+        '${streak.days} dias seguidos de leitura.',
     };
+    final likes = item.highFives + (_liked ? 1 : 0);
+    final meta = [
+      if (widget.groupHint != null) widget.groupHint!,
+      timeAgo(item.occurredAt),
+    ].join(' · ');
+
+    return ProtoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              AppAvatar(
+                initials: item.author.initials,
+                color: AppColors.slate800,
+                foregroundColor: AppColors.slate100,
+                size: 31,
+              ),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.author.displayName,
+                      style: const TextStyle(
+                        color: AppColors.slate100,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    Text(
+                      meta,
+                      style: const TextStyle(
+                        color: AppColors.slate400,
+                        fontSize: 9,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(
+            body,
+            style: const TextStyle(
+              color: AppColors.slate300,
+              fontSize: 11,
+              height: 1.45,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () => setState(() => _liked = !_liked),
+                child: Text(
+                  '${_liked ? '♥' : '♡'} Apoiar $likes',
+                  style: TextStyle(
+                    color: _liked ? AppColors.ember : AppColors.slate300,
+                    fontSize: 10,
+                    fontWeight: _liked ? FontWeight.w800 : FontWeight.w500,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              const Text(
+                'Comentar',
+                style: TextStyle(color: AppColors.slate300, fontSize: 10),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

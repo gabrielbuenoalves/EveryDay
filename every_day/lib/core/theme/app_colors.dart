@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  static const cream = Color(0xFFF6F1E6);
-  static const creamDark = Color(0xFFEDE6D6);
-  static const charcoal = Color(0xFF1C1917);
-  static const charcoalSoft = Color(0xFF2A2623);
-  static const orange = Color(0xFFD95F33);
-  static const orangePressed = Color(0xFFC14F28);
+  static const slate950 = Color(0xFF0F172A);
+  static const slate900 = Color(0xFF131A22);
+  static const slate850 = Color(0xFF18222E);
+  static const slate800 = Color(0xFF1E293B);
+  static const slate700 = Color(0xFF334155);
+  static const slate500 = Color(0xFF64748B);
+  static const slate400 = Color(0xFF94A3B8);
+  static const slate300 = Color(0xFFCBD5E1);
+  static const slate100 = Color(0xFFF1F5F9);
+  static const ember = Color(0xFFE3703A);
+  static const emberDark = Color(0xFFB8501F);
+
+  static const cream = slate900;
+  static const creamDark = slate800;
+  static const charcoal = slate950;
+  static const charcoalSoft = slate850;
+  static const orange = ember;
+  static const orangePressed = emberDark;
   static const forest = Color(0xFF2D5A47);
   static const forestDeep = Color(0xFF1F4A3A);
   static const forestMuted = Color(0xFF3D6B58);
-  static const surface = Color(0xFFFFFCF7);
-  static const quoteFill = Color(0xFFF3EDE0);
-  static const muted = Color(0xFF8A8478);
-  static const mutedDark = Color(0xFF6B665C);
-  static const navInactive = Color(0xFFB0A99C);
-  static const divider = Color(0xFFE8E1D4);
-  static const checkGreen = Color(0xFF3E8F63);
-  static const white = Color(0xFFFFFFFF);
+  static const surface = slate800;
+  static const quoteFill = slate950;
+  static const muted = slate400;
+  static const mutedDark = slate500;
+  static const navInactive = slate400;
+  static const divider = slate700;
+  static const checkGreen = ember;
+  static const white = slate100;
 }

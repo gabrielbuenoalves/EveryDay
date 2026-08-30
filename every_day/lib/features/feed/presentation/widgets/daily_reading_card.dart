@@ -8,10 +8,12 @@ class DailyReadingCard extends StatelessWidget {
     super.key,
     required this.reading,
     required this.onRead,
+    this.fromCarePlan = false,
   });
 
   final DailyReading reading;
   final VoidCallback onRead;
+  final bool fromCarePlan;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,9 @@ class DailyReadingCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SUA LEITURA DE HOJE',
+                  fromCarePlan
+                      ? 'SUA LEITURA DE CUIDADO'
+                      : 'SUA LEITURA DE HOJE',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: const Color(0xFFC8C2B8),
                     letterSpacing: 1.4,

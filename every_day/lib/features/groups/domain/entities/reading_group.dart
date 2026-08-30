@@ -8,6 +8,7 @@ class ReadingGroup {
     required this.memberCount,
     required this.weekProgress,
     required this.members,
+    this.inviteCode,
   });
 
   final String id;
@@ -16,4 +17,5 @@ class ReadingGroup {
   final int memberCount;
   final double weekProgress;
   final List<UserPreview> members;
+  final String? inviteCode;
 }

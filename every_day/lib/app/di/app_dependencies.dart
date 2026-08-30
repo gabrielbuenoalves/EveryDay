@@ -1,47 +1,107 @@
-import '../../features/feed/data/datasources/feed_local_datasource.dart';
+import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/care/data/repositories/care_repository_impl.dart';
+import '../../features/care/domain/usecases/care_usecases.dart';
 import '../../features/feed/data/repositories/feed_repository_impl.dart';
 import '../../features/feed/domain/usecases/get_feed_home.dart';
-import '../../features/groups/data/datasources/groups_local_datasource.dart';
 import '../../features/groups/data/repositories/groups_repository_impl.dart';
 import '../../features/groups/domain/usecases/get_groups.dart';
-import '../../features/profile/data/datasources/profile_local_datasource.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/usecases/get_profile.dart';
-import '../../features/reading/data/datasources/reading_local_datasource.dart';
+import '../../features/plans/data/plans_repository_impl.dart';
+import '../../features/plans/domain/usecases/plans_usecases.dart';
+import '../../features/reading/data/repositories/bible_repository_impl.dart';
 import '../../features/reading/data/repositories/reading_repository_impl.dart';
+import '../../features/reading/domain/usecases/get_bible_passage.dart';
 import '../../features/reading/domain/usecases/log_reading.dart';
-import '../../features/shelf/data/datasources/shelf_local_datasource.dart';
 import '../../features/shelf/data/repositories/shelf_repository_impl.dart';
 import '../../features/shelf/domain/usecases/get_bookshelf.dart';
 
+class FeedReload extends ChangeNotifier {
+  void ping() => notifyListeners();
+}
+
 class AppDependencies {
-  const AppDependencies({
+  AppDependencies({
+    required this.auth,
     required this.getFeedHome,
     required this.getBookshelf,
     required this.getGroups,
     required this.getProfile,
     required this.logReading,
+    required this.getBiblePassage,
+    required this.submitMoodCheckin,
+    required this.analyzeCheckin,
+    required this.getCareInbox,
+    required this.approveCarePlan,
+    required this.scheduleCareContact,
+    required this.hasCheckedInToday,
+    required this.completeCarePlan,
+    required this.getCareReflections,
+    required this.getMyPlans,
+    required this.listPlanComments,
+    required this.addPlanComment,
+    required this.createGroupPlan,
+    required this.completeGroupPlan,
+    required this.listGroupPlans,
+    required this.minutesForPassages,
+    required this.feedReload,
   });
 
+  final AuthRepository auth;
   final GetFeedHome getFeedHome;
   final GetBookshelf getBookshelf;
   final GetGroups getGroups;
   final GetProfile getProfile;
   final LogReading logReading;
+  final GetBiblePassage getBiblePassage;
+  final SubmitMoodCheckin submitMoodCheckin;
+  final AnalyzeCheckin analyzeCheckin;
+  final GetCareInbox getCareInbox;
+  final ApproveCarePlan approveCarePlan;
+  final ScheduleCareContact scheduleCareContact;
+  final HasCheckedInToday hasCheckedInToday;
+  final CompleteCarePlan completeCarePlan;
+  final GetCareReflections getCareReflections;
+  final GetMyPlans getMyPlans;
+  final ListPlanComments listPlanComments;
+  final AddPlanComment addPlanComment;
+  final CreateGroupPlan createGroupPlan;
+  final CompleteGroupPlan completeGroupPlan;
+  final ListGroupPlans listGroupPlans;
+  final MinutesForPassages minutesForPassages;
+  final FeedReload feedReload;
 
-  factory AppDependencies.bootstrap() {
-    final feedRepository = FeedRepositoryImpl(FeedLocalDataSource());
-    final shelfRepository = ShelfRepositoryImpl(ShelfLocalDataSource());
-    final groupsRepository = GroupsRepositoryImpl(GroupsLocalDataSource());
-    final profileRepository = ProfileRepositoryImpl(ProfileLocalDataSource());
-    final readingRepository = ReadingRepositoryImpl(ReadingLocalDataSource());
-
+  factory AppDependencies.fromSupabase(SupabaseClient client) {
+    final care = CareRepositoryImpl(client);
+    final plans = PlansRepositoryImpl(client);
     return AppDependencies(
-      getFeedHome: GetFeedHome(feedRepository),
-      getBookshelf: GetBookshelf(shelfRepository),
-      getGroups: GetGroups(groupsRepository),
-      getProfile: GetProfile(profileRepository),
-      logReading: LogReading(readingRepository),
+      auth: AuthRepositoryImpl(client),
+      getFeedHome: GetFeedHome(FeedRepositoryImpl(client)),
+      getBookshelf: GetBookshelf(ShelfRepositoryImpl(client)),
+      getGroups: GetGroups(GroupsRepositoryImpl(client)),
+      getProfile: GetProfile(ProfileRepositoryImpl(client)),
+      logReading: LogReading(ReadingRepositoryImpl(client)),
+      getBiblePassage: GetBiblePassage(BibleRepositoryImpl(client)),
+      submitMoodCheckin: SubmitMoodCheckin(care),
+      analyzeCheckin: AnalyzeCheckin(care),
+      getCareInbox: GetCareInbox(care),
+      approveCarePlan: ApproveCarePlan(care),
+      scheduleCareContact: ScheduleCareContact(care),
+      hasCheckedInToday: HasCheckedInToday(care),
+      completeCarePlan: CompleteCarePlan(care),
+      getCareReflections: GetCareReflections(care),
+      getMyPlans: GetMyPlans(plans),
+      listPlanComments: ListPlanComments(plans),
+      addPlanComment: AddPlanComment(plans),
+      createGroupPlan: CreateGroupPlan(plans),
+      completeGroupPlan: CompleteGroupPlan(plans),
+      listGroupPlans: ListGroupPlans(plans),
+      minutesForPassages: MinutesForPassages(plans),
+      feedReload: FeedReload(),
     );
   }
 }

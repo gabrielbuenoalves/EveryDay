@@ -1,3 +1,5 @@
+import '../../../../core/domain/user_role.dart';
+
 class UserStats {
   const UserStats({
     required this.chaptersThisWeek,
@@ -20,6 +22,9 @@ class UserProfile {
     required this.longestStreak,
     required this.currentPlan,
     required this.stats,
+    required this.role,
+    this.churchName,
+    this.inviteCode,
   });
 
   final String id;
@@ -30,4 +35,17 @@ class UserProfile {
   final int longestStreak;
   final String currentPlan;
   final UserStats stats;
+  final UserRole role;
+  final String? churchName;
+  final String? inviteCode;
+
+  String get firstName {
+    final parts = displayName.trim().split(RegExp(r'\s+'));
+    return parts.isEmpty ? displayName : parts.first;
+  }
+
+  String get username {
+    final raw = firstName.toLowerCase().replaceAll(RegExp(r'[^a-z0-9._-]'), '');
+    return '@${raw.isEmpty ? 'voce' : raw}';
+  }
 }

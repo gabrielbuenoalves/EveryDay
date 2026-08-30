@@ -229,8 +229,7 @@ class _FeedPersonHeader extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style:
-                    subtitleStyle ?? Theme.of(context).textTheme.bodyMedium,
+                style: subtitleStyle ?? Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
