@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
-import '../../features/feed/presentation/pages/feed_page.dart';
-import '../../features/groups/presentation/pages/groups_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart';
-import '../../features/reading/presentation/widgets/log_reading_sheet.dart';
-import '../../features/shelf/presentation/pages/shelf_page.dart';
-import '../di/app_scope.dart';
-import 'app_bottom_nav.dart';
-import 'app_tab.dart';
+import '../../features/community/presentation/community_pages.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -18,52 +11,89 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  AppTab _tab = AppTab.feed;
+  int _index = 0;
+
+  static const _pages = <Widget>[
+    HomePage(),
+    GroupsHubPage(),
+    CarePage(),
+    AgendaPage(),
+    ProfileHubPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.cream,
-      body: IndexedStack(
-        index: _tab.index,
-        children: const [
-          FeedPage(),
-          ShelfPage(),
-          GroupsPage(),
-          ProfilePage(),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(top: 18),
-        child: SizedBox(
-          width: 64,
-          height: 64,
-          child: FloatingActionButton(
-            onPressed: _openLogSheet,
-            elevation: 3,
-            backgroundColor: AppColors.orange,
-            foregroundColor: AppColors.white,
-            shape: const CircleBorder(),
-            child: const Icon(Icons.add_rounded, size: 34),
-          ),
-        ),
-      ),
-      bottomNavigationBar: AppBottomNav(
-        current: _tab,
-        onSelect: (tab) => setState(() => _tab = tab),
+      backgroundColor: AppColors.background,
+      body: IndexedStack(index: _index, children: _pages),
+      bottomNavigationBar: _NavigationBar(
+        index: _index,
+        onTap: (value) => setState(() => _index = value),
       ),
     );
   }
+}
 
-  Future<void> _openLogSheet() async {
-    final logged = await showLogReadingSheet(
-      context,
-      logReading: AppScope.of(context).logReading,
-    );
-    if (!logged || !mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Leitura registrada')),
+class _NavigationBar extends StatelessWidget {
+  const _NavigationBar({required this.index, required this.onTap});
+
+  final int index;
+  final ValueChanged<int> onTap;
+
+  static const labels = ['Início', 'Grupos', 'Cuidado', 'Agenda', 'Perfil'];
+  static const icons = [
+    Icons.home_rounded,
+    Icons.groups_rounded,
+    Icons.favorite_rounded,
+    Icons.calendar_month_rounded,
+    Icons.person_rounded,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        border: Border(top: BorderSide(color: AppColors.divider)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 76,
+          child: Row(
+            children: List.generate(
+              labels.length,
+              (item) => Expanded(
+                child: InkWell(
+                  onTap: () => onTap(item),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        icons[item],
+                        color: item == index
+                            ? AppColors.orange
+                            : AppColors.muted,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        labels[item],
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: item == index
+                              ? AppColors.white
+                              : AppColors.muted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

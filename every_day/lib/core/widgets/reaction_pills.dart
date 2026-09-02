@@ -37,11 +37,7 @@ class ReactionPills extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({
-    required this.icon,
-    required this.count,
-    this.onTap,
-  });
+  const _Pill({required this.icon, required this.count, this.onTap});
 
   final IconData icon;
   final int count;

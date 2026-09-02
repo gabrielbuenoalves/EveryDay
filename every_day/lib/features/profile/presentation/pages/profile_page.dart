@@ -145,7 +145,10 @@ class _StatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label.toUpperCase(), style: Theme.of(context).textTheme.labelSmall),
+          Text(
+            label.toUpperCase(),
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
           const SizedBox(height: 8),
           Text(value, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 4),

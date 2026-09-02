@@ -27,9 +27,8 @@ class ReadingPage extends StatelessWidget {
           children: [
             Text(
               'LEITURA DE HOJE',
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: const Color(0xFFC8C2B8),
-              ),
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(color: const Color(0xFFC8C2B8)),
             ),
             const SizedBox(height: 16),
             Text(

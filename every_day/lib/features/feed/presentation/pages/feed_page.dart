@@ -84,9 +84,7 @@ class _FeedPageState extends State<FeedPage> {
 
   void _openReading(DailyReading reading) {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ReadingPage(reading: reading),
-      ),
+      MaterialPageRoute<void>(builder: (_) => ReadingPage(reading: reading)),
     );
   }
 }
@@ -99,8 +97,12 @@ class _FeedItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (item) {
-      final BookCompletedFeedItem completed => CompletionFeedCard(item: completed),
-      final ReadingProgressFeedItem progress => ProgressFeedCard(item: progress),
+      final BookCompletedFeedItem completed => CompletionFeedCard(
+        item: completed,
+      ),
+      final ReadingProgressFeedItem progress => ProgressFeedCard(
+        item: progress,
+      ),
       final StreakAchievementFeedItem streak => StreakFeedCard(item: streak),
     };
   }

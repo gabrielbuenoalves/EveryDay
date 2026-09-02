@@ -88,9 +88,8 @@ class _ShelfSummary extends StatelessWidget {
               children: [
                 Text(
                   'SUA BÍBLIA',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: const Color(0xFFC8C2B8),
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall
+                      ?.copyWith(color: const Color(0xFFC8C2B8)),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -189,7 +188,9 @@ class _BookRow extends StatelessWidget {
                 value: book.progress,
                 minHeight: 8,
                 backgroundColor: AppColors.creamDark,
-                color: book.isCompleted ? AppColors.checkGreen : AppColors.forest,
+                color: book.isCompleted
+                    ? AppColors.checkGreen
+                    : AppColors.forest,
               ),
             ),
           ),

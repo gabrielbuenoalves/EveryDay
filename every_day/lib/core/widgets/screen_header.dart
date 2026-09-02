@@ -4,11 +4,7 @@ import '../theme/app_colors.dart';
 import 'app_logo.dart';
 
 class ScreenHeader extends StatelessWidget {
-  const ScreenHeader({
-    super.key,
-    required this.title,
-    this.trailing,
-  });
+  const ScreenHeader({super.key, required this.title, this.trailing});
 
   final String title;
   final Widget? trailing;
