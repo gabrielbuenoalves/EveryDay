@@ -21,26 +21,27 @@ class PhoneViewport extends StatelessWidget {
         if (compact) return child;
 
         return ColoredBox(
-          color: const Color(0xFF111110),
+          color: const Color(0xFF0D0D10),
           child: Center(
             child: FittedBox(
               child: Container(
-                width: width + 20,
-                height: height + 20,
-                padding: const EdgeInsets.all(10),
+                width: width + 18,
+                height: height + 18,
+                padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: AppColors.charcoal,
-                  borderRadius: BorderRadius.circular(40),
+                  color: const Color(0xFF121214),
+                  borderRadius: BorderRadius.circular(42),
+                  border: Border.all(color: AppColors.slate700),
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0x66000000),
-                      blurRadius: 40,
-                      offset: Offset(0, 18),
+                      color: Color(0xA6000000),
+                      blurRadius: 80,
+                      offset: Offset(0, 28),
                     ),
                   ],
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(35),
                   child: SizedBox(
                     width: width,
                     height: height,
@@ -49,6 +50,7 @@ class PhoneViewport extends StatelessWidget {
                         size: const Size(width, height),
                         padding: const EdgeInsets.only(top: 12, bottom: 8),
                         viewPadding: const EdgeInsets.only(top: 12, bottom: 8),
+                        textScaler: TextScaler.noScaling,
                       ),
                       child: child,
                     ),
