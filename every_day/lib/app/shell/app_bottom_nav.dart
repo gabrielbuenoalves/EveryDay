@@ -20,22 +20,22 @@ class AppBottomNav extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: const Color(0xFA202026),
-            borderRadius: BorderRadius.circular(24),
+            color: const Color(0xFC1A1B24),
+            borderRadius: BorderRadius.circular(18),
             border: Border.all(color: AppColors.slate700),
             boxShadow: const [
               BoxShadow(
                 color: Color(0xA6000000),
-                blurRadius: 32,
-                offset: Offset(0, 13),
+                blurRadius: 22,
+                offset: Offset(0, 8),
               ),
             ],
           ),
           child: SizedBox(
-            height: 70,
+            height: 58,
             child: Row(
               children: [
                 for (final item in items)
@@ -75,30 +75,21 @@ class _NavItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: AppColors.ember,
-                borderRadius: BorderRadius.circular(13),
+                borderRadius: BorderRadius.circular(11),
               ),
               child: const Text(
                 '+',
                 style: TextStyle(
                   color: AppColors.slate950,
-                  fontSize: 25,
+                  fontSize: 23,
                   height: 1,
                   fontWeight: FontWeight.w700,
                 ),
-              ),
-            ),
-            const SizedBox(height: 2),
-            const Text(
-              'Criar',
-              style: TextStyle(
-                color: AppColors.slate400,
-                fontSize: 8,
-                fontWeight: FontWeight.w800,
               ),
             ),
           ],
@@ -109,20 +100,20 @@ class _NavItem extends StatelessWidget {
     final color = selected ? AppColors.ember : AppColors.slate400;
     return Material(
       color: selected ? const Color(0x24FF5A16) : Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _iconWithBadge,
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             Text(
               item.label,
               style: TextStyle(
                 color: color,
-                fontSize: 8,
+                fontSize: 7,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -136,7 +127,7 @@ class _NavItem extends StatelessWidget {
     final icon = Icon(
       _icon,
       color: selected ? AppColors.ember : AppColors.slate400,
-      size: 20,
+      size: 18,
     );
     if (item.badge <= 0) return icon;
     return Stack(
@@ -172,6 +163,7 @@ class _NavItem extends StatelessWidget {
   IconData get _icon => switch (item.id) {
     'home' => Icons.home_outlined,
     'plans' => Icons.auto_stories_outlined,
+    'agenda' => Icons.calendar_month_outlined,
     'groups' => Icons.groups_outlined,
     'notices' => Icons.notifications_outlined,
     'members' => Icons.people_outline,

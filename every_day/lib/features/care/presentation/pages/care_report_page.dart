@@ -73,11 +73,51 @@ class _CareReportPageState extends State<CareReportPage> {
 
     return Scaffold(
       backgroundColor: AppColors.slate900,
-      appBar: AppBar(title: Text('Cuidar de ${item.member.displayName}')),
+      appBar: AppBar(title: const Text('Cuidado Pastoral')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          const MiniLabel('1 · RELATO DA OVELHA'),
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppColors.violet,
+                child: Text(
+                  _sheepName.substring(0, 1),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.member.displayName,
+                      style: const TextStyle(
+                        color: AppColors.slate100,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const Text(
+                      'RELATO RECEBIDO',
+                      style: TextStyle(
+                        color: AppColors.slate400,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const MiniLabel('RELATO DO MEMBRO'),
           const SizedBox(height: 8),
           SurfaceCard(
             child: Column(
@@ -105,9 +145,10 @@ class _CareReportPageState extends State<CareReportPage> {
             ),
           ),
           const SizedBox(height: 18),
-          const MiniLabel('2 · RELATÓRIO DA IA · SÓ VOCÊ VÊ'),
+          const MiniLabel('ANÁLISE DA IA · SÓ VOCÊ VÊ'),
           const SizedBox(height: 8),
           SurfaceCard(
+            color: AppColors.violetSoft,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -157,7 +198,7 @@ class _CareReportPageState extends State<CareReportPage> {
             ),
           ),
           const SizedBox(height: 18),
-          MiniLabel('3 · AUDITAR E ENVIAR · SÓ PARA $_sheepName'),
+          MiniLabel('RESPONDER PARA $_sheepName'),
           const SizedBox(height: 8),
           const Text(
             'A ovelha vê todas as leituras de uma vez e navega entre elas. Sem a sua aprovação, ela não recebe nada.',

@@ -7,7 +7,7 @@ class ProtoCard extends StatelessWidget {
   const ProtoCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(16),
+    this.padding = const EdgeInsets.all(14),
     this.challenge = false,
   });
 
@@ -22,7 +22,7 @@ class ProtoCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       padding: padding,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: challenge ? const Color(0x99FF5A16) : AppColors.slate700,
         ),
@@ -33,7 +33,7 @@ class ProtoCard extends StatelessWidget {
                 colors: [AppColors.slate800, Color(0x55D94308)],
               )
             : null,
-        color: challenge ? null : const Color(0xF0202026),
+        color: challenge ? null : AppColors.slate800,
       ),
       child: challenge
           ? Stack(
@@ -70,7 +70,7 @@ class ProtoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 22, 2, 10),
+      padding: const EdgeInsets.fromLTRB(1, 19, 1, 8),
       child: Row(
         children: [
           Expanded(
@@ -78,9 +78,9 @@ class ProtoSection extends StatelessWidget {
               title,
               style: const TextStyle(
                 color: AppColors.slate100,
-                fontSize: 14,
+                fontSize: 11,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -0.1,
+                letterSpacing: .15,
               ),
             ),
           ),
@@ -110,10 +110,10 @@ class MiniLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: TextStyle(
-        color: dark ? const Color(0xD10F172A) : AppColors.ember,
-        fontSize: 9,
+        color: dark ? const Color(0xD10F172A) : AppColors.slate400,
+        fontSize: 8,
         fontWeight: FontWeight.w900,
-        letterSpacing: 1.2,
+        letterSpacing: 1.05,
       ),
     );
   }
@@ -130,7 +130,7 @@ class EmberProgress extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: LinearProgressIndicator(
         value: value.clamp(0, 1),
-        minHeight: 7,
+        minHeight: 6,
         backgroundColor: AppColors.slate700,
         color: AppColors.ember,
       ),
@@ -153,7 +153,7 @@ class EmberButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final button = SizedBox(
-      height: 42,
+      height: 40,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
@@ -161,7 +161,7 @@ class EmberButton extends StatelessWidget {
           foregroundColor: AppColors.slate950,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(13),
+            borderRadius: BorderRadius.circular(11),
           ),
           textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
         ),
@@ -280,13 +280,13 @@ class SpecialtyChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.slate950,
         borderRadius: BorderRadius.circular(11),
-        boxShadow: active
-            ? const [BoxShadow(color: AppColors.ember, spreadRadius: 2)]
-            : null,
+        border: Border.all(
+          color: active ? AppColors.ember : AppColors.slate700,
+        ),
       ),
       child: Text(
         label,
@@ -336,18 +336,20 @@ class AppScreenHeader extends StatelessWidget {
     required this.kicker,
     required this.title,
     this.initials = 'ED',
+    this.action,
   });
 
   final String kicker;
   final String title;
   final String initials;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: const EdgeInsets.fromLTRB(17, 10, 17, 7),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -362,12 +364,12 @@ class AppScreenHeader extends StatelessWidget {
                     letterSpacing: 1.4,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   title,
                   style: const TextStyle(
                     color: AppColors.slate100,
-                    fontSize: 21,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.6,
                   ),
@@ -375,16 +377,17 @@ class AppScreenHeader extends StatelessWidget {
               ],
             ),
           ),
+          ?action,
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.ember, width: 2),
+              border: Border.all(color: AppColors.slate700),
             ),
             child: AppAvatar(
               initials: initials,
               color: AppColors.slate800,
               foregroundColor: AppColors.slate100,
-              size: 38,
+              size: 34,
             ),
           ),
         ],

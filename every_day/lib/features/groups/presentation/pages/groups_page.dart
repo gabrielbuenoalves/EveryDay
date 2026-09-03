@@ -73,7 +73,7 @@ class _GroupsPageState extends State<GroupsPage> {
             child: groups == null
                 ? const _GroupsLoading()
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 104),
                     children: [
                       ProtoSection(
                         title: widget.pastor
@@ -83,10 +83,10 @@ class _GroupsPageState extends State<GroupsPage> {
                             '${visibleGroups!.length} de ${groups.length}',
                       ),
                       Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           color: AppColors.slate850,
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(11),
                           border: Border.all(color: AppColors.slate700),
                         ),
                         child: Row(
@@ -127,7 +127,7 @@ class _GroupsPageState extends State<GroupsPage> {
                               await _load(AppScope.of(context).getGroups);
                             }
                           },
-                          borderRadius: BorderRadius.circular(17),
+                          borderRadius: BorderRadius.circular(14),
                           child: ProtoCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,12 +137,12 @@ class _GroupsPageState extends State<GroupsPage> {
                                       ? participationLabel(group.weekProgress)
                                       : group.planLabel,
                                 ),
-                                const SizedBox(height: 6),
+                                const SizedBox(height: 5),
                                 Text(
                                   group.name,
                                   style: const TextStyle(
                                     color: AppColors.slate100,
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
@@ -156,7 +156,7 @@ class _GroupsPageState extends State<GroupsPage> {
                                     fontSize: 11,
                                   ),
                                 ),
-                                const SizedBox(height: 13),
+                                const SizedBox(height: 12),
                                 EmberProgress(value: group.weekProgress),
                                 if (group.inviteCode != null &&
                                     group.inviteCode!.isNotEmpty &&
@@ -213,10 +213,10 @@ class _FilterButton extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
           decoration: BoxDecoration(
             color: selected ? AppColors.ember : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             label,

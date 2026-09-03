@@ -68,7 +68,7 @@ class _CareInboxPageState extends State<CareInboxPage> {
             color: AppColors.ember,
             onRefresh: _load,
             child: ListView(
-              padding: EdgeInsets.fromLTRB(16, 12, 16, widget.asTab ? 120 : 32),
+              padding: EdgeInsets.fromLTRB(16, 5, 16, widget.asTab ? 104 : 28),
               children: [
                 if (_error != null)
                   Container(
@@ -185,12 +185,12 @@ class _InboxCard extends StatelessWidget {
     final urgency = item.report?.urgency;
     return Material(
       color: AppColors.slate850,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onOpen,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(13),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
@@ -205,7 +205,7 @@ class _InboxCard extends StatelessWidget {
                 color: AppColors.slate800,
                 foregroundColor: AppColors.slate100,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,7 +217,7 @@ class _InboxCard extends StatelessWidget {
                         color: AppColors.slate100,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 3),
                     Text(
                       [
                         'Auditar leitura da IA',
@@ -230,7 +230,7 @@ class _InboxCard extends StatelessWidget {
                         fontSize: 11,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
                     Text(
                       item.preview,
                       maxLines: 3,
