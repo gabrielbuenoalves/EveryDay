@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 abstract final class AppColors {
   // The names are retained so existing presentation stays compatible; the
   // palette itself is the warm, ink-dark EveryDay system.
-  static const slate950 = Color(0xFF0D0E14);
-  static const slate900 = Color(0xFF101117);
-  static const slate850 = Color(0xFF15161E);
-  static const slate800 = Color(0xFF1A1B24);
-  static const slate700 = Color(0xFF2A2C37);
-  static const slate500 = Color(0xFF626572);
-  static const slate400 = Color(0xFF9C9EAA);
-  static const slate300 = Color(0xFFD5D5DC);
-  static const slate100 = Color(0xFFF5F3F0);
-  static const ember = Color(0xFFFF6720);
-  static const emberDark = Color(0xFFE84E0C);
-  static const success = Color(0xFF58C583);
-  static const danger = Color(0xFFEF6A62);
-  static const violet = Color(0xFF35205D);
-  static const violetSoft = Color(0xFF271A43);
+  static const slate950 = Color(0xFF101014);
+  static const slate900 = Color(0xFF15151B);
+  static const slate850 = Color(0xFF1B1B22);
+  static const slate800 = Color(0xFF222229);
+  static const slate700 = Color(0xFF34343D);
+  static const slate500 = Color(0xFF6D6D78);
+  static const slate400 = Color(0xFFA0A0AA);
+  static const slate300 = Color(0xFFD2D2D8);
+  static const slate100 = Color(0xFFF6F5F2);
+  static const ember = Color(0xFFFF5C16);
+  static const emberDark = Color(0xFFE94D0A);
+  static const success = Color(0xFF46C879);
+  static const danger = Color(0xFFFF6961);
+  static const violet = Color(0xFF332052);
+  static const violetSoft = Color(0xFF25183D);
 
   static const cream = slate900;
   static const creamDark = slate800;

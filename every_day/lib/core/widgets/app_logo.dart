@@ -6,11 +6,7 @@ const everydayTagline = 'o dia começa na leitura';
 const everydayLogoAsset = 'assets/branding/everyday_logo.jpg';
 
 class AppLogo extends StatelessWidget {
-  const AppLogo({
-    super.key,
-    this.size = 36,
-    this.showShadow = true,
-  });
+  const AppLogo({super.key, this.size = 36, this.showShadow = true});
 
   final double size;
   final bool showShadow;
@@ -45,11 +41,7 @@ class AppLogo extends StatelessWidget {
 }
 
 class AppWordmark extends StatelessWidget {
-  const AppWordmark({
-    super.key,
-    this.logoSize = 56,
-    this.showTagline = true,
-  });
+  const AppWordmark({super.key, this.logoSize = 56, this.showTagline = true});
 
   final double logoSize;
   final bool showTagline;

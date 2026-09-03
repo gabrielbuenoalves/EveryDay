@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../core/domain/user_role.dart';
 import '../../core/theme/app_colors.dart';
+import '../../features/agenda/presentation/pages/agenda_page.dart';
 import '../../features/care/presentation/pages/care_inbox_page.dart';
 import '../../features/care/presentation/widgets/mood_checkin_sheet.dart';
 import '../../features/feed/presentation/pages/feed_page.dart';
 import '../../features/groups/presentation/pages/groups_page.dart';
-import '../../features/members/presentation/pages/members_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/reading/presentation/pages/reading_tab.dart';
 import '../di/app_scope.dart';
@@ -93,20 +93,20 @@ class _AppShellState extends State<AppShell> {
         backgroundColor: AppColors.slate900,
         body: DecoratedBox(
           decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment(-.8, -1.1),
-              radius: 1.25,
-              colors: [Color(0x26FF5A16), AppColors.slate900],
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.slate950, AppColors.slate900],
             ),
           ),
           child: IndexedStack(
             index: _pageIndex,
             children: [
               FeedPage(pastor: _pastor),
-              if (!_pastor) const ReadingTab(),
               GroupsPage(pastor: _pastor, canDirect: _role.canLead),
               if (_pastor) const CareInboxPage(asTab: true),
-              if (_pastor) const MembersPage(),
+              if (!_pastor) const ReadingTab(),
+              AgendaPage(role: _role),
               const ProfilePage(),
             ],
           ),
@@ -124,16 +124,17 @@ class _AppShellState extends State<AppShell> {
     if (_pastor) {
       return switch (_currentId) {
         'groups' => 1,
-        'notices' => 2,
-        'members' => 3,
+        'care' => 2,
+        'agenda' => 3,
         'profile' => 4,
         _ => 0,
       };
     }
     return switch (_currentId) {
-      'plans' => 1,
-      'groups' => 2,
-      'profile' => 3,
+      'groups' => 1,
+      'plans' => 2,
+      'agenda' => 3,
+      'profile' => 4,
       _ => 0,
     };
   }
@@ -141,12 +142,9 @@ class _AppShellState extends State<AppShell> {
   void _onSelect(String id) {
     setState(() => _currentId = id);
     if (_pastor &&
-        (id == 'notices' ||
-            id == 'members' ||
-            id == 'profile' ||
-            id == 'home')) {
+        (id == 'notices' || id == 'care' || id == 'profile' || id == 'home')) {
       _loadCareBadge();
-      if (id == 'notices' && mounted) {
+      if (id == 'care' && mounted) {
         AppScope.of(context).feedReload.ping();
       }
     }

@@ -106,10 +106,21 @@ class _DirectReadingSheetState extends State<DirectReadingSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: Container(
+                width: 34,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.slate500,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
             MiniLabel('${widget.groupName} / Direcionar leitura'),
             const SizedBox(height: 6),
             const Text(
-              'Direcionar leitura',
+              'Novo desafio de leitura',
               style: TextStyle(
                 color: AppColors.slate100,
                 fontSize: 18,
@@ -118,7 +129,7 @@ class _DirectReadingSheetState extends State<DirectReadingSheet> {
             ),
             const SizedBox(height: 4),
             const Text(
-              'As passagens entram no plano ativo do grupo. Digite uma por linha.',
+              'Defina a sequência que entra no plano ativo do grupo. Uma passagem por linha.',
               style: TextStyle(color: AppColors.slate400, fontSize: 12),
             ),
             const SizedBox(height: 12),

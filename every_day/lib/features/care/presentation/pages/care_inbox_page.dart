@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_avatar.dart';
 import '../../../../core/widgets/proto.dart';
 import '../../domain/entities/care_models.dart';
+import '../../../members/presentation/pages/members_page.dart';
 import 'care_report_page.dart';
 
 class CareInboxPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class CareInboxPage extends StatefulWidget {
 class _CareInboxPageState extends State<CareInboxPage> {
   List<CareInboxItem>? _items;
   Object? _error;
+  var _filter = 0;
   Listenable? _reload;
   var _listening = false;
 
@@ -62,6 +64,12 @@ class _CareInboxPageState extends State<CareInboxPage> {
   @override
   Widget build(BuildContext context) {
     final items = _items;
+    final filtered = items?.where((item) {
+      if (_filter == 1) return item.checkin.crisis;
+      if (_filter == 2) return item.checkin.score <= 2;
+      return true;
+    }).toList();
+    final visible = filtered ?? const <CareInboxItem>[];
     final list = items == null
         ? const Center(child: CircularProgressIndicator(color: AppColors.ember))
         : RefreshIndicator(
@@ -70,6 +78,19 @@ class _CareInboxPageState extends State<CareInboxPage> {
             child: ListView(
               padding: EdgeInsets.fromLTRB(16, 5, 16, widget.asTab ? 104 : 28),
               children: [
+                const ProtoSection(title: 'Fila de cuidado', trailing: 'Hoje'),
+                ProtoFilterBar(
+                  labels: const ['Todos', 'Urgente', 'Oração', 'Respondidos'],
+                  selected: _filter,
+                  onSelected: (value) => setState(() => _filter = value),
+                  disabledIndices: const <int>{3},
+                ),
+                const SizedBox(height: 5),
+                const Text(
+                  'Respostas pastorais aguardam integração de dados.',
+                  style: TextStyle(color: AppColors.slate500, fontSize: 9),
+                ),
+                const SizedBox(height: 12),
                 if (_error != null)
                   Container(
                     margin: const EdgeInsets.only(bottom: 12),
@@ -99,37 +120,13 @@ class _CareInboxPageState extends State<CareInboxPage> {
                       ],
                     ),
                   ),
-                if (items.isEmpty)
-                  const ProtoCard(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.check_circle_outline_rounded,
-                          color: AppColors.success,
-                          size: 30,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          'Nenhum pedido de oração em aberto.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: AppColors.slate100,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Quando alguém pedir cuidado, aparecerá aqui.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: AppColors.slate400,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                if (visible.isEmpty)
+                  const ProtoEmptyState(
+                    icon: Icons.check_circle_outline_rounded,
+                    title: 'Tudo em dia por aqui',
+                    copy: 'Quando alguém pedir cuidado, o relato aparece nesta fila.',
                   ),
-                for (final item in items) ...[
+                for (final item in visible) ...[
                   _InboxCard(item: item, onOpen: () => _open(item)),
                   const SizedBox(height: 10),
                 ],
@@ -142,9 +139,18 @@ class _CareInboxPageState extends State<CareInboxPage> {
         bottom: false,
         child: Column(
           children: [
-            const AppScreenHeader(
+            AppScreenHeader(
               kicker: 'Cuidado pastoral',
-              title: 'Notificações',
+              title: 'Cuidado',
+              action: IconButton(
+                tooltip: 'Membros',
+                onPressed: () {
+                  Navigator.of(context).push<void>(
+                    MaterialPageRoute(builder: (_) => const MembersPage()),
+                  );
+                },
+                icon: const Icon(Icons.people_outline, color: AppColors.ember),
+              ),
             ),
             Expanded(child: list),
           ],

@@ -98,6 +98,49 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
         children: [
+          ProtoCard(
+            child: Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: const Color(0x18FF5C16),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    widget.memberName.substring(0, 1).toUpperCase(),
+                    style: const TextStyle(
+                      color: AppColors.ember,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.memberName,
+                    style: const TextStyle(
+                      color: AppColors.slate100,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+                const Text(
+                  'MEMBRO',
+                  style: TextStyle(
+                    color: AppColors.slate400,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 3),
           const MiniLabel('RELATÓRIO PASTORAL'),
           const SizedBox(height: 8),
           if (_loadingReport)

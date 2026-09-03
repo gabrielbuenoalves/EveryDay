@@ -143,12 +143,20 @@ class _MemberHome extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const _VerseOfDay(),
-        const ProtoSection(
-          title: 'Seu desafio atual',
-          trailing: 'Ver detalhes',
+        const ProtoEmptyState(
+          icon: Icons.auto_stories_outlined,
+          title: 'Versículo do dia indisponível',
+          copy: 'Aguardando integração de dados para esta área.',
         ),
-        _ChallengeCard(group: firstGroup),
+        const ProtoSection(title: 'Seu desafio atual'),
+        if (firstGroup == null)
+          const ProtoEmptyState(
+            icon: Icons.flag_outlined,
+            title: 'Nenhum desafio ativo',
+            copy: 'Entre em um grupo para receber leituras direcionadas.',
+          )
+        else
+          _ChallengeCard(group: firstGroup),
         const ProtoSection(title: 'Reflexão do pastor'),
         const _PastorReflection(),
         const ProtoSection(title: 'Do seu círculo', trailing: 'Hoje'),
@@ -232,9 +240,17 @@ class _PastorHome extends StatelessWidget {
         CareNoticeTeaser(items: careItems, error: careError),
         const ProtoSection(title: 'Visão da semana', trailing: 'Participação'),
         ProtoCard(
-          child: WeekBars(
-            heights: const [0.48, 0.70, 0.56, 0.82, 0.67, 0.91, 0.76],
-          ),
+          child: groups.isEmpty
+              ? const Text(
+                  'Aguardando integração de métricas semanais.',
+                  style: TextStyle(color: AppColors.slate400, fontSize: 11),
+                )
+              : WeekBars(
+                  heights: groups
+                      .map((group) => group.weekProgress)
+                      .take(7)
+                      .toList(),
+                ),
         ),
       ],
     );
@@ -279,77 +295,21 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-class _VerseOfDay extends StatelessWidget {
-  const _VerseOfDay();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 132,
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF3B2920), Color(0xFF1B1B23), Color(0xFF111218)],
-        ),
-        border: Border.all(color: const Color(0xFF463329)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.ember,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Text(
-              'VERSÍCULO DO DIA',
-              style: TextStyle(
-                color: AppColors.slate950,
-                fontSize: 8,
-                fontWeight: FontWeight.w900,
-                letterSpacing: .6,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '“A minha graça te basta.”',
-            style: TextStyle(
-              color: AppColors.slate100,
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 3),
-          const Text(
-            '2 CORÍNTIOS 12:9',
-            style: TextStyle(
-              color: AppColors.slate400,
-              fontSize: 8,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _ChallengeCard extends StatelessWidget {
   const _ChallengeCard({this.group});
   final ReadingGroup? group;
 
   @override
   Widget build(BuildContext context) {
-    final progress = group?.weekProgress ?? .18;
+    final progress = group?.weekProgress;
+    if (group == null || progress == null) {
+      return const ProtoEmptyState(
+        icon: Icons.flag_outlined,
+        title: 'Nenhum desafio ativo',
+        copy: 'Aguardando uma leitura direcionada pela liderança.',
+      );
+    }
+    final currentGroup = group!;
     return ProtoCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,7 +318,7 @@ class _ChallengeCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  group?.planLabel ?? 'Sua leitura de hoje',
+                  currentGroup.planLabel,
                   style: const TextStyle(
                     color: AppColors.slate100,
                     fontSize: 15,
@@ -378,7 +338,7 @@ class _ChallengeCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            group?.name ?? 'Escolha um plano para começar.',
+            currentGroup.name,
             style: const TextStyle(color: AppColors.slate400, fontSize: 10),
           ),
           const SizedBox(height: 13),
@@ -387,7 +347,16 @@ class _ChallengeCard extends StatelessWidget {
           EmberButton(
             label: 'MARCAR LEITURA DE HOJE',
             expand: true,
+            onPressed: null,
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            'Marcação diária aguarda integração de dados.',
+            style: TextStyle(color: AppColors.slate500, fontSize: 9),
+          ),
+          TextButton(
             onPressed: () => AppNavScope.go(context, 'plans'),
+            child: const Text('ABRIR LEITURA'),
           ),
         ],
       ),
@@ -399,46 +368,10 @@ class _PastorReflection extends StatelessWidget {
   const _PastorReflection();
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppColors.violet,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'REFLEXÃO NOVA',
-            style: TextStyle(
-              color: Color(0xFFD6B8FF),
-              fontSize: 8,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Uma pausa para lembrar onde a esperança começa.',
-            style: TextStyle(
-              color: AppColors.slate100,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              height: 1.3,
-            ),
-          ),
-          SizedBox(height: 9),
-          Text(
-            'LER REFLEXÃO',
-            style: TextStyle(
-              color: AppColors.slate100,
-              fontSize: 9,
-              fontWeight: FontWeight.w900,
-              letterSpacing: .7,
-            ),
-          ),
-        ],
-      ),
+    return const ProtoEmptyState(
+      icon: Icons.notes_outlined,
+      title: 'Nenhuma reflexão publicada',
+      copy: 'Aguardando integração de dados para reflexões pastorais.',
     );
   }
 }
@@ -456,7 +389,7 @@ class _PastorBrief extends StatelessWidget {
           const MiniLabel('Reflexão do dia'),
           const SizedBox(height: 5),
           const Text(
-            'Uma palavra para conduzir a semana.',
+            'Reflexão do dia',
             style: TextStyle(
               color: AppColors.slate100,
               fontSize: 16,
@@ -464,41 +397,27 @@ class _PastorBrief extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5),
-          Text(
-            '${groups.length} grupos aguardam sua direção.',
-            style: const TextStyle(color: AppColors.slate300, fontSize: 11),
+          const Text(
+            'Aguardando integração de conteúdo para publicação pastoral.',
+            style: TextStyle(color: AppColors.slate300, fontSize: 11),
           ),
           const SizedBox(height: 12),
-          EmberButton(
-            label: 'PUBLICAR REFLEXÃO',
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Publique sua reflexão pela agenda de avisos.'),
-              ),
-            ),
-          ),
+          EmberButton(label: 'PUBLICAÇÃO EM BREVE', onPressed: null),
         ],
       ),
     );
   }
 }
 
-class _PostCard extends StatefulWidget {
+class _PostCard extends StatelessWidget {
   const _PostCard({required this.item, this.groupHint});
 
   final FeedItem item;
   final String? groupHint;
 
   @override
-  State<_PostCard> createState() => _PostCardState();
-}
-
-class _PostCardState extends State<_PostCard> {
-  var _liked = false;
-
-  @override
   Widget build(BuildContext context) {
-    final item = widget.item;
+    final item = this.item;
     final body = switch (item) {
       final BookCompletedFeedItem completed =>
         completed.quote ?? 'Terminou ${completed.bookName}.',
@@ -507,11 +426,10 @@ class _PostCardState extends State<_PostCard> {
       final StreakAchievementFeedItem streak =>
         '${streak.days} dias seguidos de leitura.',
     };
-    final likes = item.highFives + (_liked ? 1 : 0);
     final meta = [
-      if (widget.groupHint != null) widget.groupHint!,
+      groupHint,
       timeAgo(item.occurredAt),
-    ].join(' · ');
+    ].whereType<String>().join(' · ');
 
     return ProtoCard(
       child: Column(
@@ -562,41 +480,27 @@ class _PostCardState extends State<_PostCard> {
           const SizedBox(height: 12),
           Row(
             children: [
-              InkWell(
-                onTap: () => setState(() => _liked = !_liked),
-                borderRadius: BorderRadius.circular(8),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 2,
-                    vertical: 3,
+              Row(
+                children: [
+                  const Icon(
+                    Icons.favorite_border,
+                    color: AppColors.slate400,
+                    size: 14,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        _liked ? Icons.favorite : Icons.favorite_border,
-                        color: _liked ? AppColors.ember : AppColors.slate300,
-                        size: 14,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Apoiar $likes',
-                        style: TextStyle(
-                          color: _liked ? AppColors.ember : AppColors.slate300,
-                          fontSize: 10,
-                          fontWeight: _liked
-                              ? FontWeight.w800
-                              : FontWeight.w500,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(width: 5),
+                  Text(
+                    'Apoios ${item.highFives}',
+                    style: const TextStyle(
+                      color: AppColors.slate300,
+                      fontSize: 10,
+                    ),
                   ),
-                ),
+                ],
               ),
               const SizedBox(width: 14),
-              const Text(
-                'Comentar',
-                style: TextStyle(color: AppColors.slate300, fontSize: 10),
+              Text(
+                '${item.comments} comentários',
+                style: const TextStyle(color: AppColors.slate300, fontSize: 10),
               ),
             ],
           ),

@@ -60,7 +60,7 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
-      visualDensity: VisualDensity.standard,
+      visualDensity: VisualDensity.compact,
       brightness: Brightness.dark,
       scaffoldBackgroundColor: AppColors.slate900,
       colorScheme: const ColorScheme.dark(
@@ -85,7 +85,7 @@ abstract final class AppTheme {
         color: AppColors.slate800,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           side: const BorderSide(color: AppColors.slate700),
         ),
       ),
@@ -100,7 +100,7 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.ember,
           foregroundColor: AppColors.slate950,
-          minimumSize: const Size(48, 44),
+          minimumSize: const Size(48, 42),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

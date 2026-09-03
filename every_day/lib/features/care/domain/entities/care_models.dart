@@ -58,7 +58,10 @@ class CareInboxItem {
   String get preview {
     final body = checkin.body?.trim();
     if (body != null && body.isNotEmpty) {
-      return body.split('\n').where((line) => line.trim().isNotEmpty).join(' · ');
+      return body
+          .split('\n')
+          .where((line) => line.trim().isNotEmpty)
+          .join(' · ');
     }
     if (report != null && report!.summary.isNotEmpty) {
       return report!.summary;
@@ -162,21 +165,21 @@ class CarePlanInsight {
   final String? takeaway;
 
   String get understandingLabel => switch (understanding) {
-        1 => 'Confuso',
-        2 => 'Pouco',
-        3 => 'Razoável',
-        4 => 'Bom',
-        _ => 'Claro',
-      };
+    1 => 'Confuso',
+    2 => 'Pouco',
+    3 => 'Razoável',
+    4 => 'Bom',
+    _ => 'Claro',
+  };
 
   String get receptionLabel => switch (reception) {
-        'consolo' => 'Consolo',
-        'esperanca' => 'Esperança',
-        'encorajamento' => 'Encorajamento',
-        'desafio' => 'Desafio',
-        'ainda_pesado' => 'Ainda pesado',
-        _ => 'Paz',
-      };
+    'consolo' => 'Consolo',
+    'esperanca' => 'Esperança',
+    'encorajamento' => 'Encorajamento',
+    'desafio' => 'Desafio',
+    'ainda_pesado' => 'Ainda pesado',
+    _ => 'Paz',
+  };
 
   String get nextReadingHint {
     if (understanding <= 2 || reception == 'ainda_pesado') {
@@ -185,7 +188,9 @@ class CarePlanInsight {
     if (reception == 'desafio' && understanding >= 4) {
       return 'Pode aprofundar o tema com um texto um pouco mais desafiador.';
     }
-    if (reception == 'paz' || reception == 'consolo' || reception == 'esperanca') {
+    if (reception == 'paz' ||
+        reception == 'consolo' ||
+        reception == 'esperanca') {
       return 'O texto acolheu. Pode seguir no mesmo tom, ou avançar com calma.';
     }
     return 'Mantenha textos claros, ligados ao que essa ovelha está vivendo.';

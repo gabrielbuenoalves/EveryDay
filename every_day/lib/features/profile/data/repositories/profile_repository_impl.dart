@@ -16,7 +16,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
     final row = await _client
         .from('profiles')
-        .select('id, display_name, initials, avatar_color, role, churches(name, invite_code)')
+        .select(
+          'id, display_name, initials, avatar_color, role, churches(name, invite_code)',
+        )
         .eq('id', uid)
         .single();
 

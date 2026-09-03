@@ -19,7 +19,8 @@ class BibleChapterText {
   final List<BibleVerse> verses;
 
   bool get isEmpty =>
-      verses.every((verse) => verse.text.trim().isEmpty) && content.trim().isEmpty;
+      verses.every((verse) => verse.text.trim().isEmpty) &&
+      content.trim().isEmpty;
 }
 
 class BiblePassage {

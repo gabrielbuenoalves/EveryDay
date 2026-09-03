@@ -76,13 +76,13 @@ class _FeelingDialogState extends State<_FeelingDialog> {
         borderRadius: BorderRadius.circular(22),
         side: const BorderSide(color: AppColors.slate700),
       ),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.sizeOf(context).height * 0.85,
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+          padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -105,6 +105,19 @@ class _FeelingDialogState extends State<_FeelingDialog> {
                   ),
                 ],
               ),
+              const SizedBox(height: 3),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'CHECK-IN DIÁRIO',
+                  style: TextStyle(
+                    color: AppColors.ember,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
               const SizedBox(height: 8),
               const Align(
                 alignment: Alignment.centerLeft,
@@ -120,7 +133,7 @@ class _FeelingDialogState extends State<_FeelingDialog> {
                 physics: const NeverScrollableScrollPhysics(),
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
-                childAspectRatio: 0.95,
+                childAspectRatio: 1.05,
                 children: [
                   for (final feeling in dailyFeelings)
                     _FeelingTile(
@@ -140,7 +153,7 @@ class _FeelingDialogState extends State<_FeelingDialog> {
                   style: const TextStyle(color: AppColors.ember, fontSize: 12),
                 ),
               ],
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 48,

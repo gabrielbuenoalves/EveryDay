@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../features/agenda/data/repositories/agenda_repository_impl.dart';
+import '../../features/agenda/domain/repositories/agenda_repository.dart';
+import '../../features/agenda/domain/usecases/agenda_usecases.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/care/data/repositories/care_repository_impl.dart';
@@ -12,7 +15,6 @@ import '../../features/groups/domain/usecases/get_groups.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/usecases/get_profile.dart';
 import '../../features/plans/data/plans_repository_impl.dart';
-import '../../features/plans/domain/repositories/plans_repository.dart';
 import '../../features/plans/domain/usecases/plans_usecases.dart';
 import '../../features/reading/data/repositories/bible_repository_impl.dart';
 import '../../features/reading/data/repositories/reading_repository_impl.dart';
@@ -43,6 +45,7 @@ class AppDependencies {
     required this.completeCarePlan,
     required this.getCareReflections,
     required this.getMyPlans,
+    required this.getAgenda,
     required this.feedReload,
   });
 
@@ -62,9 +65,11 @@ class AppDependencies {
   final CompleteCarePlan completeCarePlan;
   final GetCareReflections getCareReflections;
   final GetMyPlans getMyPlans;
+  final GetAgenda getAgenda;
   final FeedReload feedReload;
 
   PlansRepository get plans => getMyPlans.repository;
+  AgendaRepository get agenda => getAgenda.repository;
 
   GetArchivedPlans get getArchivedPlans => GetArchivedPlans(plans);
   ListPlanComments get listPlanComments => ListPlanComments(plans);
@@ -73,6 +78,11 @@ class AppDependencies {
   CompleteGroupPlan get completeGroupPlan => CompleteGroupPlan(plans);
   ListGroupPlans get listGroupPlans => ListGroupPlans(plans);
   MinutesForPassages get minutesForPassages => MinutesForPassages(plans);
+  SaveAgendaEvent get saveAgendaEvent => SaveAgendaEvent(agenda);
+  ChangeAgendaEventStatus get changeAgendaEventStatus =>
+      ChangeAgendaEventStatus(agenda);
+  ToggleAgendaAttendance get toggleAgendaAttendance =>
+      ToggleAgendaAttendance(agenda);
   GetMemberEngagement get getMemberEngagement =>
       GetMemberEngagement(getCareReflections.repository);
   GetChurchPulse get getChurchPulse =>
@@ -85,6 +95,7 @@ class AppDependencies {
   factory AppDependencies.fromSupabase(SupabaseClient client) {
     final care = CareRepositoryImpl(client);
     final plans = PlansRepositoryImpl(client);
+    final agenda = AgendaRepositoryImpl(client);
     return AppDependencies(
       auth: AuthRepositoryImpl(client),
       getFeedHome: GetFeedHome(FeedRepositoryImpl(client)),
@@ -102,6 +113,7 @@ class AppDependencies {
       completeCarePlan: CompleteCarePlan(care),
       getCareReflections: GetCareReflections(care),
       getMyPlans: GetMyPlans(plans),
+      getAgenda: GetAgenda(agenda),
       feedReload: FeedReload(),
     );
   }

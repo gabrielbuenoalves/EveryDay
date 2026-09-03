@@ -104,6 +104,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
                 ProtoCard(
+                  challenge: true,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -121,12 +122,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Leituras que a liderança direcionou a este grupo.',
+                        '${(widget.group.weekProgress * 100).round()}% do grupo acompanhou a leitura nesta semana.',
                         style: const TextStyle(
                           color: AppColors.slate300,
                           fontSize: 12,
                         ),
                       ),
+                      const SizedBox(height: 13),
+                      EmberProgress(value: widget.group.weekProgress),
                       if (widget.canDirect &&
                           widget.group.inviteCode != null &&
                           widget.group.inviteCode!.isNotEmpty) ...[
@@ -151,6 +154,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     label: 'Direcionar leitura',
                     expand: true,
                     onPressed: () => _directReading(),
+                  ),
+                ],
+                if (!widget.canDirect) ...[
+                  const SizedBox(height: 12),
+                  const ProtoCard(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.forum_outlined,
+                          color: AppColors.ember,
+                          size: 19,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Tópicos e pedidos de oração deste grupo aparecerão aqui quando esse recurso estiver disponível.',
+                            style: TextStyle(
+                              color: AppColors.slate400,
+                              fontSize: 11,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
                 ProtoSection(

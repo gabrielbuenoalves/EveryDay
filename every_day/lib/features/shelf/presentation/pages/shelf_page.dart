@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/di/app_scope.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/screen_header.dart';
+import '../../../../core/widgets/proto.dart';
 import '../../domain/entities/bible_book.dart';
 import '../../domain/usecases/get_bookshelf.dart';
 
@@ -58,7 +59,7 @@ class _ShelfPageState extends State<ShelfPage> {
                 : shelf == null
                 ? const _ShelfLoading()
                 : ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 120),
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
                     children: [
                       _ShelfSummary(shelf: shelf),
                       const SizedBox(height: 22),
@@ -87,8 +88,8 @@ class _ShelfSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SurfaceCard(
-      color: AppColors.charcoal,
+    return ProtoCard(
+      challenge: true,
       padding: const EdgeInsets.fromLTRB(20, 20, 16, 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,9 +102,8 @@ class _ShelfSummary extends StatelessWidget {
                   children: [
                     Text(
                       'SUA BÍBLIA',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: const Color(0xFFC8C2B8),
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: const Color(0xFFC8C2B8)),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -128,7 +128,7 @@ class _ShelfSummary extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(

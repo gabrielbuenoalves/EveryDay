@@ -20,11 +20,11 @@ class AppBottomNav extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+        padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: const Color(0xFC1A1B24),
-            borderRadius: BorderRadius.circular(18),
+            color: const Color(0xFC222229),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.slate700),
             boxShadow: const [
               BoxShadow(
@@ -35,7 +35,7 @@ class AppBottomNav extends StatelessWidget {
             ],
           ),
           child: SizedBox(
-            height: 58,
+            height: 56,
             child: Row(
               children: [
                 for (final item in items)
@@ -99,11 +99,11 @@ class _NavItem extends StatelessWidget {
 
     final color = selected ? AppColors.ember : AppColors.slate400;
     return Material(
-      color: selected ? const Color(0x24FF5A16) : Colors.transparent,
-      borderRadius: BorderRadius.circular(10),
+      color: selected ? const Color(0x29FF5C16) : Colors.transparent,
+      borderRadius: BorderRadius.circular(9),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(9),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -113,7 +113,7 @@ class _NavItem extends StatelessWidget {
               item.label,
               style: TextStyle(
                 color: color,
-                fontSize: 7,
+                fontSize: 8,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -162,9 +162,10 @@ class _NavItem extends StatelessWidget {
 
   IconData get _icon => switch (item.id) {
     'home' => Icons.home_outlined,
-    'plans' => Icons.auto_stories_outlined,
+    'plans' => Icons.menu_book_outlined,
     'agenda' => Icons.calendar_month_outlined,
     'groups' => Icons.groups_outlined,
+    'care' => Icons.volunteer_activism_outlined,
     'notices' => Icons.notifications_outlined,
     'members' => Icons.people_outline,
     'profile' => Icons.person_outline,

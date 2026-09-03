@@ -14,18 +14,27 @@ class GroupsRepositoryImpl implements GroupsRepository {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) throw StateError('not authenticated');
 
-    final me = await _client.from('profiles').select('church_id').eq('id', uid).single();
+    final me = await _client
+        .from('profiles')
+        .select('church_id')
+        .eq('id', uid)
+        .single();
     final churchId = me['church_id'] as String?;
     if (churchId == null) return [];
 
-    final groups = await _client.from('groups').select().eq('church_id', churchId);
+    final groups = await _client
+        .from('groups')
+        .select()
+        .eq('church_id', churchId);
     final result = <ReadingGroup>[];
 
     for (final group in groups) {
       final groupId = group['id'] as String;
       final members = await _client
           .from('group_members')
-          .select('user_id, profiles!user_id(id, display_name, initials, avatar_color)')
+          .select(
+            'user_id, profiles!user_id(id, display_name, initials, avatar_color)',
+          )
           .eq('group_id', groupId);
 
       final previews = <UserPreview>[];
@@ -41,7 +50,9 @@ class GroupsRepositoryImpl implements GroupsRepository {
         );
       }
 
-      final weekAgo = DateTime.now().subtract(const Duration(days: 7)).toIso8601String();
+      final weekAgo = DateTime.now()
+          .subtract(const Duration(days: 7))
+          .toIso8601String();
       final logs = await _client
           .from('reading_logs')
           .select('user_id')

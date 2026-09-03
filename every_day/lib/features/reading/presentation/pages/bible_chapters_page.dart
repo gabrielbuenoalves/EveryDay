@@ -20,6 +20,7 @@ class BibleChaptersPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
           ProtoCard(
+            challenge: book.isInProgress,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -47,7 +48,12 @@ class BibleChaptersPage extends StatelessWidget {
               ],
             ),
           ),
-          const ProtoSection(title: 'Capítulos'),
+          ProtoSection(
+            title: 'Capítulos',
+            trailing: book.isInProgress
+                ? '${book.readChapters}/${book.chapters} lidos'
+                : 'Escolha um capítulo',
+          ),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -61,7 +67,9 @@ class BibleChaptersPage extends StatelessWidget {
             itemBuilder: (context, index) {
               final chapter = index + 1;
               return Material(
-                color: AppColors.slate800,
+                color: chapter <= book.readChapters
+                    ? const Color(0x18FF5C16)
+                    : AppColors.slate800,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
                   borderRadius: BorderRadius.circular(12),
@@ -84,12 +92,18 @@ class BibleChaptersPage extends StatelessWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.slate700),
+                      border: Border.all(
+                        color: chapter <= book.readChapters
+                            ? AppColors.ember
+                            : AppColors.slate700,
+                      ),
                     ),
                     child: Text(
                       '$chapter',
-                      style: const TextStyle(
-                        color: AppColors.slate100,
+                      style: TextStyle(
+                        color: chapter <= book.readChapters
+                            ? AppColors.ember
+                            : AppColors.slate100,
                         fontWeight: FontWeight.w800,
                       ),
                     ),

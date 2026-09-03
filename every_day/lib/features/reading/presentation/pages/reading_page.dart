@@ -412,11 +412,11 @@ class _ReadingPageState extends State<ReadingPage> {
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(15),
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.emberDark, AppColors.ember],
+              colors: [Color(0xFF8B3210), AppColors.emberDark],
             ),
           ),
           child: Column(
@@ -438,7 +438,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     _current.passageLabel,
                 style: const TextStyle(
                   color: AppColors.slate950,
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -560,7 +560,7 @@ class _ReadingPageState extends State<ReadingPage> {
   Widget _scripture(BiblePassage? passage) {
     if (passage != null && !passage.isEmpty) {
       return Container(
-        padding: const EdgeInsets.fromLTRB(18, 20, 18, 22),
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 20),
         decoration: BoxDecoration(
           color: AppColors.slate850,
           borderRadius: BorderRadius.circular(20),
@@ -642,7 +642,7 @@ class _ReadingPageState extends State<ReadingPage> {
       children: [
         const Text(
           'Não foi possível carregar o texto da Bíblia agora.',
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Georgia',
             color: AppColors.slate300,
             fontSize: 16,

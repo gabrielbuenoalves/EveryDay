@@ -18,10 +18,13 @@ class ShelfRepositoryImpl implements ShelfRepository {
     try {
       final rows = await _client
           .from('book_progress')
-          .select('read_chapters, book_id, bible_books(id, name, testament, chapters)')
+          .select(
+            'read_chapters, book_id, bible_books(id, name, testament, chapters)',
+          )
           .eq('user_id', uid);
       for (final row in rows) {
-        final bookId = row['book_id'] as String? ??
+        final bookId =
+            row['book_id'] as String? ??
             (row['bible_books'] is Map
                 ? (row['bible_books'] as Map)['id'] as String?
                 : null);

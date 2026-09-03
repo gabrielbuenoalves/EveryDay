@@ -3,7 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/domain/daily_reading.dart';
 import '../../../../core/domain/user_preview.dart';
 import '../../care/domain/entities/care_models.dart';
-import '../../feed/domain/entities/feed_home.dart';
 import '../domain/repositories/plans_repository.dart';
 
 class PlansRepositoryImpl implements PlansRepository {
@@ -45,8 +44,11 @@ class PlansRepositoryImpl implements PlansRepository {
     plans.addAll(await _carePlans(uid, done, archived: true));
     try {
       plans.addAll(
-        (await _groupPlans(uid, done, includeArchived: true))
-            .where((plan) => plan.isArchived),
+        (await _groupPlans(
+          uid,
+          done,
+          includeArchived: true,
+        )).where((plan) => plan.isArchived),
       );
     } catch (_) {}
     plans.sort((a, b) {
@@ -68,7 +70,9 @@ class PlansRepositoryImpl implements PlansRepository {
         .eq('user_id', uid)
         .eq('status', archived ? 'archived' : 'active')
         .order('created_at', ascending: false);
-    final reflections = archived ? await _careReflections(uid) : const <String, Map<String, dynamic>>{};
+    final reflections = archived
+        ? await _careReflections(uid)
+        : const <String, Map<String, dynamic>>{};
     final result = <MemberCarePlan>[];
     for (final row in rows) {
       final readings = await _readingsForCare(row['id'] as String, done);
@@ -405,9 +409,7 @@ class PlansRepositoryImpl implements PlansRepository {
   Future<int> minutesForPassages(List<String> labels) async {
     final uid = _client.auth.currentUser?.id;
     if (uid == null || labels.isEmpty) return 1;
-    final keys = {
-      for (final label in labels) label.trim().toLowerCase(),
-    };
+    final keys = {for (final label in labels) label.trim().toLowerCase()};
     final logs = await _client
         .from('reading_logs')
         .select('passage_label, minutes')

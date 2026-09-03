@@ -6,14 +6,20 @@ import '../../../../core/widgets/proto.dart';
 import '../../domain/entities/reading_group.dart';
 import '../../domain/usecases/get_groups.dart';
 import '../widgets/direct_reading_sheet.dart';
+import '../models/group_capabilities.dart';
 import 'group_detail_page.dart';
 
 class GroupsPage extends StatefulWidget {
-  const GroupsPage({super.key, this.pastor = false, bool? canDirect})
-    : canDirect = canDirect ?? pastor;
+  const GroupsPage({
+    super.key,
+    this.pastor = false,
+    bool? canDirect,
+    this.capabilities = const GroupCapabilities(),
+  }) : canDirect = canDirect ?? pastor;
 
   final bool pastor;
   final bool canDirect;
+  final GroupCapabilities capabilities;
 
   @override
   State<GroupsPage> createState() => _GroupsPageState();
@@ -58,9 +64,17 @@ class _GroupsPageState extends State<GroupsPage> {
   @override
   Widget build(BuildContext context) {
     final groups = _groups;
-    final visibleGroups = groups
-        ?.where((group) => _filter == 0 || group.weekProgress < 0.55)
-        .toList();
+    final visibleGroups = widget.pastor
+        ? _filter == 0
+              ? groups
+              : _filter == 1
+              ? groups?.where((group) => group.weekProgress < .5).toList()
+              : null
+        : _filter == 0
+        ? groups
+        : _filter == 1
+        ? widget.capabilities.explore?.map((item) => item.group).toList()
+        : widget.capabilities.history?.map((item) => item.group).toList();
     return SafeArea(
       bottom: false,
       child: Column(
@@ -78,42 +92,52 @@ class _GroupsPageState extends State<GroupsPage> {
                       ProtoSection(
                         title: widget.pastor
                             ? 'Todos os grupos'
-                            : 'Grupos que participo',
-                        trailing:
-                            '${visibleGroups!.length} de ${groups.length}',
+                            : _filter == 0
+                            ? 'Grupos que participo'
+                            : _filter == 1
+                            ? 'Explorar grupos'
+                            : 'Histórico',
+                        trailing: visibleGroups == null
+                            ? 'indisponível'
+                            : '${visibleGroups.length}',
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: AppColors.slate850,
-                          borderRadius: BorderRadius.circular(11),
-                          border: Border.all(color: AppColors.slate700),
-                        ),
-                        child: Row(
-                          children: [
-                            _FilterButton(
-                              label: 'Todos',
-                              selected: _filter == 0,
-                              onTap: () => setState(() => _filter = 0),
-                            ),
-                            _FilterButton(
-                              label: 'Precisa de atenção',
-                              selected: _filter == 1,
-                              onTap: () => setState(() => _filter = 1),
-                            ),
-                          ],
-                        ),
+                      ProtoFilterBar(
+                        labels: widget.pastor
+                            ? const [
+                                'Todos',
+                                'Precisam atenção',
+                                'Desafio ativo',
+                              ]
+                            : const ['Ativos', 'Explorar', 'Histórico'],
+                        selected: _filter,
+                        onSelected: (value) => setState(() => _filter = value),
+                        disabledIndices: widget.pastor
+                            ? const <int>{2}
+                            : const <int>{},
                       ),
-                      if (visibleGroups.isEmpty)
-                        const ProtoCard(
-                          child: Text(
-                            'Nenhum grupo ainda. Peça um convite à liderança.',
-                            style: TextStyle(color: AppColors.slate300),
-                          ),
+                      const SizedBox(height: 10),
+                      if (visibleGroups == null)
+                        const ProtoEmptyState(
+                          icon: Icons.cloud_off_outlined,
+                          title: 'Dados indisponíveis',
+                          copy:
+                              'Esta visão aguarda integração com a comunidade.',
+                        )
+                      else if (visibleGroups.isEmpty)
+                        ProtoEmptyState(
+                          icon: Icons.groups_outlined,
+                          title: _filter == 0
+                              ? 'Você ainda não participa de grupos'
+                              : 'Nenhum grupo nesta visão',
+                          copy: _filter == 0
+                              ? 'Seus grupos ativos aparecem aqui.'
+                              : 'Quando este recurso estiver disponível, os grupos aparecem aqui.',
                         ),
-                      for (final group in visibleGroups) ...[
+                      for (final group
+                          in visibleGroups ?? const <ReadingGroup>[]) ...[
                         InkWell(
                           onTap: () async {
+                            final getGroups = AppScope.of(context).getGroups;
                             await Navigator.of(context).push<void>(
                               MaterialPageRoute(
                                 builder: (_) => GroupDetailPage(
@@ -124,7 +148,7 @@ class _GroupsPageState extends State<GroupsPage> {
                               ),
                             );
                             if (mounted) {
-                              await _load(AppScope.of(context).getGroups);
+                              await _load(getGroups);
                             }
                           },
                           borderRadius: BorderRadius.circular(14),
@@ -180,6 +204,36 @@ class _GroupsPageState extends State<GroupsPage> {
                                     onPressed: () => _directReading(group),
                                   ),
                                 ],
+                                if (!widget.pastor && _filter == 1) ...[
+                                  const SizedBox(height: 10),
+                                  EmberButton(
+                                    label: widget.capabilities.onJoin == null
+                                        ? 'Entrada aguarda integração'
+                                        : 'Entrar no grupo',
+                                    onPressed:
+                                        widget.capabilities.onJoin == null
+                                        ? null
+                                        : () => widget.capabilities.onJoin!(
+                                            group,
+                                          ),
+                                  ),
+                                ],
+                                if (!widget.pastor && _filter == 0) ...[
+                                  const SizedBox(height: 8),
+                                  TextButton(
+                                    onPressed:
+                                        widget.capabilities.onLeave == null
+                                        ? null
+                                        : () => widget.capabilities.onLeave!(
+                                            group,
+                                          ),
+                                    child: Text(
+                                      widget.capabilities.onLeave == null
+                                          ? 'Saída aguarda integração'
+                                          : 'Sair do grupo',
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),
@@ -190,44 +244,6 @@ class _GroupsPageState extends State<GroupsPage> {
                   ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _FilterButton extends StatelessWidget {
-  const _FilterButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 6),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.ember : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: selected ? AppColors.slate950 : AppColors.slate400,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -172,6 +172,132 @@ class EmberButton extends StatelessWidget {
   }
 }
 
+class ProtoFilterBar extends StatelessWidget {
+  const ProtoFilterBar({
+    super.key,
+    required this.labels,
+    required this.selected,
+    required this.onSelected,
+    this.disabledIndices = const <int>{},
+    this.disabledHint = 'Aguardando integração de dados',
+  });
+
+  final List<String> labels;
+  final int selected;
+  final ValueChanged<int> onSelected;
+  final Set<int> disabledIndices;
+  final String disabledHint;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(labels.length, (index) {
+          final active = index == selected;
+          final disabled = disabledIndices.contains(index);
+          final filter = Material(
+            color: active ? AppColors.ember : AppColors.slate850,
+            borderRadius: BorderRadius.circular(9),
+            child: InkWell(
+              onTap: disabled ? null : () => onSelected(index),
+              borderRadius: BorderRadius.circular(9),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(
+                    color: active ? AppColors.ember : AppColors.slate700,
+                  ),
+                ),
+                child: Text(
+                  labels[index],
+                  style: TextStyle(
+                    color: active
+                        ? AppColors.slate950
+                        : disabled
+                        ? AppColors.slate500
+                        : AppColors.slate400,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          );
+          return Padding(
+            padding: EdgeInsets.only(right: index == labels.length - 1 ? 0 : 7),
+            child: Semantics(
+              enabled: !disabled,
+              button: true,
+              child: disabled
+                  ? Tooltip(message: disabledHint, child: filter)
+                  : filter,
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class ProtoEmptyState extends StatelessWidget {
+  const ProtoEmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.copy,
+  });
+
+  final IconData icon;
+  final String title;
+  final String copy;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProtoCard(
+      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 25),
+      child: Column(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: const Color(0x18FF5C16),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: AppColors.ember, size: 21),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.slate100,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            copy,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.slate400,
+              fontSize: 11,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class WeekBars extends StatelessWidget {
   const WeekBars({super.key, required this.heights});
 

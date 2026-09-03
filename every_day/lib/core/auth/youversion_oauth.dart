@@ -28,7 +28,10 @@ String randomOAuthValue([Random? random, int length = 32]) {
   final source = random ?? Random.secure();
   const chars =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-  return List.generate(length, (_) => chars[source.nextInt(chars.length)]).join();
+  return List.generate(
+    length,
+    (_) => chars[source.nextInt(chars.length)],
+  ).join();
 }
 
 Uri youVersionAuthorizeUri({
@@ -55,9 +58,8 @@ Uri youVersionAuthorizeUri({
 }
 
 Uri youVersionStateReplayUri(String state) {
-  return Uri.parse(YouVersionAuthorizePaths.callback).replace(
-    queryParameters: {'state': state},
-  );
+  return Uri.parse(YouVersionAuthorizePaths.callback)
+      .replace(queryParameters: {'state': state});
 }
 
 abstract final class YouVersionAuthorizePaths {

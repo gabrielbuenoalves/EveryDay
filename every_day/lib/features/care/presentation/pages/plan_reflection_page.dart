@@ -37,6 +37,7 @@ Future<bool> finishDirectedPlan(
       await deps.minutesForPassages(
         plan.readings.map((item) => item.passageLabel).toList(),
       );
+  if (!context.mounted) return false;
   final archived = await showPlanReflectionSheet(
     context,
     planTitle: plan.title,
@@ -140,6 +141,15 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
                   ),
                 ),
               ],
+            ),
+          ),
+          const ProtoSection(title: 'Seu check-out'),
+          const Text(
+            'Não existe resposta certa. Essas notas ajudam a próxima conversa e a sua caminhada.',
+            style: TextStyle(
+              color: AppColors.slate400,
+              fontSize: 11,
+              height: 1.35,
             ),
           ),
           const ProtoSection(title: 'Quanto você entendeu o texto?'),

@@ -24,14 +24,15 @@ List<String> usfmPassageIds({
   if (end - start + 1 > maxChapters) {
     end = start + maxChapters - 1;
   }
-  return [for (var chapter = start; chapter <= end; chapter++) '$code.$chapter'];
+  return [
+    for (var chapter = start; chapter <= end; chapter++) '$code.$chapter',
+  ];
 }
 
 List<String> usfmIdsFromLabel(String? label) {
   if (label == null || label.trim().isEmpty) return const [];
-  final verse = RegExp(
-    r'^(.+?)\s+(\d+):(\d+)(?:\s*[-–]\s*(\d+))?$',
-  ).firstMatch(label.trim());
+  final verse = RegExp(r'^(.+?)\s+(\d+):(\d+)(?:\s*[-–]\s*(\d+))?$')
+      .firstMatch(label.trim());
   if (verse != null) {
     final code = usfmBookCode(verse.group(1)!);
     if (code == null) return const [];
@@ -45,9 +46,8 @@ List<String> usfmIdsFromLabel(String? label) {
     return ['$code.$chapter.$start-$code.$chapter.$end'];
   }
 
-  final chapters = RegExp(
-    r'^(.+?)\s+(\d+)\s*[-–]\s*(\d+)$',
-  ).firstMatch(label.trim());
+  final chapters = RegExp(r'^(.+?)\s+(\d+)\s*[-–]\s*(\d+)$')
+      .firstMatch(label.trim());
   if (chapters != null) {
     return usfmPassageIds(
       book: chapters.group(1)!,
@@ -102,11 +102,28 @@ String? _usfmIfLooksLikeCode(String key) {
 }
 
 const _fold = {
-  0xE1: 0x61, 0xE0: 0x61, 0xE3: 0x61, 0xE2: 0x61, 0xE4: 0x61,
-  0xE9: 0x65, 0xE8: 0x65, 0xEA: 0x65, 0xEB: 0x65,
-  0xED: 0x69, 0xEC: 0x69, 0xEE: 0x69, 0xEF: 0x69,
-  0xF3: 0x6F, 0xF2: 0x6F, 0xF5: 0x6F, 0xF4: 0x6F, 0xF6: 0x6F,
-  0xFA: 0x75, 0xF9: 0x75, 0xFB: 0x75, 0xFC: 0x75,
+  0xE1: 0x61,
+  0xE0: 0x61,
+  0xE3: 0x61,
+  0xE2: 0x61,
+  0xE4: 0x61,
+  0xE9: 0x65,
+  0xE8: 0x65,
+  0xEA: 0x65,
+  0xEB: 0x65,
+  0xED: 0x69,
+  0xEC: 0x69,
+  0xEE: 0x69,
+  0xEF: 0x69,
+  0xF3: 0x6F,
+  0xF2: 0x6F,
+  0xF5: 0x6F,
+  0xF4: 0x6F,
+  0xF6: 0x6F,
+  0xFA: 0x75,
+  0xF9: 0x75,
+  0xFB: 0x75,
+  0xFC: 0x75,
   0xE7: 0x63,
 };
 

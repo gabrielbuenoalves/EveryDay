@@ -1,4 +1,4 @@
-enum AppTab { home, plans, groups, notices, members, profile }
+enum AppTab { home, plans, agenda, groups, care, notices, members, profile }
 
 class NavDestination {
   const NavDestination({
@@ -17,17 +17,18 @@ class NavDestination {
 List<NavDestination> navForPastor(bool pastor, {int careBadge = 0}) {
   if (pastor) {
     return [
-      const NavDestination(id: 'home', label: 'Home'),
+      const NavDestination(id: 'home', label: 'Início'),
       const NavDestination(id: 'groups', label: 'Grupos'),
-      NavDestination(id: 'notices', label: 'Avisos', badge: careBadge),
-      const NavDestination(id: 'members', label: 'Membros'),
+      NavDestination(id: 'care', label: 'Cuidado', badge: careBadge),
+      const NavDestination(id: 'agenda', label: 'Agenda'),
       const NavDestination(id: 'profile', label: 'Perfil'),
     ];
   }
   return const [
-    NavDestination(id: 'home', label: 'Home'),
-    NavDestination(id: 'plans', label: 'Planos'),
+    NavDestination(id: 'home', label: 'Início'),
     NavDestination(id: 'groups', label: 'Grupos'),
+    NavDestination(id: 'plans', label: 'Ler'),
+    NavDestination(id: 'agenda', label: 'Agenda'),
     NavDestination(id: 'profile', label: 'Perfil'),
   ];
 }

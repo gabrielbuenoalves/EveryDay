@@ -198,6 +198,19 @@ class _CareReportPageState extends State<CareReportPage> {
             ),
           ),
           const SizedBox(height: 18),
+          const MiniLabel('AÇÕES DE CUIDADO'),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: const [
+              _CareAction(label: 'Mensagem', icon: Icons.chat_bubble_outline),
+              _CareAction(label: 'Ligação', icon: Icons.call_outlined),
+              _CareAction(label: 'Visita', icon: Icons.home_outlined),
+              _CareAction(label: 'Encaminhar', icon: Icons.people_outline),
+            ],
+          ),
+          const SizedBox(height: 18),
           MiniLabel('RESPONDER PARA $_sheepName'),
           const SizedBox(height: 8),
           const Text(
@@ -341,5 +354,29 @@ class _CareReportPageState extends State<CareReportPage> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+}
+
+class _CareAction extends StatelessWidget {
+  const _CareAction({required this.label, required this.icon});
+
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Aguardando integração de dados',
+      child: OutlinedButton.icon(
+        onPressed: null,
+        icon: Icon(icon, size: 15),
+        label: Text('$label · em breve'),
+        style: OutlinedButton.styleFrom(
+          disabledForegroundColor: AppColors.slate500,
+          side: const BorderSide(color: AppColors.slate700),
+          textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+        ),
+      ),
+    );
   }
 }

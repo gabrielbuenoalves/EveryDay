@@ -79,8 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (_specialties.isEmpty) {
         _specialties = const ['Leitura', 'Comunidade'];
       }
-      _churchBio =
-          'Existimos para acolher pessoas, fortalecer a fé no dia a dia e servir nossa cidade com graça, presença e propósito.';
+      _churchBio = 'Existimos para acolher pessoas, fortalecer a fé no dia a dia e servir nossa cidade com graça, presença e propósito.';
       _churchCity = 'Cidade';
     });
   }
@@ -129,9 +128,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<Widget> _memberBody(UserProfile profile) {
     final book = _currentBook;
-    final progress = book?.progress ?? 0.18;
+    final progress = book?.progress ?? 0;
     return [
       ProtoCard(
+        challenge: true,
         child: Column(
           children: [
             Container(
@@ -224,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Text(
-              '${profile.churchName ?? 'sem igreja'}${_churchCity.isEmpty ? '' : ' · $_churchCity'}',
+              profile.churchName ?? 'Igreja não informada',
               style: const TextStyle(color: AppColors.slate400, fontSize: 13),
             ),
             const SizedBox(height: 12),
@@ -250,7 +250,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Text(
-              _favoriteCharacter,
+              'Não informado',
               style: const TextStyle(color: AppColors.slate400, fontSize: 13),
             ),
             const SizedBox(height: 12),
@@ -267,10 +267,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      const ProtoSection(title: 'Consistência · 8 semanas', trailing: '86%'),
+      const ProtoSection(
+        title: 'Consistência semanal',
+        trailing: 'indisponível',
+      ),
       const ProtoCard(
-        child: WeekBars(
-          heights: [0.34, 0.68, 0.48, 0.88, 0.58, 0.75, 0.92, 0.86],
+        child: Text(
+          'O histórico semanal aguarda integração.',
+          style: TextStyle(color: AppColors.slate400),
+        ),
+      ),
+      const ProtoSection(title: 'Conquistas', trailing: 'indisponível'),
+      const ProtoCard(
+        child: Text(
+          'Conquistas serão exibidas quando disponíveis.',
+          style: TextStyle(color: AppColors.slate400),
         ),
       ),
       ProtoSection(
@@ -299,7 +310,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: const TextStyle(color: AppColors.slate300, fontSize: 11),
             ),
             const SizedBox(height: 13),
-            EmberProgress(value: progress == 0 ? 0.18 : progress),
+            EmberProgress(value: progress),
           ],
         ),
       ),
@@ -317,7 +328,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _groups.length;
     final attention = _groups.where((group) => group.weekProgress < 0.5).length;
     final book = _currentBook;
-    final progress = book?.progress ?? 0.18;
+    final progress = book?.progress ?? 0;
 
     return [
       ProtoCard(
@@ -486,7 +497,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: const TextStyle(color: AppColors.slate300, fontSize: 11),
             ),
             const SizedBox(height: 13),
-            EmberProgress(value: progress == 0 ? 0.18 : progress),
+            EmberProgress(value: progress),
           ],
         ),
       ),
@@ -529,6 +540,32 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 8),
             const MiniLabel('Perfil do pastor'),
+          ],
+        ),
+      ),
+      const SizedBox(height: 10),
+      const ProtoSection(
+        title: 'Ferramentas pastorais',
+        trailing: 'aguarda integração',
+      ),
+      const ProtoCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Configurações de ministério',
+              style: TextStyle(
+                color: AppColors.slate100,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Preferências de avisos, equipes e acompanhamento estarão disponíveis após a integração.',
+              style: TextStyle(color: AppColors.slate400, fontSize: 12),
+            ),
+            SizedBox(height: 10),
+            OutlinedButton(onPressed: null, child: Text('Aguarda integração')),
           ],
         ),
       ),
@@ -727,10 +764,21 @@ class _ProfilePageState extends State<ProfilePage> {
             bottom: MediaQuery.viewInsetsOf(context).bottom,
           ),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 22, 24, 24),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 22),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: Container(
+                    width: 34,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.slate500,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 const Text(
                   'Editar perfil',
                   style: TextStyle(
@@ -899,8 +947,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   maxLength: 280,
                   decoration: const InputDecoration(
                     labelText: 'Bio da igreja',
-                    helperText:
-                        'Esta apresentação ficará visível no perfil da igreja · até 280 caracteres.',
+                    helperText: 'Esta apresentação ficará visível no perfil da igreja · até 280 caracteres.',
                   ),
                 ),
                 const SizedBox(height: 12),

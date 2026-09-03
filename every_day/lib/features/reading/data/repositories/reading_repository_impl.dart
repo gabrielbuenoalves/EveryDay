@@ -12,11 +12,11 @@ class ReadingRepositoryImpl implements ReadingRepository {
   Future<void> logReading(ReadingLog log) async {
     await _client.rpc(
       'log_reading',
-          params: {
-            'p_passage': log.passageLabel,
-            'p_minutes': log.minutes,
-            'p_note': log.note ?? '',
-          },
+      params: {
+        'p_passage': log.passageLabel,
+        'p_minutes': log.minutes,
+        'p_note': log.note ?? '',
+      },
     );
   }
 }

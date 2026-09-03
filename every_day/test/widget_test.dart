@@ -30,12 +30,17 @@ void main() {
       ),
       findsNothing,
     );
-    expect(find.text('Home'), findsWidgets);
-    expect(find.text('Planos'), findsOneWidget);
+    expect(find.text('Início'), findsOneWidget);
+    expect(find.text('Ler'), findsOneWidget);
+    expect(find.text('Agenda'), findsOneWidget);
     expect(find.text('Grupos'), findsOneWidget);
     expect(find.text('Perfil'), findsOneWidget);
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Agenda'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum evento na agenda.'), findsOneWidget);
+
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Salmos 28–30'), findsWidgets);
     expect(find.text('Em andamento'), findsOneWidget);
@@ -76,7 +81,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Continuar leitura'));
     await tester.pumpAndSettle();
@@ -93,7 +98,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Salmos 23'), findsWidgets);
@@ -120,7 +125,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Encerrar plano'));
     await tester.pumpAndSettle();
@@ -141,7 +146,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
 
     expect(find.text('Antigo Testamento'), findsOneWidget);
@@ -201,24 +206,18 @@ void main() {
 
     expect(find.text('PERFIL DO PASTOR'), findsOneWidget);
     expect(find.text('IGREJA VINCULADA'), findsOneWidget);
-    expect(find.text('Avisos'), findsOneWidget);
-    expect(find.text('Grupos da igreja'), findsOneWidget);
-    expect(
-      find.text('CÓDIGO DO GRUPO', skipOffstage: false),
-      findsWidgets,
-    );
+    expect(find.text('Cuidado'), findsOneWidget);
+    expect(find.text('Grupos da igreja', skipOffstage: false), findsOneWidget);
+    expect(find.text('CÓDIGO DO GRUPO', skipOffstage: false), findsWidgets);
     expect(find.text('GRUPO1', skipOffstage: false), findsWidgets);
-    expect(
-      find.text('Direcionar leitura', skipOffstage: false),
-      findsWidgets,
-    );
+    expect(find.text('Direcionar leitura', skipOffstage: false), findsWidgets);
     expect(find.text('NOTIFICAÇÕES'), findsNothing);
     expect(find.text('IGREJA'), findsOneWidget);
     expect(find.text('PERFIL DO MEMBRO'), findsNothing);
     expect(find.text('PERFIL DO LÍDER'), findsNothing);
   });
 
-  testWidgets('pastor vê tempo, comentários e engajamento em Membros', (
+  testWidgets('pastor vê diretório com métricas verdadeiras em Membros', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -229,11 +228,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Membros'));
+    await tester.tap(find.text('Cuidado'));
     await tester.pumpAndSettle();
-    expect(find.text('120 min'), findsOneWidget);
-    expect(find.text('COMENTÁRIOS'), findsOneWidget);
-    expect(find.text('18'), findsOneWidget);
+    await tester.tap(find.byTooltip('Membros'));
+    await tester.pumpAndSettle();
+    expect(find.text('TOTAL'), findsOneWidget);
+    expect(find.text('dados indisponíveis'), findsWidgets);
+    expect(find.text('Sem grupo'), findsOneWidget);
   });
 
   testWidgets('pastor abre a aba de notificações', (tester) async {
@@ -245,11 +246,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Avisos'));
+    await tester.tap(find.text('Cuidado'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Notificações'), findsOneWidget);
-    expect(find.text('Nenhum pedido de oração em aberto.'), findsOneWidget);
+    expect(find.text('Cuidado'), findsWidgets);
+    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(
+      find.text('Quando alguém pedir cuidado, o relato aparece nesta fila.'),
+      findsOneWidget,
+    );
     expect(find.text('PERFIL DO PASTOR'), findsNothing);
   });
 

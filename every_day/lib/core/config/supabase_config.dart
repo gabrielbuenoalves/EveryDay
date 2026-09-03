@@ -10,9 +10,6 @@ class SupabaseConfig {
     String url = '',
     String anonKey = '',
   }) {
-    return SupabaseConfig(
-      url: url.trim(),
-      anonKey: anonKey.trim(),
-    );
+    return SupabaseConfig(url: url.trim(), anonKey: anonKey.trim());
   }
 }

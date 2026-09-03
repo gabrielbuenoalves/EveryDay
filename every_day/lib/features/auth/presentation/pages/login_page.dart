@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight - 24,
@@ -51,15 +51,25 @@ class _LoginPageState extends State<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(18),
+                      padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: AppColors.slate850,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(18),
                         border: Border.all(color: AppColors.slate700),
                       ),
                       child: const AppWordmark(),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'EVERYDAY / COMUNIDADE',
+                      style: TextStyle(
+                        color: AppColors.ember,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       _register
                           ? 'Uma comunidade para atravessar o dia.'
@@ -71,12 +81,10 @@ class _LoginPageState extends State<LoginPage> {
                       _register
                           ? 'Escolha como você entra na comunidade.'
                           : 'Fé vivida em comunidade. Escolha o seu perfil.',
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.slate400,
-                        height: 1.35,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge
+                          ?.copyWith(color: AppColors.slate400, height: 1.35),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
                     for (final role in UserRole.values) ...[
                       _RoleChoice(
                         role: role,

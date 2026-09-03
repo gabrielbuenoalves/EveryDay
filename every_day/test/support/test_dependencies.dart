@@ -1,4 +1,7 @@
 import 'package:every_day/app/di/app_dependencies.dart';
+import 'package:every_day/features/agenda/domain/entities/agenda_event.dart';
+import 'package:every_day/features/agenda/domain/repositories/agenda_repository.dart';
+import 'package:every_day/features/agenda/domain/usecases/agenda_usecases.dart';
 import 'package:every_day/core/domain/daily_reading.dart';
 import 'package:every_day/core/domain/user_preview.dart';
 import 'package:every_day/core/domain/user_role.dart';
@@ -6,13 +9,11 @@ import 'package:every_day/features/auth/domain/repositories/auth_repository.dart
 import 'package:every_day/features/care/domain/entities/care_models.dart';
 import 'package:every_day/features/care/domain/repositories/care_repository.dart';
 import 'package:every_day/features/care/domain/usecases/care_usecases.dart';
-import 'package:every_day/features/feed/domain/entities/feed_home.dart';
 import 'package:every_day/features/feed/domain/repositories/feed_repository.dart';
 import 'package:every_day/features/feed/domain/usecases/get_feed_home.dart';
 import 'package:every_day/features/groups/domain/entities/reading_group.dart';
 import 'package:every_day/features/groups/domain/repositories/groups_repository.dart';
 import 'package:every_day/features/groups/domain/usecases/get_groups.dart';
-import 'package:every_day/features/plans/domain/repositories/plans_repository.dart';
 import 'package:every_day/features/plans/domain/usecases/plans_usecases.dart';
 import 'package:every_day/features/profile/domain/entities/user_profile.dart';
 import 'package:every_day/features/profile/domain/repositories/profile_repository.dart';
@@ -50,8 +51,26 @@ AppDependencies testDependencies({
     completeCarePlan: CompleteCarePlan(care),
     getCareReflections: GetCareReflections(care),
     getMyPlans: GetMyPlans(plans),
+    getAgenda: GetAgenda(_FakeAgenda()),
     feedReload: FeedReload(),
   );
+}
+
+class _FakeAgenda implements AgendaRepository {
+  @override
+  Future<List<AgendaEvent>> listEvents() async => const [];
+
+  @override
+  Future<String> createEvent(AgendaEventDraft draft) async => 'event-1';
+
+  @override
+  Future<void> updateEvent(String eventId, AgendaEventDraft draft) async {}
+
+  @override
+  Future<void> setStatus(String eventId, AgendaEventStatus status) async {}
+
+  @override
+  Future<void> setAttendance(String eventId, {required bool attending}) async {}
 }
 
 class _FakeAuth implements AuthRepository {
@@ -210,9 +229,7 @@ class _FakePlans implements PlansRepository {
       MemberCarePlan(
         id: '1:gp-active',
         title: 'Salmos da semana',
-        readings: [
-          CareReading(reading: DailyReading.fromLabel('Salmos 1')),
-        ],
+        readings: [CareReading(reading: DailyReading.fromLabel('Salmos 1'))],
         sourceLabel: 'Grupo Salmos em 30 dias',
         groupId: '1',
         readingPlanId: 'gp-active',
@@ -420,8 +437,7 @@ class _FakeCare implements CareRepository {
   @override
   Future<MemberAiReport> generateMemberBriefing(String userId) async {
     return const MemberAiReport(
-      summary:
-          'Lucas tem lido com regularidade nesta semana e deixou um quiz de compreensão razoável.',
+      summary: 'Lucas tem lido com regularidade nesta semana e deixou um quiz de compreensão razoável.',
       prayerAttention: 'Nenhum pedido de oração recente.',
       readingPulse: '42 min nesta semana · última passagem Salmos 23.',
       nextStep: 'Afirme a constância e avance com calma na próxima leitura.',

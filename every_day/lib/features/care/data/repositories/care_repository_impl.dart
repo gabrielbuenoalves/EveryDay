@@ -32,11 +32,7 @@ class CareRepositoryImpl implements CareRepository {
   }) async {
     final id = await _client.rpc(
       'submit_mood_checkin',
-      params: {
-        'p_score': score,
-        'p_body': body ?? '',
-        'p_lgpd': lgpdAccepted,
-      },
+      params: {'p_score': score, 'p_body': body ?? '', 'p_lgpd': lgpdAccepted},
     );
     return id as String;
   }
@@ -129,7 +125,9 @@ class CareRepositoryImpl implements CareRepository {
     }
 
     items.sort((a, b) {
-      final crisis = (b.checkin.crisis ? 1 : 0).compareTo(a.checkin.crisis ? 1 : 0);
+      final crisis = (b.checkin.crisis ? 1 : 0).compareTo(
+        a.checkin.crisis ? 1 : 0,
+      );
       if (crisis != 0) return crisis;
       final ua = a.report?.urgency.rank ?? 9;
       final ub = b.report?.urgency.rank ?? 9;
@@ -205,13 +203,19 @@ class CareRepositoryImpl implements CareRepository {
       rows = await (userId == null
           ? filter.order('created_at', ascending: false).limit(40)
           : filter
-              .eq('user_id', userId)
-              .order('created_at', ascending: false)
-              .limit(40));
+                .eq('user_id', userId)
+                .order('created_at', ascending: false)
+                .limit(40));
     } catch (_) {}
 
-    final userIds = rows.map((row) => row['user_id'] as String).toSet().toList();
-    final planIds = rows.map((row) => row['plan_id'] as String).toSet().toList();
+    final userIds = rows
+        .map((row) => row['user_id'] as String)
+        .toSet()
+        .toList();
+    final planIds = rows
+        .map((row) => row['plan_id'] as String)
+        .toSet()
+        .toList();
 
     if (userIds.isNotEmpty) {
       final profileRows = await _client
@@ -258,19 +262,27 @@ class CareRepositoryImpl implements CareRepository {
     required Map<String, String> names,
   }) async {
     try {
-      final filter = _client.from('group_plan_completions').select(
-        'id, plan_id, user_id, comment_text, takeaway, understanding, reception, minutes, created_at',
-      );
+      final filter = _client
+          .from('group_plan_completions')
+          .select(
+            'id, plan_id, user_id, comment_text, takeaway, understanding, reception, minutes, created_at',
+          );
       final rows = await (userId == null
           ? filter.order('created_at', ascending: false).limit(40)
           : filter
-              .eq('user_id', userId)
-              .order('created_at', ascending: false)
-              .limit(40));
+                .eq('user_id', userId)
+                .order('created_at', ascending: false)
+                .limit(40));
       if (rows.isEmpty) return const [];
 
-      final userIds = rows.map((row) => row['user_id'] as String).toSet().toList();
-      final planIds = rows.map((row) => row['plan_id'] as String).toSet().toList();
+      final userIds = rows
+          .map((row) => row['user_id'] as String)
+          .toSet()
+          .toList();
+      final planIds = rows
+          .map((row) => row['plan_id'] as String)
+          .toSet()
+          .toList();
 
       if (userId == null) {
         final profileRows = await _client
@@ -328,7 +340,10 @@ class CareRepositoryImpl implements CareRepository {
           .eq('user_id', userId),
     );
     final feedComments = await _safeSelect(
-      () => _client.from('comments').select('id, created_at').eq('user_id', userId),
+      () => _client
+          .from('comments')
+          .select('id, created_at')
+          .eq('user_id', userId),
     );
     final checkins = await _safeSelect(
       () => _client.from('mood_checkins').select('id').eq('user_id', userId),
@@ -384,7 +399,9 @@ class CareRepositoryImpl implements CareRepository {
       plansCompleted: groupDone.length + careDone.length,
       activeDaysWeek: activeDays.length,
       lastReadAt: lastReadAt?.toLocal(),
-      lastPassage: lastPassage == null || lastPassage.isEmpty ? null : lastPassage,
+      lastPassage: lastPassage == null || lastPassage.isEmpty
+          ? null
+          : lastPassage,
     );
   }
 

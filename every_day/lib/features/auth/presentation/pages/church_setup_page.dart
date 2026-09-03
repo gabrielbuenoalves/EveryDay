@@ -57,7 +57,7 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 24),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
                   minHeight: constraints.maxHeight - 24,
@@ -76,7 +76,19 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                       ),
                       child: const AppLogo(size: 44),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 18),
+                    Text(
+                      widget.role.isPastor
+                          ? 'PASSO 1 / IGREJA'
+                          : 'PASSO 1 / COMUNIDADE',
+                      style: const TextStyle(
+                        color: AppColors.ember,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       widget.role.setupTitle,
                       style: Theme.of(context).textTheme.headlineMedium
@@ -85,20 +97,17 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                     const SizedBox(height: 8),
                     Text(
                       widget.role.setupCopy,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.slate400,
-                        height: 1.35,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge
+                          ?.copyWith(color: AppColors.slate400, height: 1.35),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 20),
                     if (widget.role.isPastor) ...[
                       TextField(
                         controller: _churchName,
                         textCapitalization: TextCapitalization.words,
                         style: fieldStyle,
-                        decoration: AuthFormStyle.decoration(
-                          'Nome da igreja',
-                        ).copyWith(hintText: 'Ex.: Comunidade da Ponte'),
+                        decoration: AuthFormStyle.decoration('Nome da igreja')
+                            .copyWith(hintText: 'Ex.: Comunidade da Ponte'),
                       ),
                       const SizedBox(height: 12),
                       TextField(
@@ -106,13 +115,12 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                         maxLines: 4,
                         maxLength: 280,
                         style: fieldStyle,
-                        decoration: AuthFormStyle.decoration('Bio da igreja').copyWith(
-                          hintText:
-                              'Conte brevemente a missão, a visão e como a comunidade acolhe as pessoas.',
-                          helperText:
-                              'Esta apresentação ficará visível no perfil da igreja · até 280 caracteres.',
-                          helperMaxLines: 2,
-                        ),
+                        decoration: AuthFormStyle.decoration('Bio da igreja')
+                            .copyWith(
+                              hintText: 'Conte brevemente a missão, a visão e como a comunidade acolhe as pessoas.',
+                              helperText: 'Esta apresentação ficará visível no perfil da igreja · até 280 caracteres.',
+                              helperMaxLines: 2,
+                            ),
                       ),
                       const SizedBox(height: 12),
                       TextField(
@@ -128,9 +136,8 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                         controller: _churchCity,
                         textCapitalization: TextCapitalization.words,
                         style: fieldStyle,
-                        decoration: AuthFormStyle.decoration(
-                          'Cidade',
-                        ).copyWith(hintText: 'Cidade e estado'),
+                        decoration: AuthFormStyle.decoration('Cidade')
+                            .copyWith(hintText: 'Cidade e estado'),
                       ),
                       const SizedBox(height: 20),
                       FilledButton(
