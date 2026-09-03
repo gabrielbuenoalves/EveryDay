@@ -10,9 +10,9 @@ abstract final class AuthFormStyle {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: AppColors.slate950,
+      fillColor: AppColors.slate850,
       isDense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
       floatingLabelBehavior: FloatingLabelBehavior.auto,
       labelStyle: const TextStyle(
         fontSize: 14,
@@ -20,15 +20,15 @@ abstract final class AuthFormStyle {
         color: AppColors.slate400,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.slate500),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.slate500),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(radius),
+        borderRadius: BorderRadius.circular(16),
         borderSide: const BorderSide(color: AppColors.ember, width: 1.4),
       ),
     );
@@ -41,8 +41,12 @@ abstract final class AuthFormStyle {
       foregroundColor: AppColors.slate950,
       disabledBackgroundColor: AppColors.emberDark,
       padding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, height: 1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        height: 1,
+      ),
     );
   }
 
@@ -52,8 +56,12 @@ abstract final class AuthFormStyle {
       foregroundColor: AppColors.slate100,
       padding: EdgeInsets.zero,
       side: const BorderSide(color: AppColors.slate500, width: 1.2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, height: 1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        height: 1,
+      ),
     );
   }
 }

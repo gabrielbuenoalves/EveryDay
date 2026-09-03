@@ -61,7 +61,10 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
   MemberAiReport _localBriefing(List<MoodCheckin> checkins) {
     final stats = widget.engagement;
     final prayers = checkins
-        .where((item) => (item.body ?? '').toLowerCase().contains('pedido de oração'))
+        .where(
+          (item) =>
+              (item.body ?? '').toLowerCase().contains('pedido de oração'),
+        )
         .toList();
     final hard = checkins.any((item) => item.score <= 2 || item.crisis);
     return MemberAiReport(
@@ -93,15 +96,31 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
       backgroundColor: AppColors.slate900,
       appBar: AppBar(title: Text(widget.memberName)),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
         children: [
-          const MiniLabel('Relatório pastoral'),
+          const MiniLabel('RELATÓRIO PASTORAL'),
           const SizedBox(height: 8),
           if (_loadingReport)
             const ProtoCard(
-              child: Text(
-                'A IA está lendo o quiz, o tempo de leitura e os pedidos de oração…',
-                style: TextStyle(color: AppColors.slate300, height: 1.4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 180,
+                    height: 10,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.slate700,
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    'A IA está lendo o quiz, o tempo de leitura e os pedidos de oração…',
+                    style: TextStyle(color: AppColors.slate300, height: 1.4),
+                  ),
+                ],
               ),
             )
           else if (_report != null)
@@ -127,12 +146,20 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                   const ProtoSection(title: 'Pedidos de oração'),
                   Text(
                     _report!.prayerAttention,
-                    style: const TextStyle(color: AppColors.slate300, height: 1.4, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.slate300,
+                      height: 1.4,
+                      fontSize: 13,
+                    ),
                   ),
                   const ProtoSection(title: 'Pulso de leitura'),
                   Text(
                     _report!.readingPulse,
-                    style: const TextStyle(color: AppColors.slate300, height: 1.4, fontSize: 13),
+                    style: const TextStyle(
+                      color: AppColors.slate300,
+                      height: 1.4,
+                      fontSize: 13,
+                    ),
                   ),
                   const ProtoSection(title: 'Próximo passo'),
                   Text(
@@ -162,7 +189,11 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                     const SizedBox(height: 6),
                     Text(
                       item.body!,
-                      style: const TextStyle(color: AppColors.slate100, height: 1.4, fontSize: 13),
+                      style: const TextStyle(
+                        color: AppColors.slate100,
+                        height: 1.4,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -170,7 +201,7 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
               const SizedBox(height: 8),
             ],
           ],
-          const MiniLabel('Como essa ovelha lê'),
+          const MiniLabel('COMO ESSA OVELHA LÊ'),
           const SizedBox(height: 8),
           if (stats != null) ...[
             ProtoCard(
@@ -184,7 +215,7 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                     stats.lastPassage == null
                         ? 'Ainda não há uma leitura registrada.'
                         : 'Última leitura: ${stats.lastPassage}'
-                            '${stats.lastReadAt == null ? '' : ' · ${timeAgo(stats.lastReadAt!)}'}',
+                              '${stats.lastReadAt == null ? '' : ' · ${timeAgo(stats.lastReadAt!)}'}',
                     style: const TextStyle(
                       color: AppColors.slate100,
                       fontSize: 15,
@@ -195,7 +226,10 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                   const SizedBox(height: 8),
                   Text(
                     '${stats.activeDaysWeek} ${stats.activeDaysWeek == 1 ? 'dia ativo' : 'dias ativos'} nesta semana · ${stats.plansCompleted} planos concluídos',
-                    style: const TextStyle(color: AppColors.slate300, fontSize: 12),
+                    style: const TextStyle(
+                      color: AppColors.slate300,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -209,10 +243,26 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
               crossAxisSpacing: 9,
               childAspectRatio: 1.45,
               children: [
-                _Metric('Tempo total', '${stats.minutesTotal} min', 'em todas as leituras'),
-                _Metric('Nesta semana', '${stats.minutesWeek} min', '${stats.readingCountWeek} registros'),
-                _Metric('Leituras', '${stats.readingCount}', 'passagens registradas'),
-                _Metric('Comentários', '${stats.commentCount}', '${stats.commentCountWeek} nesta semana'),
+                _Metric(
+                  'Tempo total',
+                  '${stats.minutesTotal} min',
+                  'em todas as leituras',
+                ),
+                _Metric(
+                  'Nesta semana',
+                  '${stats.minutesWeek} min',
+                  '${stats.readingCountWeek} registros',
+                ),
+                _Metric(
+                  'Leituras',
+                  '${stats.readingCount}',
+                  'passagens registradas',
+                ),
+                _Metric(
+                  'Comentários',
+                  '${stats.commentCount}',
+                  '${stats.commentCountWeek} nesta semana',
+                ),
                 _Metric('Check-ins', '${stats.checkinCount}', 'humor enviado'),
                 _Metric('Planos', '${stats.plansCompleted}', 'já encerrados'),
               ],
@@ -245,7 +295,10 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                   const SizedBox(height: 10),
                   Text(
                     'Último plano: ${latest.planTitle}',
-                    style: const TextStyle(color: AppColors.slate300, fontSize: 12),
+                    style: const TextStyle(
+                      color: AppColors.slate300,
+                      fontSize: 12,
+                    ),
                   ),
                 ],
               ),
@@ -259,10 +312,26 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
               crossAxisSpacing: 9,
               childAspectRatio: 1.45,
               children: [
-                _Metric('Compreensão', latest.understandingLabel, '${latest.understanding}/5'),
-                _Metric('Tempo do plano', '${latest.minutes} min', 'nesta leitura'),
-                _Metric('Olhar sobre o texto', latest.receptionLabel, 'como encontrou'),
-                _Metric('Quizzes', '${widget.insights.length}', 'já concluídos'),
+                _Metric(
+                  'Compreensão',
+                  latest.understandingLabel,
+                  '${latest.understanding}/5',
+                ),
+                _Metric(
+                  'Tempo do plano',
+                  '${latest.minutes} min',
+                  'nesta leitura',
+                ),
+                _Metric(
+                  'Olhar sobre o texto',
+                  latest.receptionLabel,
+                  'como encontrou',
+                ),
+                _Metric(
+                  'Quizzes',
+                  '${widget.insights.length}',
+                  'já concluídos',
+                ),
               ],
             ),
             if ((latest.takeaway ?? '').trim().isNotEmpty) ...[
@@ -270,7 +339,10 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
               ProtoCard(
                 child: Text(
                   latest.takeaway!,
-                  style: const TextStyle(color: AppColors.slate100, height: 1.4),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    height: 1.4,
+                  ),
                 ),
               ),
             ],
@@ -279,7 +351,10 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
               ProtoCard(
                 child: Text(
                   latest.comment!,
-                  style: const TextStyle(color: AppColors.slate100, height: 1.4),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    height: 1.4,
+                  ),
                 ),
               ),
             ],
@@ -299,13 +374,20 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                     const SizedBox(height: 4),
                     Text(
                       '${item.understandingLabel} · ${item.receptionLabel} · ${item.minutes} min · ${timeAgo(item.completedAt)}',
-                      style: const TextStyle(color: AppColors.slate400, fontSize: 11),
+                      style: const TextStyle(
+                        color: AppColors.slate400,
+                        fontSize: 11,
+                      ),
                     ),
                     if ((item.takeaway ?? '').trim().isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
                         item.takeaway!,
-                        style: const TextStyle(color: AppColors.slate300, fontSize: 12, height: 1.35),
+                        style: const TextStyle(
+                          color: AppColors.slate300,
+                          fontSize: 12,
+                          height: 1.35,
+                        ),
                       ),
                     ],
                   ],
@@ -345,7 +427,10 @@ class _Metric extends StatelessWidget {
               fontWeight: FontWeight.w800,
             ),
           ),
-          Text(hint, style: const TextStyle(color: AppColors.slate400, fontSize: 9)),
+          Text(
+            hint,
+            style: const TextStyle(color: AppColors.slate400, fontSize: 9),
+          ),
         ],
       ),
     );

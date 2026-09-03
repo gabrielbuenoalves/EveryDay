@@ -99,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return SafeArea(
       bottom: false,
       child: profile == null
-          ? const Center(child: CircularProgressIndicator(color: AppColors.ember))
+          ? const _ProfileLoading()
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
               children: [
@@ -162,10 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 8),
             const MiniLabel('Perfil do membro'),
             const SizedBox(height: 12),
-            EmberButton(
-              label: 'Editar perfil',
-              onPressed: _editMember,
-            ),
+            EmberButton(label: 'Editar perfil', onPressed: _editMember),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -197,9 +194,14 @@ class _ProfilePageState extends State<ProfilePage> {
               side: const BorderSide(color: AppColors.slate700),
               minimumSize: const Size(0, 36),
               padding: const EdgeInsets.symmetric(horizontal: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: const Text('Editar', style: TextStyle(fontWeight: FontWeight.w800)),
+            child: const Text(
+              'Editar',
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
           ),
         ],
       ),
@@ -312,7 +314,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final avg = _groups.isEmpty
         ? 0.0
         : _groups.map((group) => group.weekProgress).reduce((a, b) => a + b) /
-            _groups.length;
+              _groups.length;
     final attention = _groups.where((group) => group.weekProgress < 0.5).length;
     final book = _currentBook;
     final progress = book?.progress ?? 0.18;
@@ -373,7 +375,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 6),
             Text(
               _bio,
-              style: const TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
+              style: const TextStyle(
+                color: AppColors.slate300,
+                fontSize: 13,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 12),
             const Text(
@@ -423,16 +429,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 4),
                 Text(
                   '${group.memberCount} membros · ${(group.weekProgress * 100).round()}% leram nesta semana',
-                  style: const TextStyle(color: AppColors.slate300, fontSize: 11),
+                  style: const TextStyle(
+                    color: AppColors.slate300,
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(height: 13),
-                EmberProgress(value: group.weekProgress == 0 ? 0.12 : group.weekProgress),
+                EmberProgress(
+                  value: group.weekProgress == 0 ? 0.12 : group.weekProgress,
+                ),
                 const SizedBox(height: 12),
                 EmberButton(
                   label: 'Direcionar leitura',
                   onPressed: () => _directReading(group),
                 ),
-                if (group.inviteCode != null && group.inviteCode!.isNotEmpty) ...[
+                if (group.inviteCode != null &&
+                    group.inviteCode!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const MiniLabel('Código do grupo'),
                   const SizedBox(height: 4),
@@ -543,7 +555,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 10),
             Text(
               _churchBio,
-              style: const TextStyle(color: AppColors.slate300, fontSize: 12, height: 1.45),
+              style: const TextStyle(
+                color: AppColors.slate300,
+                fontSize: 12,
+                height: 1.45,
+              ),
             ),
             if (profile.inviteCode != null) ...[
               const SizedBox(height: 12),
@@ -566,10 +582,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      ProtoSection(
-        title: 'Grupos da igreja',
-        trailing: '${_groups.length}',
-      ),
+      ProtoSection(title: 'Grupos da igreja', trailing: '${_groups.length}'),
       if (_groups.isEmpty)
         const ProtoCard(
           child: Text(
@@ -596,11 +609,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 4),
                 Text(
                   '${group.memberCount} pessoas · ${(group.weekProgress * 100).round()}% acompanhando o desafio',
-                  style: const TextStyle(color: AppColors.slate300, fontSize: 11),
+                  style: const TextStyle(
+                    color: AppColors.slate300,
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(height: 13),
-                EmberProgress(value: group.weekProgress == 0 ? 0.12 : group.weekProgress),
-                if (group.inviteCode != null && group.inviteCode!.isNotEmpty) ...[
+                EmberProgress(
+                  value: group.weekProgress == 0 ? 0.12 : group.weekProgress,
+                ),
+                if (group.inviteCode != null &&
+                    group.inviteCode!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const MiniLabel('Código do grupo'),
                   const SizedBox(height: 4),
@@ -666,28 +685,23 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       groupName: group.name,
       onSubmit: ({required title, required passages}) {
-        return AppScope.of(context).createGroupPlan(
-          groupId: group.id,
-          title: title,
-          passages: passages,
-        );
+        return AppScope.of(
+          context,
+        ).createGroupPlan(groupId: group.id, title: title, passages: passages);
       },
     );
     if (!sent || !mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Leitura enviada a ${group.name}')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Leitura enviada a ${group.name}')));
     await _load(AppScope.of(context).getProfile);
   }
 
   Future<void> _openGroup(ReadingGroup group, {required bool pastor}) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) => GroupDetailPage(
-          group: group,
-          pastor: pastor,
-          canDirect: true,
-        ),
+        builder: (_) =>
+            GroupDetailPage(group: group, pastor: pastor, canDirect: true),
       ),
     );
     if (mounted) await _load(AppScope.of(context).getProfile);
@@ -739,7 +753,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: username,
-                  decoration: const InputDecoration(labelText: 'Nome de usuário'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nome de usuário',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -751,12 +767,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: book,
-                  decoration: const InputDecoration(labelText: 'Livro favorito'),
+                  decoration: const InputDecoration(
+                    labelText: 'Livro favorito',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: character,
-                  decoration: const InputDecoration(labelText: 'Personagem favorito'),
+                  decoration: const InputDecoration(
+                    labelText: 'Personagem favorito',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -800,9 +820,12 @@ class _ProfilePageState extends State<ProfilePage> {
         final user = username.text.trim();
         _username = user.startsWith('@') ? user : '@$user';
         _bio = bio.text.trim();
-        _favoriteBook = book.text.trim().isEmpty ? 'Não informado' : book.text.trim();
-        _favoriteCharacter =
-            character.text.trim().isEmpty ? 'Não informado' : character.text.trim();
+        _favoriteBook = book.text.trim().isEmpty
+            ? 'Não informado'
+            : book.text.trim();
+        _favoriteCharacter = character.text.trim().isEmpty
+            ? 'Não informado'
+            : character.text.trim();
         _specialties = specialties.text
             .split(',')
             .map((item) => item.trim())
@@ -828,7 +851,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final churchName = TextEditingController(text: profile?.churchName ?? '');
     final bio = TextEditingController(text: _churchBio);
     final city = TextEditingController(text: _churchCity);
-    final members = TextEditingController(text: '${_friends == 0 ? 1 : _friends}');
+    final members = TextEditingController(
+      text: '${_friends == 0 ? 1 : _friends}',
+    );
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -863,7 +888,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: churchName,
-                  decoration: const InputDecoration(labelText: 'Nome da igreja'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nome da igreja',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -880,7 +907,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 TextField(
                   controller: members,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Quantidade de membros'),
+                  decoration: const InputDecoration(
+                    labelText: 'Quantidade de membros',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -921,7 +950,9 @@ class _ProfilePageState extends State<ProfilePage> {
         _churchCity = city.text.trim();
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perfil da igreja atualizado com sucesso.')),
+        const SnackBar(
+          content: Text('Perfil da igreja atualizado com sucesso.'),
+        ),
       );
     }
     churchName.dispose();
@@ -968,6 +999,54 @@ class _HeroStat extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProfileLoading extends StatelessWidget {
+  const _ProfileLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
+      children: [
+        Container(
+          height: 12,
+          width: 60,
+          decoration: BoxDecoration(
+            color: AppColors.slate800,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 28,
+          width: 100,
+          decoration: BoxDecoration(
+            color: AppColors.slate800,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        const SizedBox(height: 24),
+        const ProtoCard(
+          child: Column(
+            children: [
+              CircleAvatar(radius: 34, backgroundColor: AppColors.slate700),
+              SizedBox(height: 14),
+              SizedBox(
+                width: 130,
+                height: 16,
+                child: ColoredBox(color: AppColors.slate700),
+              ),
+              SizedBox(height: 18),
+              SizedBox(height: 42),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        const ProtoCard(child: SizedBox(height: 120)),
+      ],
     );
   }
 }

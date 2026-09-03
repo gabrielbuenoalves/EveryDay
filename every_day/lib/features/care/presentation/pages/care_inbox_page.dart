@@ -63,28 +63,70 @@ class _CareInboxPageState extends State<CareInboxPage> {
   Widget build(BuildContext context) {
     final items = _items;
     final list = items == null
-        ? const Center(
-            child: CircularProgressIndicator(color: AppColors.ember),
-          )
+        ? const Center(child: CircularProgressIndicator(color: AppColors.ember))
         : RefreshIndicator(
             color: AppColors.ember,
             onRefresh: _load,
             child: ListView(
-              padding: EdgeInsets.fromLTRB(16, 8, 16, widget.asTab ? 120 : 32),
+              padding: EdgeInsets.fromLTRB(16, 12, 16, widget.asTab ? 120 : 32),
               children: [
                 if (_error != null)
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      'Não foi possível carregar alguns pedidos.',
-                      style: TextStyle(color: AppColors.ember),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: const Color(0x332E2521),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.emberDark),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(
+                          Icons.cloud_off_rounded,
+                          color: AppColors.ember,
+                          size: 19,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Não foi possível carregar alguns pedidos.',
+                            style: TextStyle(
+                              color: AppColors.slate300,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 if (items.isEmpty)
                   const ProtoCard(
-                    child: Text(
-                      'Nenhum pedido de oração em aberto.',
-                      style: TextStyle(color: AppColors.slate300),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.check_circle_outline_rounded,
+                          color: AppColors.success,
+                          size: 30,
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Nenhum pedido de oração em aberto.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.slate100,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Quando alguém pedir cuidado, aparecerá aqui.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: AppColors.slate400,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 for (final item in items) ...[
@@ -142,17 +184,18 @@ class _InboxCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final urgency = item.report?.urgency;
     return Material(
-      color: AppColors.slate800,
-      borderRadius: BorderRadius.circular(16),
+      color: AppColors.slate850,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onOpen,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: item.checkin.crisis ? AppColors.ember : AppColors.slate700,
+              width: item.checkin.crisis ? 1.4 : 1,
             ),
           ),
           child: Row(

@@ -42,14 +42,31 @@ class _LoginPageState extends State<LoginPage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 36, 24, 24),
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight - 24),
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const AppWordmark(),
-                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(18),
+                      decoration: BoxDecoration(
+                        color: AppColors.slate850,
+                        borderRadius: BorderRadius.circular(24),
+                        border: Border.all(color: AppColors.slate700),
+                      ),
+                      child: const AppWordmark(),
+                    ),
+                    const SizedBox(height: 28),
+                    Text(
+                      _register
+                          ? 'Uma comunidade para atravessar o dia.'
+                          : 'Volte para o que importa.',
+                      style: Theme.of(context).textTheme.displayLarge,
+                    ),
+                    const SizedBox(height: 10),
                     Text(
                       _register
                           ? 'Escolha como você entra na comunidade.'
@@ -59,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                         height: 1.35,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                     for (final role in UserRole.values) ...[
                       _RoleChoice(
                         role: role,
@@ -126,8 +143,8 @@ class _LoginPageState extends State<LoginPage> {
                         _busy
                             ? 'Aguarde...'
                             : (_register
-                                ? 'Criar conta de ${_role.label.toLowerCase()}'
-                                : 'Entrar como ${_role.label.toLowerCase()}'),
+                                  ? 'Criar conta de ${_role.label.toLowerCase()}'
+                                  : 'Entrar como ${_role.label.toLowerCase()}'),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -239,7 +256,11 @@ class _RoleChoice extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(_icon, color: selected ? AppColors.ember : AppColors.slate400, size: 22),
+              Icon(
+                _icon,
+                color: selected ? AppColors.ember : AppColors.slate400,
+                size: 22,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -248,7 +269,9 @@ class _RoleChoice extends StatelessWidget {
                     Text(
                       role.label,
                       style: TextStyle(
-                        color: selected ? AppColors.slate100 : AppColors.slate300,
+                        color: selected
+                            ? AppColors.slate100
+                            : AppColors.slate300,
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                       ),
@@ -327,7 +350,9 @@ class _ChurchGateState extends State<ChurchGate> {
         if (!snapshot.hasData) {
           return const Scaffold(
             backgroundColor: AppColors.slate900,
-            body: Center(child: CircularProgressIndicator(color: AppColors.ember)),
+            body: Center(
+              child: CircularProgressIndicator(color: AppColors.ember),
+            ),
           );
         }
         if (snapshot.data == true) return widget.home;

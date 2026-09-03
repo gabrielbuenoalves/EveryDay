@@ -81,11 +81,25 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final done = _plans.where((plan) => plan.isArchived).toList();
     return Scaffold(
       backgroundColor: AppColors.slate900,
-      appBar: AppBar(title: Text(widget.group.name)),
+      appBar: AppBar(
+        title: Text(widget.group.name),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(
+              child: Text(
+                '${widget.group.memberCount}',
+                style: const TextStyle(
+                  color: AppColors.ember,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: _loading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.ember),
-            )
+          ? const _DetailLoading()
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
@@ -159,10 +173,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     ),
                     const SizedBox(height: 8),
                   ],
-                ProtoSection(
-                  title: 'Concluídas',
-                  trailing: '${done.length}',
-                ),
+                ProtoSection(title: 'Concluídas', trailing: '${done.length}'),
                 if (done.isEmpty)
                   const ProtoCard(
                     child: Text(
@@ -200,5 +211,32 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       SnackBar(content: Text('Leitura enviada a ${widget.group.name}')),
     );
     await _load();
+  }
+}
+
+class _DetailLoading extends StatelessWidget {
+  const _DetailLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      children: [
+        const ProtoCard(child: SizedBox(height: 100)),
+        const SizedBox(height: 14),
+        Container(
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.slate800,
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        const SizedBox(height: 28),
+        for (var i = 0; i < 2; i++) ...[
+          const ProtoCard(child: SizedBox(height: 92)),
+          const SizedBox(height: 10),
+        ],
+      ],
+    );
   }
 }

@@ -57,20 +57,30 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 36, 24, 24),
+              padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
               child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight - 24),
+                constraints: BoxConstraints(
+                  minHeight: constraints.maxHeight - 24,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const AppLogo(size: 44),
-                    const SizedBox(height: 14),
+                    Container(
+                      width: 64,
+                      height: 64,
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.slate850,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.slate700),
+                      ),
+                      child: const AppLogo(size: 44),
+                    ),
+                    const SizedBox(height: 24),
                     Text(
                       widget.role.setupTitle,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontSize: 28,
-                        height: 1.1,
-                      ),
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontSize: 28, height: 1.1),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -80,14 +90,15 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                         height: 1.35,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 28),
                     if (widget.role.isPastor) ...[
                       TextField(
                         controller: _churchName,
                         textCapitalization: TextCapitalization.words,
                         style: fieldStyle,
-                        decoration: AuthFormStyle.decoration('Nome da igreja')
-                            .copyWith(hintText: 'Ex.: Comunidade da Ponte'),
+                        decoration: AuthFormStyle.decoration(
+                          'Nome da igreja',
+                        ).copyWith(hintText: 'Ex.: Comunidade da Ponte'),
                       ),
                       const SizedBox(height: 12),
                       TextField(
@@ -108,16 +119,18 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                         controller: _churchMembers,
                         keyboardType: TextInputType.number,
                         style: fieldStyle,
-                        decoration: AuthFormStyle.decoration('Quantidade de membros')
-                            .copyWith(hintText: 'Ex.: 280'),
+                        decoration: AuthFormStyle.decoration(
+                          'Quantidade de membros',
+                        ).copyWith(hintText: 'Ex.: 280'),
                       ),
                       const SizedBox(height: 12),
                       TextField(
                         controller: _churchCity,
                         textCapitalization: TextCapitalization.words,
                         style: fieldStyle,
-                        decoration: AuthFormStyle.decoration('Cidade')
-                            .copyWith(hintText: 'Cidade e estado'),
+                        decoration: AuthFormStyle.decoration(
+                          'Cidade',
+                        ).copyWith(hintText: 'Cidade e estado'),
                       ),
                       const SizedBox(height: 20),
                       FilledButton(
@@ -137,10 +150,7 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _CodeBoxes(
-                        controller: _code,
-                        enabled: !_busy,
-                      ),
+                      _CodeBoxes(controller: _code, enabled: !_busy),
                       const SizedBox(height: 16),
                       FilledButton(
                         onPressed: _busy ? null : _join,
@@ -264,7 +274,9 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
     );
     if (ok == true && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('QR Code reconhecido. Entrada concluída!')),
+        const SnackBar(
+          content: Text('QR Code reconhecido. Entrada concluída!'),
+        ),
       );
     }
   }

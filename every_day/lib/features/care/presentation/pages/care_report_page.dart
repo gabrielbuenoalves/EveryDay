@@ -73,13 +73,11 @@ class _CareReportPageState extends State<CareReportPage> {
 
     return Scaffold(
       backgroundColor: AppColors.slate900,
-      appBar: AppBar(
-        title: Text('Cuidar de ${item.member.displayName}'),
-      ),
+      appBar: AppBar(title: Text('Cuidar de ${item.member.displayName}')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
         children: [
-          const MiniLabel('1 · Relato da ovelha'),
+          const MiniLabel('1 · RELATO DA OVELHA'),
           const SizedBox(height: 8),
           SurfaceCard(
             child: Column(
@@ -88,20 +86,26 @@ class _CareReportPageState extends State<CareReportPage> {
                 Text(
                   'Nota ${item.checkin.score}'
                   '${item.checkin.crisis ? ' · alerta de crise' : ''}',
-                  style: const TextStyle(color: AppColors.slate400, fontSize: 12),
+                  style: const TextStyle(
+                    color: AppColors.slate400,
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   item.checkin.body?.trim().isNotEmpty == true
                       ? item.checkin.body!
                       : 'O membro pediu cuidado, sem texto extra.',
-                  style: const TextStyle(color: AppColors.slate100, height: 1.4),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 18),
-          const MiniLabel('2 · Relatório da IA · só você vê'),
+          const MiniLabel('2 · RELATÓRIO DA IA · SÓ VOCÊ VÊ'),
           const SizedBox(height: 8),
           SurfaceCard(
             child: Column(
@@ -109,7 +113,10 @@ class _CareReportPageState extends State<CareReportPage> {
               children: [
                 Text(
                   item.pastoralBriefing,
-                  style: const TextStyle(color: AppColors.slate100, height: 1.4),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    height: 1.4,
+                  ),
                 ),
                 if (report != null) ...[
                   const SizedBox(height: 12),
@@ -150,11 +157,15 @@ class _CareReportPageState extends State<CareReportPage> {
             ),
           ),
           const SizedBox(height: 18),
-          MiniLabel('3 · Auditar e enviar a leitura · só para $_sheepName'),
+          MiniLabel('3 · AUDITAR E ENVIAR · SÓ PARA $_sheepName'),
           const SizedBox(height: 8),
           const Text(
             'A ovelha vê todas as leituras de uma vez e navega entre elas. Sem a sua aprovação, ela não recebe nada.',
-            style: TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
+            style: TextStyle(
+              color: AppColors.slate400,
+              fontSize: 12,
+              height: 1.45,
+            ),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -171,7 +182,9 @@ class _CareReportPageState extends State<CareReportPage> {
           TextField(
             controller: _passages,
             maxLines: 5,
-            decoration: _decoration('Leituras (uma por linha) — a ovelha vê todas'),
+            decoration: _decoration(
+              'Leituras (uma por linha) — a ovelha vê todas',
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -192,7 +205,7 @@ class _CareReportPageState extends State<CareReportPage> {
             ),
           ),
           const SizedBox(height: 22),
-          const MiniLabel('Opcional · contato humano'),
+          const MiniLabel('OPCIONAL · CONTATO HUMANO'),
           const SizedBox(height: 8),
           TextField(
             controller: _when,
@@ -202,7 +215,9 @@ class _CareReportPageState extends State<CareReportPage> {
           OutlinedButton(
             onPressed: _busy || _contactScheduled ? null : _schedule,
             child: Text(
-              _contactScheduled ? 'Conversa marcada' : 'Marcar conversa com $_sheepName',
+              _contactScheduled
+                  ? 'Conversa marcada'
+                  : 'Marcar conversa com $_sheepName',
             ),
           ),
         ],
@@ -227,7 +242,9 @@ class _CareReportPageState extends State<CareReportPage> {
     if (report == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ainda não há relatório para auditar. Atualize a fila.'),
+          content: Text(
+            'Ainda não há relatório para auditar. Atualize a fila.',
+          ),
         ),
       );
       return;

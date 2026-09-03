@@ -22,6 +22,7 @@ class CarePlanCard extends StatelessWidget {
     final total = plan.readings.length;
     final done = plan.doneCount;
     final next = plan.readings.indexWhere((item) => !item.isDone);
+    final progress = total == 0 ? 0.0 : done / total;
     return ProtoCard(
       challenge: true,
       child: Column(
@@ -53,7 +54,20 @@ class CarePlanCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 12),
-          EmberProgress(value: total == 0 ? 0 : done / total),
+          Row(
+            children: [
+              Expanded(child: EmberProgress(value: progress)),
+              const SizedBox(width: 10),
+              Text(
+                '${(progress * 100).round()}%',
+                style: const TextStyle(
+                  color: AppColors.slate300,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 12),
           for (var i = 0; i < plan.readings.length; i++) ...[
             if (i > 0) const SizedBox(height: 8),
@@ -111,6 +125,15 @@ class ArchivedPlanCard extends StatelessWidget {
                 fontWeight: FontWeight.w800,
               ),
             ),
+            const SizedBox(height: 2),
+            Text(
+              plan.sourceLabel,
+              style: const TextStyle(
+                color: AppColors.slate500,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
             if (plan.takeaway != null && plan.takeaway!.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
@@ -162,9 +185,7 @@ class _ReadingRow extends StatelessWidget {
               Icon(
                 item.isDone ? Icons.check_circle : Icons.menu_book_outlined,
                 size: 18,
-                color: item.isDone
-                    ? const Color(0xFF4ADE80)
-                    : AppColors.ember,
+                color: item.isDone ? const Color(0xFF4ADE80) : AppColors.ember,
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -174,9 +195,7 @@ class _ReadingRow extends StatelessWidget {
                     color: AppColors.slate100,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    decoration: item.isDone
-                        ? TextDecoration.lineThrough
-                        : null,
+                    decoration: item.isDone ? TextDecoration.lineThrough : null,
                   ),
                 ),
               ),
