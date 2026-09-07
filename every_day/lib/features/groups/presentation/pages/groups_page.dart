@@ -15,11 +15,13 @@ class GroupsPage extends StatefulWidget {
     this.pastor = false,
     bool? canDirect,
     this.capabilities = const GroupCapabilities(),
+    this.initials = '',
   }) : canDirect = canDirect ?? pastor;
 
   final bool pastor;
   final bool canDirect;
   final GroupCapabilities capabilities;
+  final String initials;
 
   @override
   State<GroupsPage> createState() => _GroupsPageState();
@@ -82,6 +84,7 @@ class _GroupsPageState extends State<GroupsPage> {
           AppScreenHeader(
             kicker: widget.pastor ? 'Gestão' : 'Comunidade',
             title: widget.pastor ? 'Todos os grupos' : 'Grupos',
+            initials: widget.initials,
           ),
           Expanded(
             child: groups == null

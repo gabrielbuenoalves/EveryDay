@@ -23,12 +23,12 @@ class AppBottomNav extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 8),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: const Color(0xFC222229),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: AppColors.slate700),
             boxShadow: const [
               BoxShadow(
-                color: Color(0xA6000000),
+                color: AppColors.softShadow,
                 blurRadius: 22,
                 offset: Offset(0, 8),
               ),
@@ -85,7 +85,7 @@ class _NavItem extends StatelessWidget {
               child: const Text(
                 '+',
                 style: TextStyle(
-                  color: AppColors.slate950,
+                  color: AppColors.surface,
                   fontSize: 23,
                   height: 1,
                   fontWeight: FontWeight.w700,
@@ -97,27 +97,34 @@ class _NavItem extends StatelessWidget {
       );
     }
 
-    final color = selected ? AppColors.ember : AppColors.slate400;
-    return Material(
-      color: selected ? const Color(0x29FF5C16) : Colors.transparent,
-      borderRadius: BorderRadius.circular(9),
-      child: InkWell(
-        onTap: onTap,
+    final color = selected ? AppColors.surface : AppColors.textSecondary;
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: item.label,
+      child: Material(
+        color: selected ? AppColors.primary : Colors.transparent,
         borderRadius: BorderRadius.circular(9),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _iconWithBadge,
-            const SizedBox(height: 1),
-            Text(
-              item.label,
-              style: TextStyle(
-                color: color,
-                fontSize: 8,
-                fontWeight: FontWeight.w800,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(9),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _iconWithBadge,
+              const SizedBox(height: 1),
+              ExcludeSemantics(
+                child: Text(
+                  item.label,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -126,7 +133,7 @@ class _NavItem extends StatelessWidget {
   Widget get _iconWithBadge {
     final icon = Icon(
       _icon,
-      color: selected ? AppColors.ember : AppColors.slate400,
+      color: selected ? AppColors.surface : AppColors.textSecondary,
       size: 18,
     );
     if (item.badge <= 0) return icon;
@@ -148,7 +155,7 @@ class _NavItem extends StatelessWidget {
             child: Text(
               item.badge > 9 ? '9+' : '${item.badge}',
               style: const TextStyle(
-                color: AppColors.slate950,
+                color: AppColors.surface,
                 fontSize: 8,
                 fontWeight: FontWeight.w900,
                 height: 1,

@@ -105,7 +105,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 AppScreenHeader(
                   kicker: profile.role.label,
                   title: 'Perfil',
-                  initials: profile.initials,
+                  showAvatar: false,
+                  horizontalPadding: 1,
                 ),
                 if (profile.role.isPastor)
                   ..._pastorBody(profile)
@@ -141,8 +142,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: AppAvatar(
                 initials: profile.initials,
-                color: AppColors.slate800,
-                foregroundColor: AppColors.slate100,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
                 size: 64,
               ),
             ),
@@ -174,36 +175,13 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      Row(
-        children: [
-          const Expanded(
-            child: Text(
-              'Sobre',
-              style: TextStyle(
-                color: AppColors.slate100,
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: _editMember,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.slate100,
-              backgroundColor: AppColors.slate800,
-              side: const BorderSide(color: AppColors.slate700),
-              minimumSize: const Size(0, 36),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
-              'Editar',
-              style: TextStyle(fontWeight: FontWeight.w800),
-            ),
-          ),
-        ],
+      const Text(
+        'Sobre',
+        style: TextStyle(
+          color: AppColors.slate100,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+        ),
       ),
       const SizedBox(height: 8),
       ProtoCard(
@@ -254,7 +232,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: const TextStyle(color: AppColors.slate400, fontSize: 13),
             ),
             const SizedBox(height: 12),
-            const MiniLabel('Especialidades'),
+            const MiniLabel('Grupos'),
             const SizedBox(height: 9),
             Wrap(
               spacing: 7,
@@ -332,6 +310,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return [
       ProtoCard(
+        challenge: true,
         child: Column(
           children: [
             Container(
@@ -341,8 +320,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: AppAvatar(
                 initials: profile.initials,
-                color: AppColors.slate800,
-                foregroundColor: AppColors.slate100,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
                 size: 64,
               ),
             ),
@@ -363,7 +342,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const MiniLabel('Perfil do líder'),
             const SizedBox(height: 12),
             EmberButton(
-              label: 'Editar perfil do líder',
+              label: 'Editar perfil',
               onPressed: _editMember,
             ),
             const SizedBox(height: 12),
@@ -511,6 +490,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }.length;
     return [
       ProtoCard(
+        challenge: true,
         child: Column(
           children: [
             Container(
@@ -520,8 +500,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: AppAvatar(
                 initials: profile.initials,
-                color: AppColors.slate800,
-                foregroundColor: AppColors.slate100,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
                 size: 64,
               ),
             ),
@@ -540,6 +520,22 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 8),
             const MiniLabel('Perfil do pastor'),
+            const SizedBox(height: 12),
+            EmberButton(
+              label: 'Editar perfil',
+              onPressed: _editMember,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _HeroStat('${_groups.length}', 'grupos'),
+                _HeroStat('$members', 'membros'),
+                _HeroStat(
+                  '${profile.stats.chaptersThisWeek}',
+                  'capítulos',
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -613,7 +609,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
             const SizedBox(height: 12),
             EmberButton(
-              label: 'Editar perfil da igreja',
+              label: 'Editar dados da igreja',
               onPressed: _editChurch,
             ),
           ],
@@ -686,34 +682,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 10),
         ],
-      const SizedBox(height: 10),
-      ProtoCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const MiniLabel('Dados pessoais'),
-            const SizedBox(height: 6),
-            const Text(
-              'Seu perfil pastoral',
-              style: TextStyle(
-                color: AppColors.slate100,
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Atualize sua foto, nome, apresentação e preferências da conta.',
-              style: TextStyle(color: AppColors.slate300, fontSize: 11),
-            ),
-            const SizedBox(height: 12),
-            EmberButton(
-              label: 'Editar perfil do pastor',
-              onPressed: _editMember,
-            ),
-          ],
-        ),
-      ),
     ];
   }
 
@@ -830,8 +798,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 TextField(
                   controller: specialties,
                   decoration: const InputDecoration(
-                    labelText: 'Especialidades',
-                    helperText: 'Separe as especialidades por vírgulas.',
+                    labelText: 'Grupos',
+                    helperText: 'Separe os grupos por vírgulas.',
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -849,7 +817,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPressed: () => Navigator.pop(context, true),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.ember,
-                          foregroundColor: AppColors.slate950,
+                          foregroundColor: AppColors.surface,
                         ),
                         child: const Text('Salvar alterações'),
                       ),
@@ -978,7 +946,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPressed: () => Navigator.pop(context, true),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.ember,
-                          foregroundColor: AppColors.slate950,
+                          foregroundColor: AppColors.surface,
                         ),
                         child: const Text('Continuar'),
                       ),
@@ -1022,7 +990,7 @@ class _HeroStat extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
         decoration: BoxDecoration(
-          color: AppColors.slate950,
+          color: AppColors.primaryContainer,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(

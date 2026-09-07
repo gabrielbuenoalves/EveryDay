@@ -68,7 +68,7 @@ class BibleChaptersPage extends StatelessWidget {
               final chapter = index + 1;
               return Material(
                 color: chapter <= book.readChapters
-                    ? const Color(0x18FF5C16)
+                    ? AppColors.primaryContainer
                     : AppColors.slate800,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(

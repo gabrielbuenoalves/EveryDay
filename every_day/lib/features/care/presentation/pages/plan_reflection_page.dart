@@ -210,7 +210,7 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
               onPressed: _saving ? null : _submit,
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.ember,
-                foregroundColor: AppColors.slate950,
+                foregroundColor: AppColors.surface,
               ),
               child: Text(
                 _saving ? 'Arquivando…' : 'Encerrar e arquivar o plano',
@@ -272,7 +272,7 @@ class _ChoiceChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? AppColors.slate950 : AppColors.slate100,
+            color: selected ? AppColors.surface : AppColors.textPrimary,
             fontSize: 12,
             fontWeight: FontWeight.w800,
           ),

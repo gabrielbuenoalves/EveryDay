@@ -21,7 +21,7 @@ class AppLogo extends StatelessWidget {
         boxShadow: showShadow
             ? const [
                 BoxShadow(
-                  color: Color(0x3DE3703A),
+                  color: AppColors.primaryContainer,
                   blurRadius: 24,
                   offset: Offset(0, 8),
                 ),

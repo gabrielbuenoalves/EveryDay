@@ -173,7 +173,7 @@ class _ReadingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: item.isDone ? const Color(0x3322C55E) : AppColors.slate800,
+      color: item.isDone ? AppColors.primaryContainer : AppColors.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -185,7 +185,7 @@ class _ReadingRow extends StatelessWidget {
               Icon(
                 item.isDone ? Icons.check_circle : Icons.menu_book_outlined,
                 size: 18,
-                color: item.isDone ? const Color(0xFF4ADE80) : AppColors.ember,
+                color: AppColors.primary,
               ),
               const SizedBox(width: 10),
               Expanded(

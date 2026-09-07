@@ -24,39 +24,18 @@ class ProtoCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: challenge ? const Color(0x99FF5A16) : AppColors.slate700,
+          color: AppColors.primaryContainer,
         ),
         gradient: challenge
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [AppColors.slate800, Color(0x55D94308)],
+                colors: [AppColors.surface, AppColors.primaryContainer],
               )
             : null,
         color: challenge ? null : AppColors.slate800,
       ),
-      child: challenge
-          ? Stack(
-              children: [
-                child,
-                const Positioned(
-                  right: -10,
-                  bottom: -28,
-                  child: IgnorePointer(
-                    child: Text(
-                      'ED',
-                      style: TextStyle(
-                        color: Color(0x1FFF5A16),
-                        fontSize: 72,
-                        fontWeight: FontWeight.w900,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : child,
+      child: child,
     );
   }
 }
@@ -110,7 +89,7 @@ class MiniLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: TextStyle(
-        color: dark ? const Color(0xD10F172A) : AppColors.slate400,
+        color: dark ? AppColors.textPrimary : AppColors.textSecondary,
         fontSize: 8,
         fontWeight: FontWeight.w900,
         letterSpacing: 1.05,
@@ -158,7 +137,7 @@ class EmberButton extends StatelessWidget {
         onPressed: onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.ember,
-          foregroundColor: AppColors.slate950,
+          foregroundColor: AppColors.surface,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(11),
@@ -211,13 +190,14 @@ class ProtoFilterBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(9),
                   border: Border.all(
                     color: active ? AppColors.ember : AppColors.slate700,
+                    width: active ? 2 : 1,
                   ),
                 ),
                 child: Text(
                   labels[index],
                   style: TextStyle(
                     color: active
-                        ? AppColors.slate950
+                        ? AppColors.surface
                         : disabled
                         ? AppColors.slate500
                         : AppColors.slate400,
@@ -233,6 +213,7 @@ class ProtoFilterBar extends StatelessWidget {
             child: Semantics(
               enabled: !disabled,
               button: true,
+              selected: active,
               child: disabled
                   ? Tooltip(message: disabledHint, child: filter)
                   : filter,
@@ -267,7 +248,7 @@ class ProtoEmptyState extends StatelessWidget {
             height: 42,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0x18FF5C16),
+              color: AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(icon, color: AppColors.ember, size: 21),
@@ -364,7 +345,7 @@ class GroupChip extends StatelessWidget {
             height: 28,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0x33E3703A),
+              color: AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(9),
             ),
             child: Text(
@@ -408,16 +389,16 @@ class SpecialtyChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.slate950,
+        color: active ? AppColors.primary : AppColors.primaryContainer,
         borderRadius: BorderRadius.circular(11),
         border: Border.all(
-          color: active ? AppColors.ember : AppColors.slate700,
+          color: active ? AppColors.primary : AppColors.primaryContainer,
         ),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: active ? AppColors.slate100 : AppColors.slate300,
+          color: active ? AppColors.surface : AppColors.textSecondary,
           fontSize: 12,
           fontWeight: FontWeight.w800,
         ),
@@ -461,19 +442,23 @@ class AppScreenHeader extends StatelessWidget {
     super.key,
     required this.kicker,
     required this.title,
-    this.initials = 'ED',
+    this.initials = '',
     this.action,
+    this.showAvatar = true,
+    this.horizontalPadding = 17,
   });
 
   final String kicker;
   final String title;
   final String initials;
   final Widget? action;
+  final bool showAvatar;
+  final double horizontalPadding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(17, 10, 17, 7),
+      padding: EdgeInsets.fromLTRB(horizontalPadding, 10, horizontalPadding, 7),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -503,19 +488,20 @@ class AppScreenHeader extends StatelessWidget {
               ],
             ),
           ),
-          ?action,
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.slate700),
+          if (action != null) ...[action!, const SizedBox(width: 8)],
+          if (showAvatar)
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.slate700),
+              ),
+              child: AppAvatar(
+                initials: initials,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
+                size: 34,
+              ),
             ),
-            child: AppAvatar(
-              initials: initials,
-              color: AppColors.slate800,
-              foregroundColor: AppColors.slate100,
-              size: 34,
-            ),
-          ),
         ],
       ),
     );

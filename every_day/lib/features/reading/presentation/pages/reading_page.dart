@@ -378,11 +378,9 @@ class _ReadingPageState extends State<ReadingPage> {
                   backgroundColor: _allPlanDone
                       ? AppColors.ember
                       : _isDone
-                      ? const Color(0xFF166534)
+                      ? AppColors.primary
                       : AppColors.ember,
-                  foregroundColor: _allPlanDone || !_isDone
-                      ? AppColors.slate950
-                      : Colors.white,
+                  foregroundColor: AppColors.surface,
                 ),
                 child: Text(
                   _completing
@@ -416,7 +414,7 @@ class _ReadingPageState extends State<ReadingPage> {
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF8B3210), AppColors.emberDark],
+              colors: [AppColors.orange, AppColors.primaryContainer],
             ),
           ),
           child: Column(
@@ -713,27 +711,32 @@ class _PassageChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.ember : AppColors.slate800,
-          borderRadius: BorderRadius.circular(99),
-          border: Border.all(
-            color: selected
-                ? AppColors.ember
-                : done
-                ? const Color(0xFF4ADE80)
-                : AppColors.slate700,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.ember : AppColors.slate800,
+            borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: selected
+                  ? AppColors.ember
+                  : done
+                  ? AppColors.primary
+                  : AppColors.slate700,
+              width: selected ? 2 : 1,
+            ),
           ),
-        ),
-        child: Text(
-          done ? '✓ $label' : label,
-          style: TextStyle(
-            color: selected ? AppColors.slate950 : AppColors.slate100,
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
+          child: Text(
+            done ? '✓ $label' : label,
+            style: TextStyle(
+              color: selected ? AppColors.surface : AppColors.textPrimary,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
       ),

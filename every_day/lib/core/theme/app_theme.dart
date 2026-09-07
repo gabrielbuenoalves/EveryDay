@@ -61,20 +61,31 @@ abstract final class AppTheme {
     return ThemeData(
       useMaterial3: true,
       visualDensity: VisualDensity.compact,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: AppColors.slate900,
-      colorScheme: const ColorScheme.dark(
-        primary: AppColors.ember,
-        onPrimary: AppColors.slate950,
-        secondary: AppColors.emberDark,
-        onSecondary: AppColors.slate100,
-        surface: AppColors.slate800,
-        onSurface: AppColors.slate100,
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: AppColors.background,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.primary,
+        onPrimary: AppColors.surface,
+        primaryContainer: AppColors.primaryContainer,
+        onPrimaryContainer: AppColors.textPrimary,
+        secondary: AppColors.secondary,
+        onSecondary: AppColors.surface,
+        tertiary: AppColors.orange,
+        onTertiary: AppColors.textPrimary,
+        surface: AppColors.surface,
+        onSurface: AppColors.textPrimary,
+        onSurfaceVariant: AppColors.textSecondary,
+        outline: AppColors.secondary,
+        outlineVariant: AppColors.primaryContainer,
+        error: AppColors.orangeDark,
+        onError: AppColors.surface,
+        scrim: AppColors.scrim,
+        shadow: AppColors.textPrimary,
       ),
       textTheme: textTheme,
       appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.slate900,
-        foregroundColor: AppColors.slate100,
+        backgroundColor: AppColors.background,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
@@ -82,7 +93,7 @@ abstract final class AppTheme {
       dividerColor: AppColors.slate700,
       splashFactory: InkSparkle.splashFactory,
       cardTheme: CardThemeData(
-        color: AppColors.slate800,
+        color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
@@ -90,16 +101,16 @@ abstract final class AppTheme {
         ),
       ),
       bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: AppColors.slate800,
-        modalBackgroundColor: AppColors.slate800,
+        backgroundColor: AppColors.surface,
+        modalBackgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.ember,
-          foregroundColor: AppColors.slate950,
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.surface,
           minimumSize: const Size(48, 42),
           elevation: 0,
           shape: RoundedRectangleBorder(
@@ -113,8 +124,8 @@ abstract final class AppTheme {
         ),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: AppColors.slate800,
-        contentTextStyle: const TextStyle(color: AppColors.slate100),
+        backgroundColor: AppColors.primary,
+        contentTextStyle: const TextStyle(color: AppColors.surface),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         behavior: SnackBarBehavior.floating,
       ),
@@ -128,11 +139,11 @@ abstract final class AppTheme {
         labelStyle: const TextStyle(color: AppColors.slate400),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.slate700),
+          borderSide: const BorderSide(color: AppColors.secondary),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.slate700),
+          borderSide: const BorderSide(color: AppColors.secondary),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

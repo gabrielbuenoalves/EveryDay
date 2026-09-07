@@ -180,7 +180,7 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                       Container(
                         padding: const EdgeInsets.fromLTRB(9, 7, 9, 7),
                         decoration: const BoxDecoration(
-                          color: Color(0x4DB8501F),
+                          color: AppColors.primaryContainer,
                           border: Border(
                             left: BorderSide(color: AppColors.ember, width: 3),
                           ),
@@ -256,11 +256,14 @@ class _ChurchSetupPageState extends State<ChurchSetupPage> {
                 height: 210,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: AppColors.slate950,
+                  color: AppColors.primary,
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(color: AppColors.ember, width: 2),
                 ),
-                child: const Text('▦', style: TextStyle(fontSize: 58)),
+                child: const Text(
+                  '▦',
+                  style: TextStyle(color: AppColors.surface, fontSize: 58),
+                ),
               ),
               const SizedBox(height: 12),
               const Text(

@@ -1,0 +1,250 @@
+<style>
+  #everyday-complete-ui {
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px; line-height: 1.5; color: #F1F5F9;
+    display: grid; gap: 16px; padding: 24px;
+    background: #131A22; border-radius: 28px;
+  }
+  #everyday-complete-ui * { box-sizing: border-box; }
+  #everyday-complete-ui .ec-heading h2 { margin: 0 0 4px; font-weight: 500; letter-spacing: -.025em; }
+  #everyday-complete-ui .ec-heading p { margin: 0; color: #CBD5E1; }
+  #everyday-complete-ui .ec-heading-row { display: flex; justify-content: space-between; align-items: end; gap: 14px; flex-wrap: wrap; }
+  #everyday-complete-ui .ec-theme-switch { display: flex; gap: 7px; }
+  #everyday-complete-ui .ec-theme-switch button { min-height: 44px; padding: 0 13px; border: 1px solid #334155; border-radius: 12px; background: #1E293B; color: #CBD5E1; font: inherit; cursor: pointer; }
+  #everyday-complete-ui .ec-theme-switch button[aria-pressed="true"] { background: #E3703A; border-color: #E3703A; color: #0F172A; }
+  #everyday-complete-ui .ec-journeys { display: flex; gap: 8px; flex-wrap: wrap; }
+  #everyday-complete-ui .ec-journeys button { min-height: 44px; padding: 0 15px; border: 1px solid #334155; border-radius: 999px; background: #1E293B; color: #CBD5E1; font: inherit; cursor: pointer; }
+  #everyday-complete-ui .ec-journeys button[aria-pressed="true"] { background: #E3703A; border-color: #E3703A; color: #0F172A; }
+  #everyday-complete-ui .ec-pages { display: flex; gap: 7px; flex-wrap: wrap; }
+  #everyday-complete-ui .ec-pages button { min-height: 44px; padding: 0 12px; border: 1px solid #334155; border-radius: 12px; background: #0F172A; color: #CBD5E1; font: inherit; cursor: pointer; }
+  #everyday-complete-ui .ec-pages button[aria-pressed="true"] { background: #E3703A; border-color: #B8501F; color: #0F172A; }
+  #everyday-complete-ui button:focus-visible, #everyday-complete-ui input:focus-visible, #everyday-complete-ui textarea:focus-visible { outline: 3px solid #E3703A; outline-offset: 3px; }
+  #everyday-complete-ui .ec-stage { display: grid; place-items: center; }
+  #everyday-complete-ui .ec-phone { width: min(100%, 390px); overflow: hidden; border: 2px solid #334155; border-radius: 30px; background: #F1F5F9; color: #0F172A; box-shadow: 0 24px 70px rgba(0,0,0,.42); }
+  #everyday-complete-ui .ec-status { display: flex; justify-content: space-between; padding: 11px 22px 2px; font-size: 1rem; font-weight: 500; background: #0F172A; color: #CBD5E1; }
+  #everyday-complete-ui .ec-header { min-height: 62px; padding: 8px 18px; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; background: #0F172A; color: #F1F5F9; border-bottom: 4px solid #E3703A; }
+  #everyday-complete-ui .ec-header h3 { margin: 0; text-align: center; font-weight: 500; }
+  #everyday-complete-ui .ec-icon { width: 44px; height: 44px; border: 0; border-radius: 14px; background: #1E293B; color: #CBD5E1; display: grid; place-items: center; cursor: pointer; }
+  #everyday-complete-ui .ec-icon:disabled { opacity: .35; }
+  #everyday-complete-ui .ec-content { min-height: 555px; padding: 18px 18px 24px; background: #F1F5F9; }
+  #everyday-complete-ui .ec-kicker { margin: 0 0 4px; color: #334155; }
+  #everyday-complete-ui .ec-title { margin: 0 0 18px; font-weight: 500; letter-spacing: -.02em; }
+  #everyday-complete-ui .ec-card { background: #FFFFFF; border: 1px solid #CBD5E1; border-left: 4px solid #334155; border-radius: 20px; padding: 18px; margin-bottom: 12px; }
+  #everyday-complete-ui .ec-card-warm { background: #FFF7F2; border-color: #F5D5C5; border-left-color: #E3703A; }
+  #everyday-complete-ui .ec-card-forest { background: #F1F5F9; border-color: #CBD5E1; border-left-color: #334155; }
+  #everyday-complete-ui .ec-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  #everyday-complete-ui .ec-person { display: flex; align-items: center; gap: 12px; }
+  #everyday-complete-ui .ec-avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; flex: 0 0 auto; background: #FBE9E1; color: #0F172A; font-weight: 500; }
+  #everyday-complete-ui .ec-avatar.forest { background: #E2E8F0; color: #0F172A; }
+  #everyday-complete-ui .ec-card h4, #everyday-complete-ui .ec-row h4, #everyday-complete-ui .ec-person h4 { margin: 0; font-weight: 500; }
+  #everyday-complete-ui p { margin-top: 0; }
+  #everyday-complete-ui .ec-muted { color: #334155; margin: 2px 0 0; }
+  #everyday-complete-ui .ec-label { color: #334155; font-size: 1rem; }
+  #everyday-complete-ui .ec-badge { display: inline-flex; align-items: center; min-height: 30px; padding: 0 10px; border-radius: 999px; background: #FBE9E1; color: #0F172A; font-size: 1rem; font-weight: 500; }
+  #everyday-complete-ui .ec-progress { height: 7px; border-radius: 99px; background: #E2E8F0; overflow: hidden; margin: 15px 0; }
+  #everyday-complete-ui .ec-progress span { display: block; height: 100%; border-radius: inherit; background: #E3703A; }
+  #everyday-complete-ui .ec-primary { width: 100%; min-height: 52px; border: 0; border-radius: 16px; background: #E3703A; color: #0F172A; font: inherit; font-weight: 500; cursor: pointer; box-shadow: 0 7px 16px rgba(184,80,31,.18); }
+  #everyday-complete-ui .ec-secondary { width: 100%; min-height: 50px; border: 1px solid #334155; border-radius: 16px; background: #334155; color: #F1F5F9; font: inherit; cursor: pointer; }
+  #everyday-complete-ui .ec-list { display: grid; }
+  #everyday-complete-ui .ec-list button, #everyday-complete-ui .ec-list .ec-static-row { width: 100%; min-height: 64px; padding: 12px 2px; border: 0; border-bottom: 1px solid #E2E8F0; background: transparent; color: inherit; font: inherit; text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  #everyday-complete-ui .ec-list button { cursor: pointer; }
+  #everyday-complete-ui .ec-list button > i, #everyday-complete-ui .ec-static-row > i { color: #B8501F; }
+  #everyday-complete-ui .ec-section { margin: 22px 2px 9px; font-weight: 500; }
+  #everyday-complete-ui .ec-field { display: grid; gap: 6px; margin-bottom: 12px; color: #334155; }
+  #everyday-complete-ui .ec-field input, #everyday-complete-ui .ec-field textarea { width: 100%; min-height: 50px; padding: 12px 13px; border: 1px solid #CBD5E1; border-radius: 14px; background: #FFFFFF; color: #0F172A; font: inherit; }
+  #everyday-complete-ui .ec-field textarea { min-height: 90px; resize: vertical; }
+  #everyday-complete-ui .ec-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 12px 0; }
+  #everyday-complete-ui .ec-stat { padding: 12px 5px; border-radius: 15px; background: #0F172A; border: 1px solid #334155; text-align: center; }
+  #everyday-complete-ui .ec-stat strong { display: block; font-weight: 500; color: #E3703A; }
+  #everyday-complete-ui .ec-stat span { font-size: 1rem; color: #CBD5E1; }
+  #everyday-complete-ui .ec-verse { padding: 12px 0; border-bottom: 1px solid #E2E8F0; line-height: 1.7; }
+  #everyday-complete-ui .ec-verse strong { color: #B8501F; margin-right: 7px; }
+  #everyday-complete-ui .ec-moods { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; }
+  #everyday-complete-ui .ec-moods button { min-height: 72px; border: 1px solid #CBD5E1; border-radius: 17px; background: #FFFFFF; color: #334155; font: inherit; cursor: pointer; }
+  #everyday-complete-ui .ec-moods button[aria-pressed="true"] { background: #E3703A; border-color: #B8501F; color: #0F172A; }
+  #everyday-complete-ui .ec-nav { display: grid; padding: 8px 8px 13px; border-top: 1px solid #334155; background: #0F172A; }
+  #everyday-complete-ui .ec-nav.member { grid-template-columns: repeat(4,1fr); }
+  #everyday-complete-ui .ec-nav.pastor { grid-template-columns: repeat(5,1fr); }
+  #everyday-complete-ui .ec-nav button { min-height: 62px; border: 0; border-radius: 14px; background: transparent; color: #CBD5E1; display: grid; place-items: center; gap: 2px; font: inherit; font-size: 1rem; cursor: pointer; }
+  #everyday-complete-ui .ec-nav button.is-active { background: #1E293B; color: #E3703A; }
+  #everyday-complete-ui .ec-note { padding: 12px 14px; border-left: 4px solid #E3703A; background: #FFF7F2; border-radius: 0 12px 12px 0; color: #334155; }
+  #everyday-complete-ui .ec-toast { display: none; margin: 0 18px 12px; padding: 13px 15px; border-radius: 14px; background: #0F172A; color: #F1F5F9; }
+  #everyday-complete-ui .ec-toast.is-visible { display: block; }
+  #everyday-complete-ui.is-dark { background: #CBD5E1; color: #0F172A; }
+  #everyday-complete-ui.is-dark .ec-heading p { color: #334155; }
+  #everyday-complete-ui.is-dark .ec-theme-switch button, #everyday-complete-ui.is-dark .ec-journeys button, #everyday-complete-ui.is-dark > .ec-pages button { background: #F1F5F9; border-color: #94A3B8; color: #334155; }
+  #everyday-complete-ui.is-dark .ec-theme-switch button[aria-pressed="true"], #everyday-complete-ui.is-dark .ec-journeys button[aria-pressed="true"] { background: #0F172A; border-color: #0F172A; color: #E3703A; }
+  #everyday-complete-ui.is-dark > .ec-pages button[aria-pressed="true"] { background: #E3703A; border-color: #B8501F; color: #0F172A; }
+  #everyday-complete-ui.is-dark .ec-phone { background: #131A22; border-color: #334155; color: #F1F5F9; box-shadow: 0 24px 70px rgba(15,23,42,.34); }
+  #everyday-complete-ui.is-dark .ec-content { background: #131A22; color: #F1F5F9; }
+  #everyday-complete-ui.is-dark .ec-card { background: #1E293B; border-color: #334155; border-left-color: #64748B; }
+  #everyday-complete-ui.is-dark .ec-card-warm { background: #1E293B; border-color: #334155; border-left-color: #E3703A; }
+  #everyday-complete-ui.is-dark .ec-card-forest { background: #1E293B; border-color: #334155; border-left-color: #94A3B8; }
+  #everyday-complete-ui.is-dark .ec-kicker, #everyday-complete-ui.is-dark .ec-muted, #everyday-complete-ui.is-dark .ec-label { color: #CBD5E1; }
+  #everyday-complete-ui.is-dark .ec-list button, #everyday-complete-ui.is-dark .ec-list .ec-static-row { border-color: #334155; color: #F1F5F9; }
+  #everyday-complete-ui.is-dark .ec-field { color: #CBD5E1; }
+  #everyday-complete-ui.is-dark .ec-field input, #everyday-complete-ui.is-dark .ec-field textarea { background: #0F172A; border-color: #334155; color: #F1F5F9; }
+  #everyday-complete-ui.is-dark .ec-moods button { background: #1E293B; border-color: #334155; color: #F1F5F9; }
+  #everyday-complete-ui.is-dark .ec-moods button[aria-pressed="true"] { background: #E3703A; border-color: #B8501F; color: #0F172A; }
+  #everyday-complete-ui.is-dark .ec-note { background: #1E293B; color: #CBD5E1; }
+  @media (max-width: 480px) { #everyday-complete-ui { padding: 16px 10px; border-radius: 20px; } }
+  @media (max-width: 360px) { #everyday-complete-ui .ec-content { padding-inline: 15px; } #everyday-complete-ui .ec-journeys button { padding-inline: 11px; } }
+</style>
+
+<div id="everyday-complete-ui">
+  <div class="ec-heading-row"><div class="ec-heading"><h2>EveryDay — proposta completa</h2><p>Mesma identidade, com mais espaço e foco.</p></div><div class="ec-theme-switch" aria-label="Tema"><button type="button" data-theme="light" aria-pressed="true">Tema claro</button><button type="button" data-theme="dark" aria-pressed="false">Tema escuro</button></div></div>
+  <div class="ec-journeys" role="tablist" aria-label="Jornadas">
+    <button type="button" data-journey="entrada" aria-pressed="true">Entrada</button>
+    <button type="button" data-journey="membro" aria-pressed="false">Membro</button>
+    <button type="button" data-journey="comunidade" aria-pressed="false">Comunidade</button>
+    <button type="button" data-journey="cuidado" aria-pressed="false">Cuidado pastoral</button>
+    <button type="button" data-journey="perfil" aria-pressed="false">Perfis</button>
+  </div>
+  <div class="ec-pages" role="tablist" aria-label="Páginas da jornada"></div>
+  <div class="ec-stage">
+    <section class="ec-phone" aria-label="Protótipo navegável do EveryDay">
+      <div class="ec-status"><span>09:41</span><span>● ● ●</span></div>
+      <header class="ec-header"><button class="ec-icon" id="ec-back" type="button" aria-label="Voltar"><i data-lucide="chevron-left" aria-hidden="true"></i></button><h3 id="ec-header-title">Entrar</h3><button class="ec-icon" id="ec-help" type="button" aria-label="Ajuda"><i data-lucide="circle-help" aria-hidden="true"></i></button></header>
+      <main class="ec-content" id="ec-content" role="tabpanel" aria-label="Página selecionada"></main>
+      <div class="ec-toast" id="ec-toast" role="status" aria-live="polite"></div>
+      <nav class="ec-nav member" id="ec-nav" aria-label="Navegação principal"></nav>
+    </section>
+  </div>
+</div>
+
+<script>
+(() => {
+  const root = document.getElementById('everyday-complete-ui');
+  const pages = {
+    entrada: [
+      { id:'login', label:'Login', title:'Entrar', nav:'none', html:`<p class="ec-kicker">Bem-vindo de volta</p><h3 class="ec-title">Sua leitura continua aqui</h3><div class="ec-card"><label class="ec-field">E-mail<input type="email" value="marcos@email.com"></label><label class="ec-field">Senha<input type="password" value="12345678"></label><button class="ec-primary">Entrar</button></div><p class="ec-muted" style="text-align:center">Ainda não tem conta? <strong>Criar conta</strong></p>` },
+      { id:'church', label:'Entrar na igreja', title:'Sua comunidade', nav:'none', html:`<p class="ec-kicker">Último passo</p><h3 class="ec-title">Como você participa?</h3><div class="ec-card ec-card-warm"><span class="ec-badge">Pastor</span><h4 style="margin:12px 0 4px">Criar uma igreja</h4><p class="ec-muted">Cadastre a comunidade e receba o código de convite.</p><button class="ec-primary">Cadastrar igreja</button></div><div class="ec-card"><h4>Recebi um convite</h4><p class="ec-muted">Use o código compartilhado pela liderança.</p><label class="ec-field"><span>Código de 6 caracteres</span><input value="ABC123"></label><button class="ec-secondary">Entrar na igreja</button></div>` }
+    ],
+    membro: [
+      { id:'feed-member', label:'Início', title:'Início', nav:'member', html:`<p class="ec-kicker">Domingo, 31 de agosto</p><h3 class="ec-title">Olá, Marcos</h3><div class="ec-card ec-card-warm"><div class="ec-row"><span class="ec-label">Leitura de hoje</span><span class="ec-badge">12 min</span></div><h4 style="margin-top:12px">Salmos 23–25</h4><p class="ec-muted">Plano da igreja · Dia 6 de 14</p><div class="ec-progress"><span style="width:58%"></span></div><button class="ec-primary">Continuar leitura</button></div><p class="ec-section">Sua comunidade</p><div class="ec-list"><button><span>Ana terminou João 4<small class="ec-muted" style="display:block">há 20 minutos</small></span><i data-lucide="heart"></i></button><button><span>José completou 7 dias<small class="ec-muted" style="display:block">hoje</small></span><i data-lucide="heart"></i></button></div>` },
+      { id:'plans', label:'Planos', title:'Minhas leituras', nav:'member', html:`<p class="ec-kicker">Seu ritmo</p><h3 class="ec-title">Continue de onde parou</h3><div class="ec-card ec-card-warm"><span class="ec-badge">Hoje</span><h4 style="margin-top:12px">Leitura da igreja</h4><p class="ec-muted">Salmos 23–25 · 58% concluído</p><div class="ec-progress"><span style="width:58%"></span></div><button class="ec-primary">Continuar</button></div><div class="ec-card"><h4>Plano de cuidado</h4><p class="ec-muted">Esperança em dias difíceis · 2 de 5 dias</p><div class="ec-progress"><span style="width:40%;background:#334155"></span></div><button class="ec-secondary">Abrir plano</button></div>` },
+      { id:'reading', label:'Leitura', title:'Salmos 23', nav:'none', html:`<p class="ec-kicker">NVI · Dia 6</p><h3 class="ec-title">O Senhor é meu pastor</h3><div class="ec-card"><p class="ec-verse"><strong>1</strong>O Senhor é o meu pastor; de nada terei falta.</p><p class="ec-verse"><strong>2</strong>Em verdes pastagens me faz repousar e me conduz a águas tranquilas.</p><p class="ec-verse"><strong>3</strong>Restaura-me o vigor. Guia-me nas veredas da justiça.</p></div><button class="ec-primary">Concluir leitura</button>` },
+      { id:'chapters', label:'Capítulos', title:'Bíblia', nav:'none', html:`<p class="ec-kicker">Antigo Testamento</p><h3 class="ec-title">Salmos</h3><div class="ec-card"><div class="ec-row"><div><h4>150 capítulos</h4><p class="ec-muted">32 lidos</p></div><span class="ec-badge">21%</span></div><div class="ec-progress"><span style="width:21%"></span></div></div><div class="ec-pages">${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<button style="min-width:48px">${n}</button>`).join('')}</div>` },
+      { id:'shelf', label:'Estante', title:'Minha Bíblia', nav:'member', html:`<p class="ec-kicker">Seu progresso</p><h3 class="ec-title">66 livros, uma jornada</h3><div class="ec-stats"><div class="ec-stat"><strong>18%</strong><span>Bíblia</span></div><div class="ec-stat"><strong>12</strong><span>Livros</span></div><div class="ec-stat"><strong>47</strong><span>Capítulos</span></div></div><p class="ec-section">Antigo Testamento</p><div class="ec-list"><button><span>Gênesis<small class="ec-muted" style="display:block">12 de 50 capítulos</small></span><span class="ec-badge">24%</span></button><button><span>Salmos<small class="ec-muted" style="display:block">32 de 150 capítulos</small></span><span class="ec-badge">21%</span></button></div>` },
+      { id:'reflection', label:'Reflexão', title:'Concluir plano', nav:'none', html:`<p class="ec-kicker">Antes de encerrar</p><h3 class="ec-title">Como esta leitura falou com você?</h3><div class="ec-card"><p class="ec-label">Quanto você compreendeu?</p><div class="ec-pages">${[1,2,3,4,5].map(n=>`<button>${n}</button>`).join('')}</div><label class="ec-field" style="margin-top:15px">O que você leva desta leitura?<textarea placeholder="Escreva com suas palavras"></textarea></label><button class="ec-primary">Concluir plano</button></div>` }
+    ],
+    comunidade: [
+      { id:'groups', label:'Grupos', title:'Grupos', nav:'both', html:`<p class="ec-kicker">Leia junto</p><h3 class="ec-title">Suas comunidades</h3><div class="ec-card"><div class="ec-person"><span class="ec-avatar forest">GE</span><div><h4>Grupo Esperança</h4><p class="ec-muted">12 pessoas · 73% nesta semana</p></div></div><div class="ec-progress"><span style="width:73%;background:#B8501F"></span></div><button class="ec-secondary">Ver grupo</button></div><div class="ec-card"><div class="ec-person"><span class="ec-avatar">JG</span><div><h4>Jovens da Graça</h4><p class="ec-muted">24 pessoas · 61% nesta semana</p></div></div><div class="ec-progress"><span style="width:61%"></span></div><button class="ec-secondary">Ver grupo</button></div>` },
+      { id:'group-detail', label:'Detalhes', title:'Grupo Esperança', nav:'none', html:`<div class="ec-row"><div><p class="ec-kicker">12 participantes</p><h3 class="ec-title" style="margin-bottom:0">Caminhando juntos</h3></div><span class="ec-badge">73%</span></div><p class="ec-section">Leitura em andamento</p><div class="ec-card ec-card-forest"><h4>Evangelho de João</h4><p class="ec-muted">João 4–6 · termina sexta-feira</p><div class="ec-progress"><span style="width:73%;background:#B8501F"></span></div><button class="ec-primary">Abrir leitura</button></div><p class="ec-section">Participantes</p><div class="ec-list"><div class="ec-static-row"><span class="ec-person"><span class="ec-avatar">AM</span><span>Ana Martins</span></span><span class="ec-badge">Em dia</span></div><div class="ec-static-row"><span class="ec-person"><span class="ec-avatar forest">JR</span><span>José Rocha</span></span><span class="ec-muted">2/3</span></div></div>` },
+      { id:'members', label:'Membros', title:'Membros', nav:'pastor', html:`<p class="ec-kicker">Comunidade da Graça</p><h3 class="ec-title">Pessoas</h3><div class="ec-card"><label class="ec-field" style="margin:0">Buscar membro<input placeholder="Nome do membro"></label></div><div class="ec-list"><button><span class="ec-person"><span class="ec-avatar">AM</span><span>Ana Martins<small class="ec-muted" style="display:block">7 dias de leitura</small></span></span><i data-lucide="chevron-right"></i></button><button><span class="ec-person"><span class="ec-avatar forest">JR</span><span>José Rocha<small class="ec-muted" style="display:block">3 dias de leitura</small></span></span><i data-lucide="chevron-right"></i></button></div>` }
+    ],
+    cuidado: [
+      { id:'pastor-home', label:'Início pastoral', title:'Início', nav:'pastor', html:`<p class="ec-kicker">Domingo, 31 de agosto</p><h3 class="ec-title">Bom dia, pastor Marcos</h3><div class="ec-card ec-card-warm"><div class="ec-row"><div><span class="ec-label">Cuidado pastoral</span><h4 style="margin-top:5px">2 pessoas aguardam retorno</h4></div><span class="ec-badge">Prioridade</span></div><div style="height:14px"></div><button class="ec-primary">Ver avisos</button></div><div class="ec-stats"><div class="ec-stat"><strong>48</strong><span>Membros</span></div><div class="ec-stat"><strong>73%</strong><span>Leitura</span></div><div class="ec-stat"><strong>3</strong><span>Grupos</span></div></div><p class="ec-section">Comunidade hoje</p><div class="ec-list"><button><span>Grupo Esperança avançou no plano<small class="ec-muted" style="display:block">há 30 minutos</small></span><i data-lucide="chevron-right"></i></button></div>` },
+      { id:'mood', label:'Check-in', title:'Como você está?', nav:'none', html:`<p class="ec-kicker">Seu espaço é confidencial</p><h3 class="ec-title">Como está seu coração hoje?</h3><div class="ec-moods"><button>🤩 Grato</button><button>😢 Sozinho</button><button>😭 Triste</button><button>😩 Com pouca fé</button><button>😇 Abençoado</button><button>🤢 Doente</button><button>😀 Feliz</button><button>😍 Cuidadoso</button><button>😟 Angustiado</button></div><div class="ec-note" style="margin-top:16px">Nos sentimentos difíceis, você poderá escrever um pedido de oração e permitir contato pelo WhatsApp.</div>` },
+      { id:'care-inbox', label:'Avisos', title:'Cuidado pastoral', nav:'pastor', html:`<p class="ec-kicker">Prioridades de hoje</p><h3 class="ec-title">2 pessoas aguardam cuidado</h3><div class="ec-card ec-card-warm"><div class="ec-row"><span class="ec-person"><span class="ec-avatar">AM</span><span><h4>Ana Martins</h4><p class="ec-muted">Urgência alta · hoje</p></span></span><span class="ec-badge">Novo</span></div><p style="margin:15px 0">Relatou sobrecarga e pediu uma leitura para esta semana.</p><button class="ec-primary">Revisar cuidado</button></div><div class="ec-card"><div class="ec-person"><span class="ec-avatar forest">RC</span><span><h4>Rita Costa</h4><p class="ec-muted">Acompanhamento · ontem</p></span></span></div></div>` },
+      { id:'care-report', label:'Relatório', title:'Revisar cuidado', nav:'none', html:`<div class="ec-person"><span class="ec-avatar">AM</span><div><h4>Ana Martins</h4><p class="ec-muted">Relato recebido hoje</p></div></div><p class="ec-section">Relatório da IA · somente o pastor vê</p><div class="ec-card ec-card-warm"><span class="ec-badge">Urgência alta</span><p style="margin:12px 0 0">Ana relata cansaço intenso. Recomenda-se contato humano e uma leitura curta, sem sobrecarregar.</p></div><p class="ec-section">Auditar e editar antes de enviar</p><div class="ec-card"><label class="ec-field">Título do plano<input value="Uma leitura para você"></label><label class="ec-field">Mensagem do pastor<textarea>Ana, oramos por você. Revisei uma leitura para este momento. Não precisa responder — apenas receber.</textarea></label><label class="ec-field">Leituras · uma por linha<textarea>Salmos 23\nMateus 11:28–30\nIsaías 41:10</textarea></label><p class="ec-muted">A IA apenas sugere. Nada será enviado sem sua revisão e aprovação.</p><button class="ec-primary">Aprovar e enviar</button></div>` },
+      { id:'insights', label:'Percepções', title:'Percepções', nav:'none', html:`<p class="ec-kicker">Ana Martins</p><h3 class="ec-title">Caminhada de cuidado</h3><div class="ec-stats"><div class="ec-stat"><strong>4/5</strong><span>Compreensão</span></div><div class="ec-stat"><strong>18 min</strong><span>Leitura</span></div><div class="ec-stat"><strong>Paz</strong><span>Recepção</span></div></div><p class="ec-section">Última reflexão</p><div class="ec-card ec-card-forest"><p>“Entendi que não preciso carregar tudo sozinha.”</p><p class="ec-muted">Plano Esperança em dias difíceis</p></div>` }
+    ],
+    perfil: [
+      { id:'profile-member', label:'Membro', title:'Perfil', nav:'member', html:`<div class="ec-card"><div class="ec-person"><span class="ec-avatar">MA</span><div><h4>Marcos Almeida</h4><p class="ec-muted">@marcos · Membro</p></div></div><div class="ec-stats"><div class="ec-stat"><strong>7</strong><span>Sequência</span></div><div class="ec-stat"><strong>47</strong><span>Capítulos</span></div><div class="ec-stat"><strong>12</strong><span>Amigos</span></div></div><button class="ec-primary">Editar dados pessoais</button></div><p class="ec-section">Minha jornada</p><div class="ec-list"><button><span>Progresso bíblico</span><i data-lucide="chevron-right"></i></button><button><span>Planos concluídos</span><i data-lucide="chevron-right"></i></button></div>` },
+      { id:'profile-pastor', label:'Pastor', title:'Perfil', nav:'pastor', html:`<p class="ec-kicker">Sua conta</p><h3 class="ec-title">Perfil pastoral</h3><div class="ec-card ec-card-warm"><div class="ec-person"><span class="ec-avatar">MA</span><div><h4>Marcos Almeida</h4><p class="ec-muted">Pastor responsável</p></div></div><div style="height:15px"></div><button class="ec-primary">Editar dados pessoais</button></div><p class="ec-section">Igreja</p><div class="ec-list"><button><span>Comunidade da Graça<small class="ec-muted" style="display:block">Dados, convite e apresentação</small></span><i data-lucide="chevron-right"></i></button></div><p class="ec-section">Administração</p><div class="ec-list"><button><span>Grupos da igreja</span><i data-lucide="chevron-right"></i></button><button><span>Preferências</span><i data-lucide="chevron-right"></i></button></div>` }
+    ]
+  };
+  const content = root.querySelector('#ec-content');
+  const pageBar = root.querySelector('.ec-pages');
+  const title = root.querySelector('#ec-header-title');
+  const nav = root.querySelector('#ec-nav');
+  let journey = 'entrada';
+  let pageId = 'login';
+  let userRole = 'member';
+  let toastTimer;
+  const history = [];
+  function navHtml(type, active) {
+    if (type === 'none') return '';
+    const items = type === 'pastor' ? [['home','Início'],['users','Grupos'],['bell','Avisos'],['contact','Membros'],['user','Perfil']] : [['home','Início'],['book-open','Leituras'],['users','Grupos'],['user','Perfil']];
+    const activeMap = { 'feed-member':'Início', 'pastor-home':'Início', plans:'Leituras', reading:'Leituras', chapters:'Leituras', shelf:'Leituras', reflection:'Leituras', groups:'Grupos', 'group-detail':'Grupos', members:'Membros', 'care-inbox':'Avisos', 'care-report':'Avisos', insights:'Membros', 'profile-member':'Perfil', 'profile-pastor':'Perfil' };
+    return items.map(([icon,label])=>`<button type="button" data-nav="${label}" class="${activeMap[pageId]===label?'is-active':''}" ${activeMap[pageId]===label?'aria-current="page"':''}><i data-lucide="${icon}" aria-hidden="true"></i><span>${label}</span></button>`).join('');
+  }
+  function render(id, remember = true) {
+    const page = pages[journey].find(item => item.id === id) || pages[journey][0];
+    if (remember && pageId !== page.id) history.push({ journey, pageId, userRole });
+    pageId = page.id; title.textContent = page.title; content.innerHTML = page.html;
+    if (page.nav === 'pastor') userRole = 'pastor';
+    if (page.nav === 'member') userRole = 'member';
+    const navType = page.nav === 'both' ? userRole : page.nav;
+    nav.className = `ec-nav ${navType === 'pastor' ? 'pastor' : 'member'}`; nav.innerHTML = navHtml(navType, page.label); nav.style.display = page.nav === 'none' ? 'none' : 'grid';
+    root.querySelector('#ec-back').disabled = history.length === 0;
+    pageBar.querySelectorAll('button').forEach(button => { const selected = button.dataset.page === page.id; button.setAttribute('aria-selected', String(selected)); button.setAttribute('aria-pressed', String(selected)); });
+    content.querySelectorAll('.ec-progress').forEach(progress => {
+      const value = Number.parseInt(progress.querySelector('span')?.style.width || '0', 10);
+      progress.setAttribute('role','progressbar'); progress.setAttribute('aria-label','Progresso'); progress.setAttribute('aria-valuemin','0'); progress.setAttribute('aria-valuemax','100'); progress.setAttribute('aria-valuenow', String(value));
+    });
+    content.querySelectorAll('.ec-moods button').forEach(button => button.setAttribute('aria-pressed','false'));
+    content.querySelectorAll('i[data-lucide]').forEach(icon => icon.setAttribute('aria-hidden','true'));
+    if (window.lucide) lucide.createIcons({ attrs: { width: 18, height: 18 } });
+  }
+  function setJourney(next, remember = true) {
+    if (remember && journey !== next) history.push({ journey, pageId, userRole });
+    journey = next;
+    root.querySelectorAll('.ec-journeys button').forEach(button => { const selected = button.dataset.journey === next; button.setAttribute('aria-selected', String(selected)); button.setAttribute('aria-pressed', String(selected)); });
+    pageBar.innerHTML = pages[next].map(page => `<button type="button" role="tab" data-page="${page.id}" aria-selected="false" aria-pressed="false">${page.label}</button>`).join('');
+    pageBar.querySelectorAll('button').forEach(button => button.addEventListener('click', () => render(button.dataset.page)));
+    render(pages[next][0].id, false);
+  }
+  root.querySelector('#ec-back').addEventListener('click', () => {
+    const previous = history.pop();
+    if (!previous) return;
+    userRole = previous.userRole;
+    setJourney(previous.journey, false);
+    render(previous.pageId, false);
+  });
+  function go(targetJourney, targetPage) {
+    const origin = { journey, pageId, userRole };
+    if (origin.journey === targetJourney && origin.pageId === targetPage) return;
+    history.push(origin);
+    if (journey !== targetJourney) setJourney(targetJourney, false);
+    render(targetPage, false);
+  }
+  function toast(message) {
+    const element = root.querySelector('#ec-toast');
+    element.textContent = message; element.classList.add('is-visible');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => element.classList.remove('is-visible'), 2200);
+  }
+  nav.addEventListener('click', event => {
+    const button = event.target.closest('[data-nav]'); if (!button) return;
+    const label = button.dataset.nav;
+    const pastor = nav.classList.contains('pastor');
+    if (label === 'Início') go(pastor ? 'cuidado' : 'membro', pastor ? 'pastor-home' : 'feed-member');
+    if (label === 'Leituras') go('membro','plans');
+    if (label === 'Grupos') go('comunidade','groups');
+    if (label === 'Avisos') go('cuidado','care-inbox');
+    if (label === 'Membros') go('comunidade','members');
+    if (label === 'Perfil') go('perfil', pastor ? 'profile-pastor' : 'profile-member');
+  });
+  content.addEventListener('click', event => {
+    const button = event.target.closest('button'); if (!button) return;
+    const text = button.textContent.trim();
+    if (text === 'Entrar') go('membro','feed-member');
+    else if (text === 'Cadastrar igreja') { toast('Igreja criada. Código de convite disponível.'); go('perfil','profile-pastor'); }
+    else if (text === 'Entrar na igreja') { toast('Você entrou na comunidade.'); go('membro','feed-member'); }
+    else if (text === 'Continuar leitura' || text === 'Continuar' || text === 'Abrir leitura') go('membro','reading');
+    else if (text === 'Concluir leitura') go('membro','reflection');
+    else if (text === 'Concluir plano') { toast('Plano concluído com sucesso.'); go('membro','feed-member'); }
+    else if (text === 'Ver grupo') go('comunidade','group-detail');
+    else if (text === 'Revisar cuidado') go('cuidado','care-report');
+    else if (text === 'Ver avisos') go('cuidado','care-inbox');
+    else if (text === 'Aprovar e enviar') { toast('Plano revisado, enviado e aviso resolvido.'); go('cuidado','care-inbox'); }
+    else if (text.includes('Editar dados pessoais')) toast('Edição de dados pessoais aberta.');
+    else if (button.closest('.ec-moods')) {
+      button.parentElement.querySelectorAll('button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+      const needsPrayer = ['Sozinho','Triste','Com pouca fé','Doente','Angustiado'].some(label => text.includes(label));
+      toast(needsPrayer ? `${text} selecionado. Pedido de oração disponível.` : `${text} selecionado.`);
+    }
+    else toast(`${text || 'Ação'} selecionado.`);
+  });
+  root.querySelector('#ec-help').addEventListener('click', () => toast('Ajuda contextual desta página.'));
+  root.querySelectorAll('.ec-theme-switch button').forEach(button => button.addEventListener('click', () => {
+    const dark = button.dataset.theme === 'dark';
+    root.classList.toggle('is-dark', dark);
+    root.querySelectorAll('.ec-theme-switch button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+  }));
+  root.querySelectorAll('.ec-journeys button').forEach(button => { button.setAttribute('role','tab'); button.addEventListener('click', () => setJourney(button.dataset.journey)); });
+  setJourney('entrada', false);
+})();
+</script>

@@ -145,7 +145,6 @@ class StreakFeedCard extends StatelessWidget {
             child: _FeedPersonHeader(
               initials: item.author.initials,
               color: Color(item.author.avatarColorValue),
-              foregroundColor: AppColors.white,
               title: Text.rich(
                 TextSpan(
                   children: [
@@ -168,7 +167,7 @@ class StreakFeedCard extends StatelessWidget {
                 ),
               ),
               subtitleStyle: const TextStyle(
-                color: Color(0xFFC5D9CE),
+                color: AppColors.primaryContainer,
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),
@@ -181,7 +180,7 @@ class StreakFeedCard extends StatelessWidget {
             padding: EdgeInsets.only(left: 8, right: 4),
             child: Icon(
               Icons.local_fire_department_rounded,
-              color: Color(0xFF7CBA96),
+              color: AppColors.secondary,
               size: 48,
             ),
           ),

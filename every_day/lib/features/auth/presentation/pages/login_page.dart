@@ -137,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                       Text(
                         _error!,
                         style: const TextStyle(
-                          color: AppColors.orange,
+                          color: AppColors.orangeDark,
                           fontSize: 13,
                           height: 1.35,
                         ),
@@ -248,7 +248,7 @@ class _RoleChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected ? const Color(0x26E3703A) : AppColors.slate800,
+      color: selected ? AppColors.primaryContainer : AppColors.surface,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: onTap,

@@ -28,7 +28,7 @@ class PhoneViewport extends StatelessWidget {
             .toDouble();
         final contentSize = Size(frameWidth - 18, frameHeight - 18);
         return ColoredBox(
-          color: const Color(0xFF0D0D10),
+          color: AppColors.background,
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(vertical: 18),
@@ -37,12 +37,12 @@ class PhoneViewport extends StatelessWidget {
                 height: frameHeight,
                 padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF121214),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(42),
                   border: Border.all(color: AppColors.slate700),
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0xA6000000),
+                      color: AppColors.softShadow,
                       blurRadius: 80,
                       offset: Offset(0, 28),
                     ),

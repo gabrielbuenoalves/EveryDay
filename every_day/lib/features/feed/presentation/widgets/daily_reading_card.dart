@@ -35,7 +35,7 @@ class DailyReadingCard extends StatelessWidget {
                       ? 'SUA LEITURA DE CUIDADO'
                       : 'SUA LEITURA DE HOJE',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: const Color(0xFFC8C2B8),
+                    color: AppColors.primaryContainer,
                     letterSpacing: 1.4,
                     fontWeight: FontWeight.w600,
                   ),
@@ -58,7 +58,7 @@ class DailyReadingCard extends StatelessWidget {
           FilledButton(
             onPressed: onRead,
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.orange,
+              backgroundColor: AppColors.orangeDark,
               foregroundColor: AppColors.white,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
               shape: RoundedRectangleBorder(

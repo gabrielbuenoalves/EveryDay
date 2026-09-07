@@ -28,6 +28,7 @@ class _AppShellState extends State<AppShell> {
   UserRole _role = UserRole.member;
   var _started = false;
   var _carePending = 0;
+  var _initials = '';
 
   bool get _pastor => _role.isPastor;
 
@@ -59,7 +60,10 @@ class _AppShellState extends State<AppShell> {
     try {
       final profile = await AppScope.of(context).getProfile();
       if (!mounted) return;
-      setState(() => _role = profile.role);
+      setState(() {
+        _role = profile.role;
+        _initials = profile.initials;
+      });
     } catch (_) {}
   }
 
@@ -90,23 +94,27 @@ class _AppShellState extends State<AppShell> {
     return AppNavScope(
       select: _onSelect,
       child: Scaffold(
-        backgroundColor: AppColors.slate900,
+        backgroundColor: AppColors.background,
         body: DecoratedBox(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppColors.slate950, AppColors.slate900],
+              colors: [AppColors.background, AppColors.background],
             ),
           ),
           child: IndexedStack(
             index: _pageIndex,
             children: [
-              FeedPage(pastor: _pastor),
-              GroupsPage(pastor: _pastor, canDirect: _role.canLead),
-              if (_pastor) const CareInboxPage(asTab: true),
+              FeedPage(pastor: _pastor, initials: _initials),
+              GroupsPage(
+                pastor: _pastor,
+                canDirect: _role.canLead,
+                initials: _initials,
+              ),
+              if (_pastor) CareInboxPage(asTab: true, initials: _initials),
               if (!_pastor) const ReadingTab(),
-              AgendaPage(role: _role),
+              AgendaPage(role: _role, initials: _initials),
               const ProfilePage(),
             ],
           ),

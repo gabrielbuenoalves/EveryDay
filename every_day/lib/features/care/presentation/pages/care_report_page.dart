@@ -211,51 +211,66 @@ class _CareReportPageState extends State<CareReportPage> {
             ],
           ),
           const SizedBox(height: 18),
-          MiniLabel('RESPONDER PARA $_sheepName'),
-          const SizedBox(height: 8),
-          const Text(
-            'A ovelha vê todas as leituras de uma vez e navega entre elas. Sem a sua aprovação, ela não recebe nada.',
-            style: TextStyle(
-              color: AppColors.slate400,
-              fontSize: 12,
-              height: 1.45,
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _title,
-            decoration: _decoration('Título que o membro vê'),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _message,
-            maxLines: 4,
-            decoration: _decoration('Mensagem sua, não da IA'),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _passages,
-            maxLines: 5,
-            decoration: _decoration(
-              'Leituras (uma por linha) — a ovelha vê todas',
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: FilledButton(
-              onPressed: _busy || _planSent ? null : _approve,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.ember,
-                foregroundColor: AppColors.slate950,
-              ),
-              child: Text(
-                _planSent
-                    ? 'Leitura enviada a $_sheepName'
-                    : 'Aprovar e enviar a $_sheepName',
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
+          ProtoCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 9),
+                    Expanded(child: MiniLabel('RESPOSTA PARA $_sheepName')),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Revise a mensagem e as leituras antes de enviar.',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _title,
+                  decoration: _decoration('Título para o membro'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _message,
+                  maxLines: 4,
+                  decoration: _decoration('Sua mensagem'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _passages,
+                  maxLines: 5,
+                  decoration: _decoration('Leituras, uma por linha'),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: FilledButton(
+                    onPressed: _busy || _planSent ? null : _approve,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.ember,
+                      foregroundColor: AppColors.surface,
+                    ),
+                    child: Text(
+                      _planSent
+                          ? 'Leitura enviada a $_sheepName'
+                          : 'Aprovar e enviar a $_sheepName',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 22),

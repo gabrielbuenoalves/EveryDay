@@ -21,7 +21,7 @@ class ReadingTab extends StatefulWidget {
 class _ReadingTabState extends State<ReadingTab> {
   var _loading = true;
   var _started = false;
-  String _initials = 'ED';
+  String _initials = '';
   String _query = '';
   List<BibleBook> _books = completeBible();
   List<MemberCarePlan> _plans = const [];
@@ -37,7 +37,7 @@ class _ReadingTabState extends State<ReadingTab> {
 
   Future<void> _load() async {
     final deps = AppScope.of(context);
-    var initials = 'ED';
+    var initials = '';
     var plans = <MemberCarePlan>[];
     var archived = <MemberCarePlan>[];
     final progress = <String, int>{};
@@ -112,6 +112,7 @@ class _ReadingTabState extends State<ReadingTab> {
               kicker: weekdayDateKicker(),
               title: 'Planos',
               initials: _initials,
+              horizontalPadding: 1,
             ),
             const SizedBox(height: 4),
             ProtoSection(title: 'Em andamento', trailing: '${_plans.length}'),

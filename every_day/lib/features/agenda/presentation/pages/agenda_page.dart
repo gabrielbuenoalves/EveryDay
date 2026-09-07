@@ -13,10 +13,12 @@ class AgendaPage extends StatefulWidget {
     super.key,
     required this.role,
     this.presentation = const AgendaPresentation(),
+    this.initials = '',
   });
 
   final UserRole role;
   final AgendaPresentation presentation;
+  final String initials;
 
   @override
   State<AgendaPage> createState() => _AgendaPageState();
@@ -117,6 +119,7 @@ class _AgendaPageState extends State<AgendaPage> {
           AppScreenHeader(
             kicker: widget.role.isPastor ? 'Gestão' : 'Comunidade',
             title: 'Agenda',
+            initials: widget.initials,
             action: widget.role.isPastor
                 ? IconButton(
                     tooltip: 'Criar evento',
@@ -308,7 +311,7 @@ class _EventCard extends StatelessWidget {
                   width: 42,
                   padding: const EdgeInsets.symmetric(vertical: 7),
                   decoration: BoxDecoration(
-                    color: const Color(0x20FF5C16),
+                    color: AppColors.primaryContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
@@ -532,7 +535,7 @@ class _AgendaCalendar extends StatelessWidget {
                         '${day.day}',
                         style: TextStyle(
                           color: selected
-                              ? AppColors.slate950
+                              ? AppColors.surface
                               : AppColors.slate100,
                           fontSize: 12,
                           fontWeight: FontWeight.w900,

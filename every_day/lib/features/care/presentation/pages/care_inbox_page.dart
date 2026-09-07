@@ -9,9 +9,10 @@ import '../../../members/presentation/pages/members_page.dart';
 import 'care_report_page.dart';
 
 class CareInboxPage extends StatefulWidget {
-  const CareInboxPage({super.key, this.asTab = false});
+  const CareInboxPage({super.key, this.asTab = false, this.initials = ''});
 
   final bool asTab;
+  final String initials;
 
   @override
   State<CareInboxPage> createState() => _CareInboxPageState();
@@ -96,7 +97,7 @@ class _CareInboxPageState extends State<CareInboxPage> {
                     margin: const EdgeInsets.only(bottom: 12),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: const Color(0x332E2521),
+                      color: AppColors.primaryContainer,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.emberDark),
                     ),
@@ -142,6 +143,7 @@ class _CareInboxPageState extends State<CareInboxPage> {
             AppScreenHeader(
               kicker: 'Cuidado pastoral',
               title: 'Cuidado',
+              initials: widget.initials,
               action: IconButton(
                 tooltip: 'Membros',
                 onPressed: () {

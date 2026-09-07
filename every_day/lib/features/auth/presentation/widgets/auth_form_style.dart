@@ -38,7 +38,7 @@ abstract final class AuthFormStyle {
     return FilledButton.styleFrom(
       minimumSize: const Size.fromHeight(buttonHeight),
       backgroundColor: AppColors.ember,
-      foregroundColor: AppColors.slate950,
+      foregroundColor: AppColors.surface,
       disabledBackgroundColor: AppColors.emberDark,
       padding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(

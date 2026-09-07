@@ -106,7 +106,7 @@ class _MemberInsightsPageState extends State<MemberInsightsPage> {
                   height: 38,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: const Color(0x18FF5C16),
+                    color: AppColors.primaryContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(

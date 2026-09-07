@@ -164,7 +164,7 @@ class _CreatePostFormState extends State<_CreatePostForm> {
                     },
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.ember,
-                      foregroundColor: AppColors.slate950,
+                      foregroundColor: AppColors.surface,
                       minimumSize: const Size.fromHeight(48),
                     ),
                     child: const Text('Publicar'),

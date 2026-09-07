@@ -249,7 +249,7 @@ class _MemberFilter extends StatelessWidget {
         textAlign: TextAlign.center,
         style: TextStyle(
           color: selected
-              ? AppColors.slate950
+              ? AppColors.surface
               : onTap == null
               ? AppColors.slate500
               : AppColors.slate400,

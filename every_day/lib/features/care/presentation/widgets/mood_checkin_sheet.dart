@@ -46,7 +46,7 @@ Future<void> showDailyFeelingDialog(
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
-    barrierColor: const Color(0xCC0F172A),
+    barrierColor: AppColors.scrim,
     builder: (context) {
       return _FeelingDialog(submit: submit, analyze: analyze);
     },
@@ -161,7 +161,7 @@ class _FeelingDialogState extends State<_FeelingDialog> {
                   onPressed: _feeling == null || _saving ? null : _send,
                   style: FilledButton.styleFrom(
                     backgroundColor: AppColors.ember,
-                    foregroundColor: AppColors.slate950,
+                    foregroundColor: AppColors.surface,
                     disabledBackgroundColor: AppColors.slate700,
                     disabledForegroundColor: AppColors.slate400,
                     shape: RoundedRectangleBorder(
@@ -197,7 +197,7 @@ class _FeelingDialogState extends State<_FeelingDialog> {
         context: context,
         isScrollControlled: true,
         backgroundColor: AppColors.slate850,
-        barrierColor: const Color(0xCC0F172A),
+        barrierColor: AppColors.scrim,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
         ),
@@ -260,34 +260,41 @@ class _FeelingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: selected ? const Color(0x3DE3703A) : AppColors.slate850,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? AppColors.primaryContainer : AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: selected ? AppColors.ember : AppColors.slate700,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(feeling.emoji, style: const TextStyle(fontSize: 31)),
-              const SizedBox(height: 4),
-              Text(
-                feeling.label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: selected ? AppColors.slate100 : AppColors.slate300,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: selected ? AppColors.ember : AppColors.slate700,
+                width: selected ? 2 : 1,
               ),
-            ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(feeling.emoji, style: const TextStyle(fontSize: 31)),
+                const SizedBox(height: 4),
+                Text(
+                  feeling.label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: selected
+                        ? AppColors.slate100
+                        : AppColors.slate300,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -393,7 +400,7 @@ class _PrayerSheetState extends State<_PrayerSheet> {
             value: _whatsapp,
             onChanged: (value) => setState(() => _whatsapp = value),
             contentPadding: EdgeInsets.zero,
-            activeThumbColor: AppColors.slate950,
+            activeThumbColor: AppColors.surface,
             activeTrackColor: AppColors.ember,
             title: const Text(
               'Permitir contato via WhatsApp',
@@ -414,7 +421,7 @@ class _PrayerSheetState extends State<_PrayerSheet> {
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.ember,
-                foregroundColor: AppColors.slate950,
+                foregroundColor: AppColors.surface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

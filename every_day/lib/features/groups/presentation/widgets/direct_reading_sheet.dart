@@ -154,7 +154,10 @@ class _DirectReadingSheetState extends State<DirectReadingSheet> {
               const SizedBox(height: 8),
               Text(
                 _error!,
-                style: const TextStyle(color: Color(0xFFF87171), fontSize: 12),
+                style: const TextStyle(
+                  color: AppColors.orangeDark,
+                  fontSize: 12,
+                ),
               ),
             ],
             const SizedBox(height: 12),

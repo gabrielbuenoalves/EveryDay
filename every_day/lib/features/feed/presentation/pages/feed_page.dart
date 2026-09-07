@@ -14,9 +14,10 @@ import '../../domain/entities/feed_home.dart';
 import '../controllers/feed_controller.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key, this.pastor = false});
+  const FeedPage({super.key, this.pastor = false, this.initials = ''});
 
   final bool pastor;
+  final String initials;
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -91,7 +92,7 @@ class _FeedPageState extends State<FeedPage> {
                 title: widget.pastor
                     ? 'Central da Igreja'
                     : 'Olá, ${_profile?.firstName ?? 'você'}',
-                initials: _profile?.initials ?? 'ED',
+                initials: _profile?.initials ?? widget.initials,
               ),
               Expanded(
                 child: controller.loading && home == null
@@ -237,6 +238,7 @@ class _PastorHome extends StatelessWidget {
             _MetricCard('Interações', '$interactions', 'nos últimos dias'),
           ],
         ),
+        const SizedBox(height: 8),
         CareNoticeTeaser(items: careItems, error: careError),
         const ProtoSection(title: 'Visão da semana', trailing: 'Participação'),
         ProtoCard(

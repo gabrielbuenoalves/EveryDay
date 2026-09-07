@@ -1,39 +1,49 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // The names are retained so existing presentation stays compatible; the
-  // palette itself is the warm, ink-dark EveryDay system.
-  static const slate950 = Color(0xFF101014);
-  static const slate900 = Color(0xFF15151B);
-  static const slate850 = Color(0xFF1B1B22);
-  static const slate800 = Color(0xFF222229);
-  static const slate700 = Color(0xFF34343D);
-  static const slate500 = Color(0xFF6D6D78);
-  static const slate400 = Color(0xFFA0A0AA);
-  static const slate300 = Color(0xFFD2D2D8);
-  static const slate100 = Color(0xFFF6F5F2);
-  static const ember = Color(0xFFFF5C16);
-  static const emberDark = Color(0xFFE94D0A);
-  static const success = Color(0xFF46C879);
-  static const danger = Color(0xFFFF6961);
-  static const violet = Color(0xFF332052);
-  static const violetSoft = Color(0xFF25183D);
+  static const primary = Color(0xFF315B57);
+  static const background = Color(0xFFF7F5F0);
+  static const surface = Color(0xFFFFFCF7);
+  static const primaryContainer = Color(0xFFDCE9E4);
+  static const secondary = Color(0xFF55776F);
+  static const orange = Color(0xFFF47C20);
+  static const orangeDark = Color(0xFFB84E1E);
+  static const textPrimary = Color(0xFF25302D);
+  static const textSecondary = Color(0xFF5F6965);
+  static const scrim = Color(0xCC25302D);
+  static const softShadow = Color(0x2925302D);
 
-  static const cream = slate900;
-  static const creamDark = slate800;
-  static const charcoal = slate950;
-  static const charcoalSoft = slate850;
-  static const orange = ember;
-  static const orangePressed = emberDark;
-  static const forest = Color(0xFF236342);
-  static const forestDeep = Color(0xFF173F2C);
-  static const forestMuted = Color(0xFF4D9570);
-  static const surface = slate800;
-  static const quoteFill = slate950;
-  static const muted = slate400;
-  static const mutedDark = slate500;
-  static const navInactive = slate400;
-  static const divider = slate700;
-  static const checkGreen = ember;
-  static const white = slate100;
+  // Legacy names are retained so the presentation adopts the palette without
+  // a broad widget rewrite.
+  static const slate950 = textPrimary;
+  static const slate900 = background;
+  static const slate850 = surface;
+  static const slate800 = surface;
+  static const slate700 = primaryContainer;
+  static const slate500 = secondary;
+  static const slate400 = textSecondary;
+  static const slate300 = textSecondary;
+  static const slate100 = textPrimary;
+  static const ember = primary;
+  static const emberDark = orangeDark;
+  static const success = primary;
+  static const danger = orangeDark;
+  static const violet = primaryContainer;
+  static const violetSoft = primaryContainer;
+
+  static const cream = background;
+  static const creamDark = primaryContainer;
+  static const charcoal = primary;
+  static const charcoalSoft = primaryContainer;
+  static const orangePressed = orangeDark;
+  static const forest = primary;
+  static const forestDeep = textPrimary;
+  static const forestMuted = secondary;
+  static const quoteFill = primaryContainer;
+  static const muted = textSecondary;
+  static const mutedDark = secondary;
+  static const navInactive = textSecondary;
+  static const divider = primaryContainer;
+  static const checkGreen = primary;
+  static const white = surface;
 }

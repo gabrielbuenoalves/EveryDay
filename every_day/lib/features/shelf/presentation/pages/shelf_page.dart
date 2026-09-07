@@ -103,7 +103,7 @@ class _ShelfSummary extends StatelessWidget {
                     Text(
                       'SUA BÍBLIA',
                       style: Theme.of(context).textTheme.labelSmall
-                          ?.copyWith(color: const Color(0xFFC8C2B8)),
+                          ?.copyWith(color: AppColors.primaryContainer),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -121,7 +121,7 @@ class _ShelfSummary extends StatelessWidget {
               Text(
                 '${shelf.books.length}',
                 style: const TextStyle(
-                  color: Color(0xFFC8C2B8),
+                  color: AppColors.primaryContainer,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                 ),
