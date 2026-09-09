@@ -26,7 +26,7 @@ const dailyFeelings = [
   DailyFeeling(emoji: '😇', label: 'Abençoado', score: 5, needsPrayer: false),
   DailyFeeling(emoji: '🤢', label: 'Doente', score: 2, needsPrayer: true),
   DailyFeeling(emoji: '😀', label: 'Feliz', score: 5, needsPrayer: false),
-    DailyFeeling(emoji: '😍', label: 'Cuidadoso', score: 4, needsPrayer: false),
+  DailyFeeling(emoji: '😍', label: 'Cuidadoso', score: 4, needsPrayer: false),
   DailyFeeling(emoji: '😟', label: 'Angustiado', score: 1, needsPrayer: true),
 ];
 
@@ -46,7 +46,7 @@ Future<void> showDailyFeelingDialog(
   return showDialog<void>(
     context: context,
     barrierDismissible: false,
-    barrierColor: const Color(0xCC0F172A),
+    barrierColor: AppColors.scrim,
     builder: (context) {
       return _FeelingDialog(submit: submit, analyze: analyze);
     },
@@ -71,12 +71,12 @@ class _FeelingDialogState extends State<_FeelingDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppColors.slate850,
+      backgroundColor: AppColors.slate800,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(22),
         side: const BorderSide(color: AppColors.slate700),
       ),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 22),
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.sizeOf(context).height * 0.85,
@@ -86,68 +86,97 @@ class _FeelingDialogState extends State<_FeelingDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Como está se sentindo hoje?',
-                    style: TextStyle(
-                      color: AppColors.slate100,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.4,
+              Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Como está se sentindo hoje?',
+                      style: TextStyle(
+                        color: AppColors.slate100,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.4,
+                      ),
                     ),
                   ),
-                ),
-                IconButton(
-                  onPressed: _saving ? null : () => Navigator.pop(context),
-                  icon: const Icon(Icons.close, color: AppColors.slate400),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            GridView.count(
-              crossAxisCount: 3,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
-              childAspectRatio: 0.95,
-              children: [
-                for (final feeling in dailyFeelings)
-                  _FeelingTile(
-                    feeling: feeling,
-                    selected: _feeling == feeling,
-                    onTap: () => setState(() {
-                      _feeling = feeling;
-                      _error = null;
-                    }),
+                  IconButton(
+                    onPressed: _saving ? null : () => Navigator.pop(context),
+                    icon: const Icon(Icons.close, color: AppColors.slate400),
                   ),
-              ],
-            ),
-            if (_error != null) ...[
-              const SizedBox(height: 8),
-              Text(_error!, style: const TextStyle(color: AppColors.ember, fontSize: 12)),
-            ],
-            const SizedBox(height: 14),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: FilledButton(
-                onPressed: _feeling == null || _saving ? null : _send,
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.ember,
-                  foregroundColor: AppColors.slate950,
-                  disabledBackgroundColor: AppColors.slate700,
-                  disabledForegroundColor: AppColors.slate400,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  textStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                ),
-                child: Text(_saving ? 'Enviando...' : 'Enviar'),
+                ],
               ),
-            ),
-          ],
-        ),
+              const SizedBox(height: 3),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'CHECK-IN DIÁRIO',
+                  style: TextStyle(
+                    color: AppColors.ember,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Escolha a resposta que mais se aproxima.',
+                  style: TextStyle(color: AppColors.slate400, fontSize: 12),
+                ),
+              ),
+              const SizedBox(height: 12),
+              GridView.count(
+                crossAxisCount: 3,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 1.05,
+                children: [
+                  for (final feeling in dailyFeelings)
+                    _FeelingTile(
+                      feeling: feeling,
+                      selected: _feeling == feeling,
+                      onTap: () => setState(() {
+                        _feeling = feeling;
+                        _error = null;
+                      }),
+                    ),
+                ],
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _error!,
+                  style: const TextStyle(color: AppColors.ember, fontSize: 12),
+                ),
+              ],
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: FilledButton(
+                  onPressed: _feeling == null || _saving ? null : _send,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.ember,
+                    foregroundColor: AppColors.surface,
+                    disabledBackgroundColor: AppColors.slate700,
+                    disabledForegroundColor: AppColors.slate400,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
+                  ),
+                  child: Text(_saving ? 'Enviando...' : 'Enviar'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -168,7 +197,7 @@ class _FeelingDialogState extends State<_FeelingDialog> {
         context: context,
         isScrollControlled: true,
         backgroundColor: AppColors.slate850,
-        barrierColor: const Color(0xCC0F172A),
+        barrierColor: AppColors.scrim,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
         ),
@@ -231,34 +260,41 @@ class _FeelingTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: selected ? const Color(0x33E3703A) : AppColors.slate800,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        onTap: onTap,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: selected ? AppColors.primaryContainer : AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: selected ? AppColors.ember : AppColors.slate700,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(feeling.emoji, style: const TextStyle(fontSize: 28)),
-              const SizedBox(height: 4),
-              Text(
-                feeling.label,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: selected ? AppColors.slate100 : AppColors.slate300,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: selected ? AppColors.ember : AppColors.slate700,
+                width: selected ? 2 : 1,
               ),
-            ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(feeling.emoji, style: const TextStyle(fontSize: 31)),
+                const SizedBox(height: 4),
+                Text(
+                  feeling.label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: selected
+                        ? AppColors.slate100
+                        : AppColors.slate300,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -330,7 +366,11 @@ class _PrayerSheetState extends State<_PrayerSheet> {
           const SizedBox(height: 10),
           const Text(
             'Obrigado por compartilhar seu sentimento! Vamos orar juntos! Se desejar, escreva um pedido curto.',
-            style: TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
+            style: TextStyle(
+              color: AppColors.slate300,
+              fontSize: 13,
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -360,7 +400,7 @@ class _PrayerSheetState extends State<_PrayerSheet> {
             value: _whatsapp,
             onChanged: (value) => setState(() => _whatsapp = value),
             contentPadding: EdgeInsets.zero,
-            activeThumbColor: AppColors.slate950,
+            activeThumbColor: AppColors.surface,
             activeTrackColor: AppColors.ember,
             title: const Text(
               'Permitir contato via WhatsApp',
@@ -381,7 +421,7 @@ class _PrayerSheetState extends State<_PrayerSheet> {
               ),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.ember,
-                foregroundColor: AppColors.slate950,
+                foregroundColor: AppColors.surface,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),

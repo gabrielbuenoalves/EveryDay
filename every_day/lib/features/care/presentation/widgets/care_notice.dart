@@ -6,11 +6,7 @@ import '../../../../core/widgets/proto.dart';
 import '../../domain/entities/care_models.dart';
 
 class CareNoticeTeaser extends StatelessWidget {
-  const CareNoticeTeaser({
-    super.key,
-    required this.items,
-    this.error,
-  });
+  const CareNoticeTeaser({super.key, required this.items, this.error});
 
   final List<CareInboxItem> items;
   final Object? error;

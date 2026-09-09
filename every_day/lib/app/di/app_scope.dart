@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'app_dependencies.dart';
 
 class AppScope extends InheritedWidget {
-  const AppScope({
-    super.key,
-    required this.dependencies,
-    required super.child,
-  });
+  const AppScope({super.key, required this.dependencies, required super.child});
 
   final AppDependencies dependencies;
 

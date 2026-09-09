@@ -39,7 +39,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signIn({required String email, required String password}) {
-    return _client.auth.signInWithPassword(email: email.trim(), password: password);
+    return _client.auth.signInWithPassword(
+      email: email.trim(),
+      password: password,
+    );
   }
 
   @override
@@ -69,7 +72,11 @@ class AuthRepositoryImpl implements AuthRepository {
     final uid = _client.auth.currentUser?.id;
     if (uid == null) return false;
     for (var i = 0; i < 8; i++) {
-      final row = await _client.from('profiles').select('church_id').eq('id', uid).maybeSingle();
+      final row = await _client
+          .from('profiles')
+          .select('church_id')
+          .eq('id', uid)
+          .maybeSingle();
       if (row != null) {
         return row['church_id'] != null;
       }
@@ -95,15 +102,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> joinAsLeader(String inviteCode) async {
-    final code = inviteCode.trim();
-    try {
-      await joinChurch(code);
-    } catch (_) {
-      await joinGroup(code);
-    }
-    final uid = _client.auth.currentUser?.id;
-    if (uid == null) return;
-    await _client.from('profiles').update({'role': 'leader'}).eq('id', uid);
+    await _client.rpc('join_as_leader', params: {'p_code': inviteCode.trim()});
   }
 
   @override

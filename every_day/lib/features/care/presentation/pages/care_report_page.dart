@@ -73,13 +73,51 @@ class _CareReportPageState extends State<CareReportPage> {
 
     return Scaffold(
       backgroundColor: AppColors.slate900,
-      appBar: AppBar(
-        title: Text('Cuidar de ${item.member.displayName}'),
-      ),
+      appBar: AppBar(title: const Text('Cuidado Pastoral')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          const MiniLabel('1 · Relato da ovelha'),
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: AppColors.violet,
+                child: Text(
+                  _sheepName.substring(0, 1),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.member.displayName,
+                      style: const TextStyle(
+                        color: AppColors.slate100,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const Text(
+                      'RELATO RECEBIDO',
+                      style: TextStyle(
+                        color: AppColors.slate400,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const MiniLabel('RELATO DO MEMBRO'),
           const SizedBox(height: 8),
           SurfaceCard(
             child: Column(
@@ -88,28 +126,38 @@ class _CareReportPageState extends State<CareReportPage> {
                 Text(
                   'Nota ${item.checkin.score}'
                   '${item.checkin.crisis ? ' · alerta de crise' : ''}',
-                  style: const TextStyle(color: AppColors.slate400, fontSize: 12),
+                  style: const TextStyle(
+                    color: AppColors.slate400,
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   item.checkin.body?.trim().isNotEmpty == true
                       ? item.checkin.body!
                       : 'O membro pediu cuidado, sem texto extra.',
-                  style: const TextStyle(color: AppColors.slate100, height: 1.4),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 18),
-          const MiniLabel('2 · Relatório da IA · só você vê'),
+          const MiniLabel('ANÁLISE DA IA · SÓ VOCÊ VÊ'),
           const SizedBox(height: 8),
           SurfaceCard(
+            color: AppColors.violetSoft,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   item.pastoralBriefing,
-                  style: const TextStyle(color: AppColors.slate100, height: 1.4),
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    height: 1.4,
+                  ),
                 ),
                 if (report != null) ...[
                   const SizedBox(height: 12),
@@ -150,49 +198,83 @@ class _CareReportPageState extends State<CareReportPage> {
             ),
           ),
           const SizedBox(height: 18),
-          MiniLabel('3 · Auditar e enviar a leitura · só para $_sheepName'),
+          const MiniLabel('AÇÕES DE CUIDADO'),
           const SizedBox(height: 8),
-          const Text(
-            'A ovelha vê todas as leituras de uma vez e navega entre elas. Sem a sua aprovação, ela não recebe nada.',
-            style: TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
+          Wrap(
+            spacing: 7,
+            runSpacing: 7,
+            children: const [
+              _CareAction(label: 'Mensagem', icon: Icons.chat_bubble_outline),
+              _CareAction(label: 'Ligação', icon: Icons.call_outlined),
+              _CareAction(label: 'Visita', icon: Icons.home_outlined),
+              _CareAction(label: 'Encaminhar', icon: Icons.people_outline),
+            ],
           ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _title,
-            decoration: _decoration('Título que o membro vê'),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _message,
-            maxLines: 4,
-            decoration: _decoration('Mensagem sua, não da IA'),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _passages,
-            maxLines: 5,
-            decoration: _decoration('Leituras (uma por linha) — a ovelha vê todas'),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: FilledButton(
-              onPressed: _busy || _planSent ? null : _approve,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.ember,
-                foregroundColor: AppColors.slate950,
-              ),
-              child: Text(
-                _planSent
-                    ? 'Leitura enviada a $_sheepName'
-                    : 'Aprovar e enviar a $_sheepName',
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
+          const SizedBox(height: 18),
+          ProtoCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 9),
+                    Expanded(child: MiniLabel('RESPOSTA PARA $_sheepName')),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Revise a mensagem e as leituras antes de enviar.',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _title,
+                  decoration: _decoration('Título para o membro'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _message,
+                  maxLines: 4,
+                  decoration: _decoration('Sua mensagem'),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _passages,
+                  maxLines: 5,
+                  decoration: _decoration('Leituras, uma por linha'),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: FilledButton(
+                    onPressed: _busy || _planSent ? null : _approve,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.ember,
+                      foregroundColor: AppColors.surface,
+                    ),
+                    child: Text(
+                      _planSent
+                          ? 'Leitura enviada a $_sheepName'
+                          : 'Aprovar e enviar a $_sheepName',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 22),
-          const MiniLabel('Opcional · contato humano'),
+          const MiniLabel('OPCIONAL · CONTATO HUMANO'),
           const SizedBox(height: 8),
           TextField(
             controller: _when,
@@ -202,7 +284,9 @@ class _CareReportPageState extends State<CareReportPage> {
           OutlinedButton(
             onPressed: _busy || _contactScheduled ? null : _schedule,
             child: Text(
-              _contactScheduled ? 'Conversa marcada' : 'Marcar conversa com $_sheepName',
+              _contactScheduled
+                  ? 'Conversa marcada'
+                  : 'Marcar conversa com $_sheepName',
             ),
           ),
         ],
@@ -227,7 +311,9 @@ class _CareReportPageState extends State<CareReportPage> {
     if (report == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ainda não há relatório para auditar. Atualize a fila.'),
+          content: Text(
+            'Ainda não há relatório para auditar. Atualize a fila.',
+          ),
         ),
       );
       return;
@@ -283,5 +369,29 @@ class _CareReportPageState extends State<CareReportPage> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+}
+
+class _CareAction extends StatelessWidget {
+  const _CareAction({required this.label, required this.icon});
+
+  final String label;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Aguardando integração de dados',
+      child: OutlinedButton.icon(
+        onPressed: null,
+        icon: Icon(icon, size: 15),
+        label: Text('$label · em breve'),
+        style: OutlinedButton.styleFrom(
+          disabledForegroundColor: AppColors.slate500,
+          side: const BorderSide(color: AppColors.slate700),
+          textStyle: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800),
+        ),
+      ),
+    );
   }
 }

@@ -94,7 +94,7 @@ class _LogReadingFormState extends State<_LogReadingForm> {
               min: 5,
               max: 60,
               divisions: 11,
-              activeColor: AppColors.orange,
+              activeColor: AppColors.orangeDark,
               onChanged: (value) => setState(() => _minutes = value.round()),
             ),
             const SizedBox(height: 8),
@@ -103,7 +103,7 @@ class _LogReadingFormState extends State<_LogReadingForm> {
               child: FilledButton(
                 onPressed: _saving ? null : _submit,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.orange,
+                  backgroundColor: AppColors.orangeDark,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),

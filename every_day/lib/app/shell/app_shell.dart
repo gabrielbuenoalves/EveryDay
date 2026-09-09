@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../core/domain/user_role.dart';
 import '../../core/theme/app_colors.dart';
+import '../../features/agenda/presentation/pages/agenda_page.dart';
 import '../../features/care/presentation/pages/care_inbox_page.dart';
 import '../../features/care/presentation/widgets/mood_checkin_sheet.dart';
 import '../../features/feed/presentation/pages/feed_page.dart';
 import '../../features/groups/presentation/pages/groups_page.dart';
-import '../../features/members/presentation/pages/members_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/reading/presentation/pages/reading_tab.dart';
 import '../di/app_scope.dart';
@@ -28,6 +28,7 @@ class _AppShellState extends State<AppShell> {
   UserRole _role = UserRole.member;
   var _started = false;
   var _carePending = 0;
+  var _initials = '';
 
   bool get _pastor => _role.isPastor;
 
@@ -59,7 +60,10 @@ class _AppShellState extends State<AppShell> {
     try {
       final profile = await AppScope.of(context).getProfile();
       if (!mounted) return;
-      setState(() => _role = profile.role);
+      setState(() {
+        _role = profile.role;
+        _initials = profile.initials;
+      });
     } catch (_) {}
   }
 
@@ -90,23 +94,27 @@ class _AppShellState extends State<AppShell> {
     return AppNavScope(
       select: _onSelect,
       child: Scaffold(
-        backgroundColor: AppColors.slate900,
+        backgroundColor: AppColors.background,
         body: DecoratedBox(
           decoration: const BoxDecoration(
-            gradient: RadialGradient(
-              center: Alignment.topRight,
-              radius: 1.1,
-              colors: [Color(0x1FE3703A), AppColors.slate900],
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [AppColors.background, AppColors.background],
             ),
           ),
           child: IndexedStack(
             index: _pageIndex,
             children: [
-              FeedPage(pastor: _pastor),
+              FeedPage(pastor: _pastor, initials: _initials),
+              GroupsPage(
+                pastor: _pastor,
+                canDirect: _role.canLead,
+                initials: _initials,
+              ),
+              if (_pastor) CareInboxPage(asTab: true, initials: _initials),
               if (!_pastor) const ReadingTab(),
-              GroupsPage(pastor: _pastor, canDirect: _role.canLead),
-              if (_pastor) const CareInboxPage(asTab: true),
-              if (_pastor) const MembersPage(),
+              AgendaPage(role: _role, initials: _initials),
               const ProfilePage(),
             ],
           ),
@@ -124,16 +132,17 @@ class _AppShellState extends State<AppShell> {
     if (_pastor) {
       return switch (_currentId) {
         'groups' => 1,
-        'notices' => 2,
-        'members' => 3,
+        'care' => 2,
+        'agenda' => 3,
         'profile' => 4,
         _ => 0,
       };
     }
     return switch (_currentId) {
-      'plans' => 1,
-      'groups' => 2,
-      'profile' => 3,
+      'groups' => 1,
+      'plans' => 2,
+      'agenda' => 3,
+      'profile' => 4,
       _ => 0,
     };
   }
@@ -141,12 +150,9 @@ class _AppShellState extends State<AppShell> {
   void _onSelect(String id) {
     setState(() => _currentId = id);
     if (_pastor &&
-        (id == 'notices' ||
-            id == 'members' ||
-            id == 'profile' ||
-            id == 'home')) {
+        (id == 'notices' || id == 'care' || id == 'profile' || id == 'home')) {
       _loadCareBadge();
-      if (id == 'notices' && mounted) {
+      if (id == 'care' && mounted) {
         AppScope.of(context).feedReload.ping();
       }
     }

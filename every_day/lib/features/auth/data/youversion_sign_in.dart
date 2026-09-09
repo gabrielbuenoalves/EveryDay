@@ -72,10 +72,7 @@ class YouVersionSignIn {
       throw StateError('Sessão YouVersion incompleta.');
     }
 
-    await _client.auth.verifyOTP(
-      type: OtpType.magiclink,
-      tokenHash: tokenHash,
-    );
+    await _client.auth.verifyOTP(type: OtpType.magiclink, tokenHash: tokenHash);
   }
 
   Future<Uri> _open(Uri url) async {

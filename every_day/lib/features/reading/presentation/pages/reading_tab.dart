@@ -21,7 +21,7 @@ class ReadingTab extends StatefulWidget {
 class _ReadingTabState extends State<ReadingTab> {
   var _loading = true;
   var _started = false;
-  String _initials = 'ED';
+  String _initials = '';
   String _query = '';
   List<BibleBook> _books = completeBible();
   List<MemberCarePlan> _plans = const [];
@@ -37,7 +37,7 @@ class _ReadingTabState extends State<ReadingTab> {
 
   Future<void> _load() async {
     final deps = AppScope.of(context);
-    var initials = 'ED';
+    var initials = '';
     var plans = <MemberCarePlan>[];
     var archived = <MemberCarePlan>[];
     final progress = <String, int>{};
@@ -91,9 +91,7 @@ class _ReadingTabState extends State<ReadingTab> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.ember),
-      );
+      return const _ReadingTabLoading();
     }
     final books = _filtered;
     final old = books
@@ -114,11 +112,10 @@ class _ReadingTabState extends State<ReadingTab> {
               kicker: weekdayDateKicker(),
               title: 'Planos',
               initials: _initials,
+              horizontalPadding: 1,
             ),
-            ProtoSection(
-              title: 'Em andamento',
-              trailing: '${_plans.length}',
-            ),
+            const SizedBox(height: 4),
+            ProtoSection(title: 'Em andamento', trailing: '${_plans.length}'),
             if (_plans.isEmpty)
               const ProtoCard(
                 child: Text(
@@ -143,10 +140,7 @@ class _ReadingTabState extends State<ReadingTab> {
                 ),
                 const SizedBox(height: 8),
               ],
-            ProtoSection(
-              title: 'Arquivados',
-              trailing: '${_archived.length}',
-            ),
+            ProtoSection(title: 'Arquivados', trailing: '${_archived.length}'),
             if (_archived.isEmpty)
               const ProtoCard(
                 child: Text(
@@ -156,10 +150,7 @@ class _ReadingTabState extends State<ReadingTab> {
               )
             else
               for (final plan in _archived) ...[
-                ArchivedPlanCard(
-                  plan: plan,
-                  onOpen: () => _openPlan(plan, 0),
-                ),
+                ArchivedPlanCard(plan: plan, onOpen: () => _openPlan(plan, 0)),
                 const SizedBox(height: 8),
               ],
             ProtoSection(title: 'Bíblia', trailing: '${_books.length} livros'),
@@ -182,14 +173,20 @@ class _ReadingTabState extends State<ReadingTab> {
               title: 'Antigo Testamento',
               trailing: '${old.length} livros',
             ),
-            for (final book in old)
-              _BookTile(book: book, onOpen: () => _openBook(book)),
+            if (old.isEmpty)
+              const _NoBooksFound()
+            else
+              for (final book in old)
+                _BookTile(book: book, onOpen: () => _openBook(book)),
             ProtoSection(
               title: 'Novo Testamento',
               trailing: '${nt.length} livros',
             ),
-            for (final book in nt)
-              _BookTile(book: book, onOpen: () => _openBook(book)),
+            if (nt.isEmpty)
+              const _NoBooksFound()
+            else
+              for (final book in nt)
+                _BookTile(book: book, onOpen: () => _openBook(book)),
           ],
         ),
       ),
@@ -199,6 +196,69 @@ class _ReadingTabState extends State<ReadingTab> {
   void _openBook(BibleBook book) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => BibleChaptersPage(book: book)),
+    );
+  }
+}
+
+class _ReadingTabLoading extends StatelessWidget {
+  const _ReadingTabLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget block(double height) => Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.slate800,
+        borderRadius: BorderRadius.circular(18),
+      ),
+    );
+    return SafeArea(
+      bottom: false,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 120),
+        children: [
+          block(28),
+          const SizedBox(height: 20),
+          block(168),
+          const SizedBox(height: 24),
+          block(18),
+          const SizedBox(height: 12),
+          block(54),
+          const SizedBox(height: 24),
+          block(18),
+          const SizedBox(height: 12),
+          block(54),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoBooksFound extends StatelessWidget {
+  const _NoBooksFound();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.slate800,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.slate700),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.search_off_rounded, color: AppColors.slate400, size: 20),
+            SizedBox(width: 10),
+            Text(
+              'Nenhum livro encontrado',
+              style: TextStyle(color: AppColors.slate300, fontSize: 12),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

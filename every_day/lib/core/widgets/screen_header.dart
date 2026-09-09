@@ -4,11 +4,7 @@ import '../theme/app_colors.dart';
 import 'app_logo.dart';
 
 class ScreenHeader extends StatelessWidget {
-  const ScreenHeader({
-    super.key,
-    required this.title,
-    this.trailing,
-  });
+  const ScreenHeader({super.key, required this.title, this.trailing});
 
   final String title;
   final Widget? trailing;
@@ -16,7 +12,7 @@ class ScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
       child: Row(
         children: [
           const AppLogo(),
@@ -50,7 +46,7 @@ class SurfaceCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.slate700),
       ),
       child: child,

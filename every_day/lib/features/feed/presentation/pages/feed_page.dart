@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../app/shell/app_nav_scope.dart';
 import '../../../../app/di/app_scope.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/time_ago.dart';
@@ -13,9 +14,10 @@ import '../../domain/entities/feed_home.dart';
 import '../controllers/feed_controller.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key, this.pastor = false});
+  const FeedPage({super.key, this.pastor = false, this.initials = ''});
 
   final bool pastor;
+  final String initials;
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -90,15 +92,11 @@ class _FeedPageState extends State<FeedPage> {
                 title: widget.pastor
                     ? 'Central da Igreja'
                     : 'Olá, ${_profile?.firstName ?? 'você'}',
-                initials: _profile?.initials ?? 'ED',
+                initials: _profile?.initials ?? widget.initials,
               ),
               Expanded(
                 child: controller.loading && home == null
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.ember,
-                        ),
-                      )
+                    ? const _FeedSkeleton()
                     : RefreshIndicator(
                         color: AppColors.ember,
                         onRefresh: () async {
@@ -142,37 +140,33 @@ class _MemberHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final firstGroup = groups.isEmpty ? null : groups.first;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (groups.isNotEmpty) ...[
-          ProtoSection(
-            title: 'Meus grupos',
-            trailing:
-                '${groups.length} ${groups.length == 1 ? 'grupo' : 'grupos'}',
-          ),
-          SizedBox(
-            height: 108,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.zero,
-              itemCount: groups.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final group = groups[index];
-                return GroupChip(
-                  name: group.name,
-                  memberCount: group.memberCount,
-                );
-              },
-            ),
-          ),
-        ],
+        const ProtoEmptyState(
+          icon: Icons.auto_stories_outlined,
+          title: 'Versículo do dia indisponível',
+          copy: 'Aguardando integração de dados para esta área.',
+        ),
+        const ProtoSection(title: 'Seu desafio atual'),
+        if (firstGroup == null)
+          const ProtoEmptyState(
+            icon: Icons.flag_outlined,
+            title: 'Nenhum desafio ativo',
+            copy: 'Entre em um grupo para receber leituras direcionadas.',
+          )
+        else
+          _ChallengeCard(group: firstGroup),
+        const ProtoSection(title: 'Reflexão do pastor'),
+        const _PastorReflection(),
         const ProtoSection(title: 'Do seu círculo', trailing: 'Hoje'),
         if (home.items.isEmpty)
-          const Text(
-            'Nenhuma leitura no feed ainda.',
-            style: TextStyle(color: AppColors.slate400),
+          const ProtoCard(
+            child: Text(
+              'Quando alguém do seu grupo registrar uma leitura, ela aparece aqui.',
+              style: TextStyle(color: AppColors.slate400, fontSize: 12),
+            ),
           ),
         for (final item in home.items) ...[
           _PostCard(
@@ -221,35 +215,44 @@ class _PastorHome extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CareNoticeTeaser(items: careItems, error: careError),
-        const SizedBox(height: 10),
+        _PastorBrief(groups: groups),
+        const ProtoSection(
+          title: 'Panorama da comunidade',
+          trailing: 'Esta semana',
+        ),
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 9,
-          crossAxisSpacing: 9,
-          childAspectRatio: 1.45,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          childAspectRatio: 1.52,
           children: [
-            _MetricCard('Comunidade', '$community', 'pessoas conectadas'),
+            _MetricCard('Pessoas conectadas', '$community', 'em grupos'),
             _MetricCard(
-              'Grupos',
-              '${groups.length}',
-              '$activeGroups ativos nesta semana',
+              'Grupos ativos',
+              '$activeGroups',
+              'de ${groups.length} grupos',
             ),
-            _MetricCard(
-              'Leituras',
-              '${(avg * 100).round()}%',
-              'participação semanal',
-            ),
-            _MetricCard('Interações', '$interactions', 'nos últimos 7 dias'),
+            _MetricCard('Leitura', '${(avg * 100).round()}%', 'participação'),
+            _MetricCard('Interações', '$interactions', 'nos últimos dias'),
           ],
         ),
+        const SizedBox(height: 8),
+        CareNoticeTeaser(items: careItems, error: careError),
         const ProtoSection(title: 'Visão da semana', trailing: 'Participação'),
         ProtoCard(
-          child: WeekBars(
-            heights: const [0.48, 0.70, 0.56, 0.82, 0.67, 0.91, 0.76],
-          ),
+          child: groups.isEmpty
+              ? const Text(
+                  'Aguardando integração de métricas semanais.',
+                  style: TextStyle(color: AppColors.slate400, fontSize: 11),
+                )
+              : WeekBars(
+                  heights: groups
+                      .map((group) => group.weekProgress)
+                      .take(7)
+                      .toList(),
+                ),
         ),
       ],
     );
@@ -270,19 +273,23 @@ class _MetricCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MiniLabel(label),
-          const SizedBox(height: 5),
+          const SizedBox(height: 4),
           Text(
             value,
             style: const TextStyle(
               color: AppColors.slate100,
-              fontSize: 25,
+              fontSize: 23,
               fontWeight: FontWeight.w800,
               letterSpacing: -1,
             ),
           ),
           Text(
             hint,
-            style: const TextStyle(color: AppColors.slate400, fontSize: 9),
+            style: const TextStyle(
+              color: AppColors.slate400,
+              fontSize: 9,
+              height: 1.1,
+            ),
           ),
         ],
       ),
@@ -290,22 +297,129 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-class _PostCard extends StatefulWidget {
+class _ChallengeCard extends StatelessWidget {
+  const _ChallengeCard({this.group});
+  final ReadingGroup? group;
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = group?.weekProgress;
+    if (group == null || progress == null) {
+      return const ProtoEmptyState(
+        icon: Icons.flag_outlined,
+        title: 'Nenhum desafio ativo',
+        copy: 'Aguardando uma leitura direcionada pela liderança.',
+      );
+    }
+    final currentGroup = group!;
+    return ProtoCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  currentGroup.planLabel,
+                  style: const TextStyle(
+                    color: AppColors.slate100,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              Text(
+                '${(progress * 100).round()}%',
+                style: const TextStyle(
+                  color: AppColors.ember,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            currentGroup.name,
+            style: const TextStyle(color: AppColors.slate400, fontSize: 10),
+          ),
+          const SizedBox(height: 13),
+          EmberProgress(value: progress),
+          const SizedBox(height: 13),
+          EmberButton(
+            label: 'MARCAR LEITURA DE HOJE',
+            expand: true,
+            onPressed: null,
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            'Marcação diária aguarda integração de dados.',
+            style: TextStyle(color: AppColors.slate500, fontSize: 9),
+          ),
+          TextButton(
+            onPressed: () => AppNavScope.go(context, 'plans'),
+            child: const Text('ABRIR LEITURA'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PastorReflection extends StatelessWidget {
+  const _PastorReflection();
+  @override
+  Widget build(BuildContext context) {
+    return const ProtoEmptyState(
+      icon: Icons.notes_outlined,
+      title: 'Nenhuma reflexão publicada',
+      copy: 'Aguardando integração de dados para reflexões pastorais.',
+    );
+  }
+}
+
+class _PastorBrief extends StatelessWidget {
+  const _PastorBrief({required this.groups});
+  final List<ReadingGroup> groups;
+  @override
+  Widget build(BuildContext context) {
+    return ProtoCard(
+      challenge: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const MiniLabel('Reflexão do dia'),
+          const SizedBox(height: 5),
+          const Text(
+            'Reflexão do dia',
+            style: TextStyle(
+              color: AppColors.slate100,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 5),
+          const Text(
+            'Aguardando integração de conteúdo para publicação pastoral.',
+            style: TextStyle(color: AppColors.slate300, fontSize: 11),
+          ),
+          const SizedBox(height: 12),
+          EmberButton(label: 'PUBLICAÇÃO EM BREVE', onPressed: null),
+        ],
+      ),
+    );
+  }
+}
+
+class _PostCard extends StatelessWidget {
   const _PostCard({required this.item, this.groupHint});
 
   final FeedItem item;
   final String? groupHint;
 
   @override
-  State<_PostCard> createState() => _PostCardState();
-}
-
-class _PostCardState extends State<_PostCard> {
-  var _liked = false;
-
-  @override
   Widget build(BuildContext context) {
-    final item = widget.item;
+    final item = this.item;
     final body = switch (item) {
       final BookCompletedFeedItem completed =>
         completed.quote ?? 'Terminou ${completed.bookName}.',
@@ -314,11 +428,10 @@ class _PostCardState extends State<_PostCard> {
       final StreakAchievementFeedItem streak =>
         '${streak.days} dias seguidos de leitura.',
     };
-    final likes = item.highFives + (_liked ? 1 : 0);
     final meta = [
-      if (widget.groupHint != null) widget.groupHint!,
+      groupHint,
       timeAgo(item.occurredAt),
-    ].join(' · ');
+    ].whereType<String>().join(' · ');
 
     return ProtoCard(
       child: Column(
@@ -369,25 +482,99 @@ class _PostCardState extends State<_PostCard> {
           const SizedBox(height: 12),
           Row(
             children: [
-              GestureDetector(
-                onTap: () => setState(() => _liked = !_liked),
-                child: Text(
-                  '${_liked ? '♥' : '♡'} Apoiar $likes',
-                  style: TextStyle(
-                    color: _liked ? AppColors.ember : AppColors.slate300,
-                    fontSize: 10,
-                    fontWeight: _liked ? FontWeight.w800 : FontWeight.w500,
+              Row(
+                children: [
+                  const Icon(
+                    Icons.favorite_border,
+                    color: AppColors.slate400,
+                    size: 14,
                   ),
-                ),
+                  const SizedBox(width: 5),
+                  Text(
+                    'Apoios ${item.highFives}',
+                    style: const TextStyle(
+                      color: AppColors.slate300,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(width: 14),
-              const Text(
-                'Comentar',
-                style: TextStyle(color: AppColors.slate300, fontSize: 10),
+              Text(
+                '${item.comments} comentários',
+                style: const TextStyle(color: AppColors.slate300, fontSize: 10),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _FeedSkeleton extends StatelessWidget {
+  const _FeedSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+      children: const [
+        _SkeletonBlock(height: 94),
+        SizedBox(height: 18),
+        _SkeletonBlock(height: 160),
+        SizedBox(height: 10),
+        _SkeletonBlock(height: 136),
+      ],
+    );
+  }
+}
+
+class _SkeletonBlock extends StatelessWidget {
+  const _SkeletonBlock({required this.height});
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.slate800,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.slate700),
+      ),
+      child: const Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ShimmerLine(width: 88, height: 10),
+            SizedBox(height: 16),
+            _ShimmerLine(width: double.infinity, height: 12),
+            SizedBox(height: 9),
+            _ShimmerLine(width: 150, height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ShimmerLine extends StatelessWidget {
+  const _ShimmerLine({required this.width, required this.height});
+
+  final double width;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.slate700,
+        borderRadius: BorderRadius.circular(99),
       ),
     );
   }

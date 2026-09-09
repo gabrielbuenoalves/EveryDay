@@ -7,7 +7,7 @@ class ProtoCard extends StatelessWidget {
   const ProtoCard({
     super.key,
     required this.child,
-    this.padding = const EdgeInsets.all(15),
+    this.padding = const EdgeInsets.all(14),
     this.challenge = false,
   });
 
@@ -22,41 +22,20 @@ class ProtoCard extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       padding: padding,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(17),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: challenge ? const Color(0x8CE3703A) : AppColors.slate700,
+          color: AppColors.primaryContainer,
         ),
         gradient: challenge
             ? const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [AppColors.slate800, Color(0x47B8501F)],
+                colors: [AppColors.surface, AppColors.primaryContainer],
               )
             : null,
-        color: challenge ? null : const Color(0xD11E293B),
+        color: challenge ? null : AppColors.slate800,
       ),
-      child: challenge
-          ? Stack(
-              children: [
-                child,
-                const Positioned(
-                  right: -10,
-                  bottom: -28,
-                  child: IgnorePointer(
-                    child: Text(
-                      'ED',
-                      style: TextStyle(
-                        color: Color(0x1CE3703A),
-                        fontSize: 72,
-                        fontWeight: FontWeight.w900,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          : child,
+      child: child,
     );
   }
 }
@@ -70,7 +49,7 @@ class ProtoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 17, 2, 9),
+      padding: const EdgeInsets.fromLTRB(1, 19, 1, 8),
       child: Row(
         children: [
           Expanded(
@@ -78,9 +57,9 @@ class ProtoSection extends StatelessWidget {
               title,
               style: const TextStyle(
                 color: AppColors.slate100,
-                fontSize: 13,
+                fontSize: 11,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -0.1,
+                letterSpacing: .15,
               ),
             ),
           ),
@@ -110,10 +89,10 @@ class MiniLabel extends StatelessWidget {
     return Text(
       text.toUpperCase(),
       style: TextStyle(
-        color: dark ? const Color(0xD10F172A) : AppColors.ember,
-        fontSize: 9,
+        color: dark ? AppColors.textPrimary : AppColors.textSecondary,
+        fontSize: 8,
         fontWeight: FontWeight.w900,
-        letterSpacing: 1.2,
+        letterSpacing: 1.05,
       ),
     );
   }
@@ -130,7 +109,7 @@ class EmberProgress extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: LinearProgressIndicator(
         value: value.clamp(0, 1),
-        minHeight: 7,
+        minHeight: 6,
         backgroundColor: AppColors.slate700,
         color: AppColors.ember,
       ),
@@ -153,20 +132,150 @@ class EmberButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final button = SizedBox(
-      height: 36,
+      height: 40,
       child: FilledButton(
         onPressed: onPressed,
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.ember,
-          foregroundColor: AppColors.slate950,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          textStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900),
+          foregroundColor: AppColors.surface,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(11),
+          ),
+          textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
         ),
         child: Text(label),
       ),
     );
     return expand ? SizedBox(width: double.infinity, child: button) : button;
+  }
+}
+
+class ProtoFilterBar extends StatelessWidget {
+  const ProtoFilterBar({
+    super.key,
+    required this.labels,
+    required this.selected,
+    required this.onSelected,
+    this.disabledIndices = const <int>{},
+    this.disabledHint = 'Aguardando integração de dados',
+  });
+
+  final List<String> labels;
+  final int selected;
+  final ValueChanged<int> onSelected;
+  final Set<int> disabledIndices;
+  final String disabledHint;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: List.generate(labels.length, (index) {
+          final active = index == selected;
+          final disabled = disabledIndices.contains(index);
+          final filter = Material(
+            color: active ? AppColors.ember : AppColors.slate850,
+            borderRadius: BorderRadius.circular(9),
+            child: InkWell(
+              onTap: disabled ? null : () => onSelected(index),
+              borderRadius: BorderRadius.circular(9),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  border: Border.all(
+                    color: active ? AppColors.ember : AppColors.slate700,
+                    width: active ? 2 : 1,
+                  ),
+                ),
+                child: Text(
+                  labels[index],
+                  style: TextStyle(
+                    color: active
+                        ? AppColors.surface
+                        : disabled
+                        ? AppColors.slate500
+                        : AppColors.slate400,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+            ),
+          );
+          return Padding(
+            padding: EdgeInsets.only(right: index == labels.length - 1 ? 0 : 7),
+            child: Semantics(
+              enabled: !disabled,
+              button: true,
+              selected: active,
+              child: disabled
+                  ? Tooltip(message: disabledHint, child: filter)
+                  : filter,
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class ProtoEmptyState extends StatelessWidget {
+  const ProtoEmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.copy,
+  });
+
+  final IconData icon;
+  final String title;
+  final String copy;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProtoCard(
+      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 25),
+      child: Column(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: AppColors.ember, size: 21),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.slate100,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            copy,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: AppColors.slate400,
+              fontSize: 11,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -204,11 +313,7 @@ class WeekBars extends StatelessWidget {
 }
 
 class GroupChip extends StatelessWidget {
-  const GroupChip({
-    super.key,
-    required this.name,
-    required this.memberCount,
-  });
+  const GroupChip({super.key, required this.name, required this.memberCount});
 
   final String name;
   final int memberCount;
@@ -218,11 +323,11 @@ class GroupChip extends StatelessWidget {
     final icon = name.trim().isEmpty
         ? 'G'
         : name
-            .trim()
-            .split(RegExp(r'\s+'))
-            .take(2)
-            .map((part) => part[0].toUpperCase())
-            .join();
+              .trim()
+              .split(RegExp(r'\s+'))
+              .take(2)
+              .map((part) => part[0].toUpperCase())
+              .join();
     return Container(
       width: 104,
       padding: const EdgeInsets.all(11),
@@ -240,7 +345,7 @@ class GroupChip extends StatelessWidget {
             height: 28,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0x33E3703A),
+              color: AppColors.primaryContainer,
               borderRadius: BorderRadius.circular(9),
             ),
             child: Text(
@@ -282,18 +387,18 @@ class SpecialtyChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.slate950,
+        color: active ? AppColors.primary : AppColors.primaryContainer,
         borderRadius: BorderRadius.circular(11),
-        boxShadow: active
-            ? const [BoxShadow(color: AppColors.ember, spreadRadius: 2)]
-            : null,
+        border: Border.all(
+          color: active ? AppColors.primary : AppColors.primaryContainer,
+        ),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: active ? AppColors.slate100 : AppColors.slate300,
+          color: active ? AppColors.surface : AppColors.textSecondary,
           fontSize: 12,
           fontWeight: FontWeight.w800,
         ),
@@ -337,19 +442,25 @@ class AppScreenHeader extends StatelessWidget {
     super.key,
     required this.kicker,
     required this.title,
-    this.initials = 'ED',
+    this.initials = '',
+    this.action,
+    this.showAvatar = true,
+    this.horizontalPadding = 17,
   });
 
   final String kicker;
   final String title;
   final String initials;
+  final Widget? action;
+  final bool showAvatar;
+  final double horizontalPadding;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      padding: EdgeInsets.fromLTRB(horizontalPadding, 10, horizontalPadding, 7),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -364,12 +475,12 @@ class AppScreenHeader extends StatelessWidget {
                     letterSpacing: 1.4,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
                   title,
                   style: const TextStyle(
                     color: AppColors.slate100,
-                    fontSize: 21,
+                    fontSize: 18,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.6,
                   ),
@@ -377,18 +488,20 @@ class AppScreenHeader extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.ember, width: 2),
+          if (action != null) ...[action!, const SizedBox(width: 8)],
+          if (showAvatar)
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.slate700),
+              ),
+              child: AppAvatar(
+                initials: initials,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
+                size: 34,
+              ),
             ),
-            child: AppAvatar(
-              initials: initials,
-              color: AppColors.slate800,
-              foregroundColor: AppColors.slate100,
-              size: 38,
-            ),
-          ),
         ],
       ),
     );

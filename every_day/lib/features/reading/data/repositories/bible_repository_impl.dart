@@ -19,7 +19,9 @@ class BibleRepositoryImpl implements BibleRepository {
       passageLabel: reading.passageLabel,
     );
     if (passages.isEmpty) {
-      throw StateError('Não foi possível identificar o trecho ${reading.passageLabel}.');
+      throw StateError(
+        'Não foi possível identificar o trecho ${reading.passageLabel}.',
+      );
     }
 
     final response = await _client.functions.invoke(

@@ -1,8 +1,11 @@
 import 'package:every_day/app/di/app_scope.dart';
 import 'package:every_day/app/every_day_app.dart';
 import 'package:every_day/app/shell/app_shell.dart';
+import 'package:every_day/app/shell/pastor_shell.dart';
 import 'package:every_day/core/domain/user_role.dart';
 import 'package:every_day/features/feed/presentation/pages/feed_page.dart';
+import 'package:every_day/features/pastor/presentation/pages/pastor_care_page.dart';
+import 'package:every_day/features/pastor/presentation/pages/pastor_profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -30,12 +33,17 @@ void main() {
       ),
       findsNothing,
     );
-    expect(find.text('Home'), findsWidgets);
-    expect(find.text('Planos'), findsOneWidget);
+    expect(find.text('Início'), findsOneWidget);
+    expect(find.text('Ler'), findsOneWidget);
+    expect(find.text('Agenda'), findsOneWidget);
     expect(find.text('Grupos'), findsOneWidget);
     expect(find.text('Perfil'), findsOneWidget);
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Agenda'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nenhum evento na agenda.'), findsOneWidget);
+
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Salmos 28–30'), findsWidgets);
     expect(find.text('Em andamento'), findsOneWidget);
@@ -76,7 +84,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Continuar leitura'));
     await tester.pumpAndSettle();
@@ -93,7 +101,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Salmos 23'), findsWidgets);
@@ -120,7 +128,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Encerrar plano'));
     await tester.pumpAndSettle();
@@ -141,7 +149,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Planos'));
+    await tester.tap(find.text('Ler'));
     await tester.pumpAndSettle();
 
     expect(find.text('Antigo Testamento'), findsOneWidget);
@@ -182,7 +190,7 @@ void main() {
 
     expect(find.text('PERFIL DO LÍDER'), findsOneWidget);
     expect(find.text('Grupos que lidero'), findsOneWidget);
-    expect(find.text('Editar perfil do líder'), findsOneWidget);
+    expect(find.text('Editar perfil'), findsOneWidget);
     expect(find.text('PERFIL DO PASTOR'), findsNothing);
     expect(find.text('PERFIL DO MEMBRO'), findsNothing);
   });
@@ -199,28 +207,23 @@ void main() {
     await tester.tap(find.text('Perfil'));
     await tester.pumpAndSettle();
 
-    expect(find.text('PERFIL DO PASTOR'), findsOneWidget);
-    expect(find.text('IGREJA VINCULADA'), findsOneWidget);
-    expect(find.text('Avisos'), findsOneWidget);
-    expect(find.text('Grupos da igreja'), findsOneWidget);
-    expect(
-      find.text('CÓDIGO DO GRUPO', skipOffstage: false),
-      findsWidgets,
-    );
-    expect(find.text('GRUPO1', skipOffstage: false), findsWidgets);
-    expect(
-      find.text('Direcionar leitura', skipOffstage: false),
-      findsWidgets,
-    );
-    expect(find.text('NOTIFICAÇÕES'), findsNothing);
-    expect(find.text('IGREJA'), findsOneWidget);
+    expect(find.byType(PastorShell), findsOneWidget);
+    expect(find.byType(PastorProfilePage), findsOneWidget);
+    expect(find.text('Pr. Eduardo Ramos'), findsOneWidget);
+    expect(find.text('Cuidado'), findsOneWidget);
+    expect(find.text('Igreja'), findsWidgets);
     expect(find.text('PERFIL DO MEMBRO'), findsNothing);
     expect(find.text('PERFIL DO LÍDER'), findsNothing);
   });
 
-  testWidgets('pastor vê tempo, comentários e engajamento em Membros', (
+  testWidgets('pastor vê diretório com métricas verdadeiras em Membros', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(430, 932);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
     await tester.pumpWidget(
       EveryDayApp(
         dependencies: testDependencies(role: UserRole.pastor),
@@ -229,11 +232,21 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Membros'));
+    await tester.tap(find.text('Perfil'));
     await tester.pumpAndSettle();
-    expect(find.text('120 min'), findsOneWidget);
-    expect(find.text('COMENTÁRIOS'), findsOneWidget);
-    expect(find.text('18'), findsOneWidget);
+    await tester.drag(
+      find.descendant(
+        of: find.byType(PastorProfilePage),
+        matching: find.byType(ListView),
+      ),
+      const Offset(0, -700),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Diretório de membros'));
+    await tester.pumpAndSettle();
+    expect(find.text('Membros'), findsWidgets);
+    expect(find.text('Total de membros'), findsOneWidget);
+    expect(find.text('Sem grupo'), findsWidgets);
   });
 
   testWidgets('pastor abre a aba de notificações', (tester) async {
@@ -245,11 +258,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Avisos'));
+    await tester.tap(find.text('Cuidado'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Notificações'), findsOneWidget);
-    expect(find.text('Nenhum pedido de oração em aberto.'), findsOneWidget);
+    expect(find.byType(PastorCarePage), findsOneWidget);
+    expect(find.text('Cuidado'), findsWidgets);
+    expect(find.text('Urgentes (3)'), findsOneWidget);
     expect(find.text('PERFIL DO PASTOR'), findsNothing);
   });
 

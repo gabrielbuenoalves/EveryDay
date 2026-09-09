@@ -107,5 +107,6 @@ class MinutesForPassages {
 
   final PlansRepository _repository;
 
-  Future<int> call(List<String> labels) => _repository.minutesForPassages(labels);
+  Future<int> call(List<String> labels) =>
+      _repository.minutesForPassages(labels);
 }

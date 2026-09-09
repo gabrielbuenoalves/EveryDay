@@ -122,7 +122,9 @@ class _ReadingPageState extends State<ReadingPage> {
 
   bool get _allPlanDone =>
       _isDirected &&
-      _playlist.every((item) => _done.contains(item.passageLabel.toLowerCase()));
+      _playlist.every(
+        (item) => _done.contains(item.passageLabel.toLowerCase()),
+      );
 
   Future<void> _archivePlan() async {
     if (!_isDirected || _completing) return;
@@ -168,9 +170,7 @@ class _ReadingPageState extends State<ReadingPage> {
   void initState() {
     super.initState();
     _index = widget.initialIndex.clamp(0, 999);
-    _done = {
-      for (final label in widget.completedLabels) label.toLowerCase(),
-    };
+    _done = {for (final label in widget.completedLabels) label.toLowerCase()};
     _segmentAt = DateTime.now();
   }
 
@@ -259,10 +259,7 @@ class _ReadingPageState extends State<ReadingPage> {
     try {
       final mins = _segmentMinutes;
       await AppScope.of(context).logReading(
-        ReadingLog(
-          passageLabel: _current.passageLabel,
-          minutes: mins,
-        ),
+        ReadingLog(passageLabel: _current.passageLabel, minutes: mins),
       );
       if (!mounted) return;
       setState(() {
@@ -309,7 +306,28 @@ class _ReadingPageState extends State<ReadingPage> {
       },
       child: Scaffold(
         backgroundColor: AppColors.slate900,
-        appBar: AppBar(title: Text(_current.passageLabel)),
+        appBar: AppBar(
+          title: Text(
+            _current.passageLabel,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+          actions: [
+            if (_playlist.length > 1)
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Center(
+                  child: Text(
+                    '${_index + 1}/${_playlist.length}',
+                    style: const TextStyle(
+                      color: AppColors.slate400,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
         body: body,
         bottomNavigationBar: _bottomBar(),
       ),
@@ -360,11 +378,9 @@ class _ReadingPageState extends State<ReadingPage> {
                   backgroundColor: _allPlanDone
                       ? AppColors.ember
                       : _isDone
-                      ? const Color(0xFF166534)
+                      ? AppColors.primary
                       : AppColors.ember,
-                  foregroundColor: _allPlanDone || !_isDone
-                      ? AppColors.slate950
-                      : Colors.white,
+                  foregroundColor: AppColors.surface,
                 ),
                 child: Text(
                   _completing
@@ -394,11 +410,11 @@ class _ReadingPageState extends State<ReadingPage> {
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(18, 20, 18, 18),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(15),
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.emberDark, AppColors.ember],
+              colors: [AppColors.orange, AppColors.primaryContainer],
             ),
           ),
           child: Column(
@@ -420,7 +436,7 @@ class _ReadingPageState extends State<ReadingPage> {
                     _current.passageLabel,
                 style: const TextStyle(
                   color: AppColors.slate950,
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: FontWeight.w800,
                 ),
               ),
@@ -453,12 +469,7 @@ class _ReadingPageState extends State<ReadingPage> {
         ],
         const SizedBox(height: 8),
         if (_loading)
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 48),
-            child: Center(
-              child: CircularProgressIndicator(color: AppColors.ember),
-            ),
-          )
+          const _ReadingSkeleton()
         else ...[
           _scripture(passage),
           if (widget.groupId != null) _groupComments(),
@@ -546,74 +557,82 @@ class _ReadingPageState extends State<ReadingPage> {
 
   Widget _scripture(BiblePassage? passage) {
     if (passage != null && !passage.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final chapter in passage.chapters) ...[
-            if (passage.chapters.length > 1) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 12),
-                child: Text(
-                  chapter.reference,
-                  style: const TextStyle(
-                    color: AppColors.ember,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
+      return Container(
+        padding: const EdgeInsets.fromLTRB(16, 18, 16, 20),
+        decoration: BoxDecoration(
+          color: AppColors.slate850,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.slate700),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final chapter in passage.chapters) ...[
+              if (passage.chapters.length > 1) ...[
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, bottom: 12),
+                  child: Text(
+                    chapter.reference,
+                    style: const TextStyle(
+                      color: AppColors.ember,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
+                ),
+              ],
+              if (chapter.verses.isNotEmpty)
+                for (final verse in chapter.verses)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 13),
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          if (verse.number.isNotEmpty)
+                            TextSpan(
+                              text: '${verse.number}  ',
+                              style: const TextStyle(
+                                color: AppColors.ember,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'Georgia',
+                                fontSize: 13,
+                              ),
+                            ),
+                          TextSpan(text: verse.text),
+                        ],
+                      ),
+                      style: const TextStyle(
+                        fontFamily: 'Georgia',
+                        color: AppColors.slate300,
+                        fontSize: 17,
+                        height: 1.85,
+                      ),
+                    ),
+                  )
+              else
+                Text(
+                  chapter.content,
+                  style: const TextStyle(
+                    fontFamily: 'Georgia',
+                    color: AppColors.slate300,
+                    fontSize: 17,
+                    height: 1.85,
+                  ),
+                ),
+            ],
+            if (passage.copyright != null && passage.copyright!.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                passage.copyright!,
+                style: const TextStyle(
+                  color: AppColors.slate500,
+                  fontSize: 11,
+                  height: 1.4,
                 ),
               ),
             ],
-            if (chapter.verses.isNotEmpty)
-              for (final verse in chapter.verses)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 13),
-                  child: Text.rich(
-                    TextSpan(
-                      children: [
-                        if (verse.number.isNotEmpty)
-                          TextSpan(
-                            text: '${verse.number}  ',
-                            style: const TextStyle(
-                              color: AppColors.ember,
-                              fontWeight: FontWeight.w900,
-                              fontFamily: 'Georgia',
-                              fontSize: 13,
-                            ),
-                          ),
-                        TextSpan(text: verse.text),
-                      ],
-                    ),
-                    style: const TextStyle(
-                      fontFamily: 'Georgia',
-                      color: AppColors.slate300,
-                      fontSize: 17,
-                      height: 1.85,
-                    ),
-                  ),
-                )
-            else
-              Text(
-                chapter.content,
-                style: const TextStyle(
-                  fontFamily: 'Georgia',
-                  color: AppColors.slate300,
-                  fontSize: 17,
-                  height: 1.85,
-                ),
-              ),
           ],
-          if (passage.copyright != null && passage.copyright!.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            Text(
-              passage.copyright!,
-              style: const TextStyle(
-                color: AppColors.slate500,
-                fontSize: 11,
-                height: 1.4,
-              ),
-            ),
-          ],
-        ],
+        ),
       );
     }
     return Column(
@@ -621,7 +640,7 @@ class _ReadingPageState extends State<ReadingPage> {
       children: [
         const Text(
           'Não foi possível carregar o texto da Bíblia agora.',
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Georgia',
             color: AppColors.slate300,
             fontSize: 16,
@@ -642,6 +661,41 @@ class _ReadingPageState extends State<ReadingPage> {
   }
 }
 
+class _ReadingSkeleton extends StatelessWidget {
+  const _ReadingSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    Widget bar(double width, double height) => Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.slate800,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(6, 28, 6, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          bar(92, 11),
+          const SizedBox(height: 18),
+          bar(double.infinity, 18),
+          const SizedBox(height: 12),
+          bar(260, 18),
+          const SizedBox(height: 30),
+          bar(double.infinity, 14),
+          const SizedBox(height: 13),
+          bar(double.infinity, 14),
+          const SizedBox(height: 13),
+          bar(290, 14),
+        ],
+      ),
+    );
+  }
+}
+
 class _PassageChip extends StatelessWidget {
   const _PassageChip({
     required this.label,
@@ -657,27 +711,32 @@ class _PassageChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.ember : AppColors.slate800,
-          borderRadius: BorderRadius.circular(99),
-          border: Border.all(
-            color: selected
-                ? AppColors.ember
-                : done
-                ? const Color(0xFF4ADE80)
-                : AppColors.slate700,
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.ember : AppColors.slate800,
+            borderRadius: BorderRadius.circular(99),
+            border: Border.all(
+              color: selected
+                  ? AppColors.ember
+                  : done
+                  ? AppColors.primary
+                  : AppColors.slate700,
+              width: selected ? 2 : 1,
+            ),
           ),
-        ),
-        child: Text(
-          done ? '✓ $label' : label,
-          style: TextStyle(
-            color: selected ? AppColors.slate950 : AppColors.slate100,
-            fontSize: 11,
-            fontWeight: FontWeight.w800,
+          child: Text(
+            done ? '✓ $label' : label,
+            style: TextStyle(
+              color: selected ? AppColors.surface : AppColors.textPrimary,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ),
       ),

@@ -79,8 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (_specialties.isEmpty) {
         _specialties = const ['Leitura', 'Comunidade'];
       }
-      _churchBio =
-          'Existimos para acolher pessoas, fortalecer a fé no dia a dia e servir nossa cidade com graça, presença e propósito.';
+      _churchBio = 'Existimos para acolher pessoas, fortalecer a fé no dia a dia e servir nossa cidade com graça, presença e propósito.';
       _churchCity = 'Cidade';
     });
   }
@@ -99,14 +98,15 @@ class _ProfilePageState extends State<ProfilePage> {
     return SafeArea(
       bottom: false,
       child: profile == null
-          ? const Center(child: CircularProgressIndicator(color: AppColors.ember))
+          ? const _ProfileLoading()
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
               children: [
                 AppScreenHeader(
                   kicker: profile.role.label,
                   title: 'Perfil',
-                  initials: profile.initials,
+                  showAvatar: false,
+                  horizontalPadding: 1,
                 ),
                 if (profile.role.isPastor)
                   ..._pastorBody(profile)
@@ -129,9 +129,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   List<Widget> _memberBody(UserProfile profile) {
     final book = _currentBook;
-    final progress = book?.progress ?? 0.18;
+    final progress = book?.progress ?? 0;
     return [
       ProtoCard(
+        challenge: true,
         child: Column(
           children: [
             Container(
@@ -141,8 +142,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: AppAvatar(
                 initials: profile.initials,
-                color: AppColors.slate800,
-                foregroundColor: AppColors.slate100,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
                 size: 64,
               ),
             ),
@@ -162,10 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 8),
             const MiniLabel('Perfil do membro'),
             const SizedBox(height: 12),
-            EmberButton(
-              label: 'Editar perfil',
-              onPressed: _editMember,
-            ),
+            EmberButton(label: 'Editar perfil', onPressed: _editMember),
             const SizedBox(height: 12),
             Row(
               children: [
@@ -177,31 +175,13 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      Row(
-        children: [
-          const Expanded(
-            child: Text(
-              'Sobre',
-              style: TextStyle(
-                color: AppColors.slate100,
-                fontSize: 13,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-          TextButton(
-            onPressed: _editMember,
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.slate100,
-              backgroundColor: AppColors.slate800,
-              side: const BorderSide(color: AppColors.slate700),
-              minimumSize: const Size(0, 36),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Text('Editar', style: TextStyle(fontWeight: FontWeight.w800)),
-          ),
-        ],
+      const Text(
+        'Sobre',
+        style: TextStyle(
+          color: AppColors.slate100,
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+        ),
       ),
       const SizedBox(height: 8),
       ProtoCard(
@@ -222,7 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Text(
-              '${profile.churchName ?? 'sem igreja'}${_churchCity.isEmpty ? '' : ' · $_churchCity'}',
+              profile.churchName ?? 'Igreja não informada',
               style: const TextStyle(color: AppColors.slate400, fontSize: 13),
             ),
             const SizedBox(height: 12),
@@ -248,11 +228,11 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             Text(
-              _favoriteCharacter,
+              'Não informado',
               style: const TextStyle(color: AppColors.slate400, fontSize: 13),
             ),
             const SizedBox(height: 12),
-            const MiniLabel('Especialidades'),
+            const MiniLabel('Grupos'),
             const SizedBox(height: 9),
             Wrap(
               spacing: 7,
@@ -265,10 +245,21 @@ class _ProfilePageState extends State<ProfilePage> {
           ],
         ),
       ),
-      const ProtoSection(title: 'Consistência · 8 semanas', trailing: '86%'),
+      const ProtoSection(
+        title: 'Consistência semanal',
+        trailing: 'indisponível',
+      ),
       const ProtoCard(
-        child: WeekBars(
-          heights: [0.34, 0.68, 0.48, 0.88, 0.58, 0.75, 0.92, 0.86],
+        child: Text(
+          'O histórico semanal aguarda integração.',
+          style: TextStyle(color: AppColors.slate400),
+        ),
+      ),
+      const ProtoSection(title: 'Conquistas', trailing: 'indisponível'),
+      const ProtoCard(
+        child: Text(
+          'Conquistas serão exibidas quando disponíveis.',
+          style: TextStyle(color: AppColors.slate400),
         ),
       ),
       ProtoSection(
@@ -297,7 +288,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: const TextStyle(color: AppColors.slate300, fontSize: 11),
             ),
             const SizedBox(height: 13),
-            EmberProgress(value: progress == 0 ? 0.18 : progress),
+            EmberProgress(value: progress),
           ],
         ),
       ),
@@ -312,13 +303,14 @@ class _ProfilePageState extends State<ProfilePage> {
     final avg = _groups.isEmpty
         ? 0.0
         : _groups.map((group) => group.weekProgress).reduce((a, b) => a + b) /
-            _groups.length;
+              _groups.length;
     final attention = _groups.where((group) => group.weekProgress < 0.5).length;
     final book = _currentBook;
-    final progress = book?.progress ?? 0.18;
+    final progress = book?.progress ?? 0;
 
     return [
       ProtoCard(
+        challenge: true,
         child: Column(
           children: [
             Container(
@@ -328,8 +320,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: AppAvatar(
                 initials: profile.initials,
-                color: AppColors.slate800,
-                foregroundColor: AppColors.slate100,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
                 size: 64,
               ),
             ),
@@ -350,7 +342,7 @@ class _ProfilePageState extends State<ProfilePage> {
             const MiniLabel('Perfil do líder'),
             const SizedBox(height: 12),
             EmberButton(
-              label: 'Editar perfil do líder',
+              label: 'Editar perfil',
               onPressed: _editMember,
             ),
             const SizedBox(height: 12),
@@ -373,7 +365,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 6),
             Text(
               _bio,
-              style: const TextStyle(color: AppColors.slate300, fontSize: 13, height: 1.4),
+              style: const TextStyle(
+                color: AppColors.slate300,
+                fontSize: 13,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 12),
             const Text(
@@ -423,16 +419,22 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 4),
                 Text(
                   '${group.memberCount} membros · ${(group.weekProgress * 100).round()}% leram nesta semana',
-                  style: const TextStyle(color: AppColors.slate300, fontSize: 11),
+                  style: const TextStyle(
+                    color: AppColors.slate300,
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(height: 13),
-                EmberProgress(value: group.weekProgress == 0 ? 0.12 : group.weekProgress),
+                EmberProgress(
+                  value: group.weekProgress == 0 ? 0.12 : group.weekProgress,
+                ),
                 const SizedBox(height: 12),
                 EmberButton(
                   label: 'Direcionar leitura',
                   onPressed: () => _directReading(group),
                 ),
-                if (group.inviteCode != null && group.inviteCode!.isNotEmpty) ...[
+                if (group.inviteCode != null &&
+                    group.inviteCode!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const MiniLabel('Código do grupo'),
                   const SizedBox(height: 4),
@@ -474,7 +476,7 @@ class _ProfilePageState extends State<ProfilePage> {
               style: const TextStyle(color: AppColors.slate300, fontSize: 11),
             ),
             const SizedBox(height: 13),
-            EmberProgress(value: progress == 0 ? 0.18 : progress),
+            EmberProgress(value: progress),
           ],
         ),
       ),
@@ -488,6 +490,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }.length;
     return [
       ProtoCard(
+        challenge: true,
         child: Column(
           children: [
             Container(
@@ -497,8 +500,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               child: AppAvatar(
                 initials: profile.initials,
-                color: AppColors.slate800,
-                foregroundColor: AppColors.slate100,
+                color: AppColors.primary,
+                foregroundColor: AppColors.surface,
                 size: 64,
               ),
             ),
@@ -517,6 +520,48 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 8),
             const MiniLabel('Perfil do pastor'),
+            const SizedBox(height: 12),
+            EmberButton(
+              label: 'Editar perfil',
+              onPressed: _editMember,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                _HeroStat('${_groups.length}', 'grupos'),
+                _HeroStat('$members', 'membros'),
+                _HeroStat(
+                  '${profile.stats.chaptersThisWeek}',
+                  'capítulos',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(height: 10),
+      const ProtoSection(
+        title: 'Ferramentas pastorais',
+        trailing: 'aguarda integração',
+      ),
+      const ProtoCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Configurações de ministério',
+              style: TextStyle(
+                color: AppColors.slate100,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Preferências de avisos, equipes e acompanhamento estarão disponíveis após a integração.',
+              style: TextStyle(color: AppColors.slate400, fontSize: 12),
+            ),
+            SizedBox(height: 10),
+            OutlinedButton(onPressed: null, child: Text('Aguarda integração')),
           ],
         ),
       ),
@@ -543,7 +588,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 10),
             Text(
               _churchBio,
-              style: const TextStyle(color: AppColors.slate300, fontSize: 12, height: 1.45),
+              style: const TextStyle(
+                color: AppColors.slate300,
+                fontSize: 12,
+                height: 1.45,
+              ),
             ),
             if (profile.inviteCode != null) ...[
               const SizedBox(height: 12),
@@ -560,16 +609,13 @@ class _ProfilePageState extends State<ProfilePage> {
             ],
             const SizedBox(height: 12),
             EmberButton(
-              label: 'Editar perfil da igreja',
+              label: 'Editar dados da igreja',
               onPressed: _editChurch,
             ),
           ],
         ),
       ),
-      ProtoSection(
-        title: 'Grupos da igreja',
-        trailing: '${_groups.length}',
-      ),
+      ProtoSection(title: 'Grupos da igreja', trailing: '${_groups.length}'),
       if (_groups.isEmpty)
         const ProtoCard(
           child: Text(
@@ -596,11 +642,17 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 4),
                 Text(
                   '${group.memberCount} pessoas · ${(group.weekProgress * 100).round()}% acompanhando o desafio',
-                  style: const TextStyle(color: AppColors.slate300, fontSize: 11),
+                  style: const TextStyle(
+                    color: AppColors.slate300,
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(height: 13),
-                EmberProgress(value: group.weekProgress == 0 ? 0.12 : group.weekProgress),
-                if (group.inviteCode != null && group.inviteCode!.isNotEmpty) ...[
+                EmberProgress(
+                  value: group.weekProgress == 0 ? 0.12 : group.weekProgress,
+                ),
+                if (group.inviteCode != null &&
+                    group.inviteCode!.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   const MiniLabel('Código do grupo'),
                   const SizedBox(height: 4),
@@ -630,34 +682,6 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 10),
         ],
-      const SizedBox(height: 10),
-      ProtoCard(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const MiniLabel('Dados pessoais'),
-            const SizedBox(height: 6),
-            const Text(
-              'Seu perfil pastoral',
-              style: TextStyle(
-                color: AppColors.slate100,
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Atualize sua foto, nome, apresentação e preferências da conta.',
-              style: TextStyle(color: AppColors.slate300, fontSize: 11),
-            ),
-            const SizedBox(height: 12),
-            EmberButton(
-              label: 'Editar perfil do pastor',
-              onPressed: _editMember,
-            ),
-          ],
-        ),
-      ),
     ];
   }
 
@@ -666,28 +690,23 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       groupName: group.name,
       onSubmit: ({required title, required passages}) {
-        return AppScope.of(context).createGroupPlan(
-          groupId: group.id,
-          title: title,
-          passages: passages,
-        );
+        return AppScope.of(
+          context,
+        ).createGroupPlan(groupId: group.id, title: title, passages: passages);
       },
     );
     if (!sent || !mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Leitura enviada a ${group.name}')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Leitura enviada a ${group.name}')));
     await _load(AppScope.of(context).getProfile);
   }
 
   Future<void> _openGroup(ReadingGroup group, {required bool pastor}) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute(
-        builder: (_) => GroupDetailPage(
-          group: group,
-          pastor: pastor,
-          canDirect: true,
-        ),
+        builder: (_) =>
+            GroupDetailPage(group: group, pastor: pastor, canDirect: true),
       ),
     );
     if (mounted) await _load(AppScope.of(context).getProfile);
@@ -713,10 +732,21 @@ class _ProfilePageState extends State<ProfilePage> {
             bottom: MediaQuery.viewInsetsOf(context).bottom,
           ),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(24, 22, 24, 24),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 22),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Center(
+                  child: Container(
+                    width: 34,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.slate500,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 const Text(
                   'Editar perfil',
                   style: TextStyle(
@@ -739,7 +769,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: username,
-                  decoration: const InputDecoration(labelText: 'Nome de usuário'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nome de usuário',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -751,19 +783,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: book,
-                  decoration: const InputDecoration(labelText: 'Livro favorito'),
+                  decoration: const InputDecoration(
+                    labelText: 'Livro favorito',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: character,
-                  decoration: const InputDecoration(labelText: 'Personagem favorito'),
+                  decoration: const InputDecoration(
+                    labelText: 'Personagem favorito',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: specialties,
                   decoration: const InputDecoration(
-                    labelText: 'Especialidades',
-                    helperText: 'Separe as especialidades por vírgulas.',
+                    labelText: 'Grupos',
+                    helperText: 'Separe os grupos por vírgulas.',
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -781,7 +817,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPressed: () => Navigator.pop(context, true),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.ember,
-                          foregroundColor: AppColors.slate950,
+                          foregroundColor: AppColors.surface,
                         ),
                         child: const Text('Salvar alterações'),
                       ),
@@ -800,9 +836,12 @@ class _ProfilePageState extends State<ProfilePage> {
         final user = username.text.trim();
         _username = user.startsWith('@') ? user : '@$user';
         _bio = bio.text.trim();
-        _favoriteBook = book.text.trim().isEmpty ? 'Não informado' : book.text.trim();
-        _favoriteCharacter =
-            character.text.trim().isEmpty ? 'Não informado' : character.text.trim();
+        _favoriteBook = book.text.trim().isEmpty
+            ? 'Não informado'
+            : book.text.trim();
+        _favoriteCharacter = character.text.trim().isEmpty
+            ? 'Não informado'
+            : character.text.trim();
         _specialties = specialties.text
             .split(',')
             .map((item) => item.trim())
@@ -828,7 +867,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final churchName = TextEditingController(text: profile?.churchName ?? '');
     final bio = TextEditingController(text: _churchBio);
     final city = TextEditingController(text: _churchCity);
-    final members = TextEditingController(text: '${_friends == 0 ? 1 : _friends}');
+    final members = TextEditingController(
+      text: '${_friends == 0 ? 1 : _friends}',
+    );
     final saved = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -863,7 +904,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 const SizedBox(height: 16),
                 TextField(
                   controller: churchName,
-                  decoration: const InputDecoration(labelText: 'Nome da igreja'),
+                  decoration: const InputDecoration(
+                    labelText: 'Nome da igreja',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -872,15 +915,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   maxLength: 280,
                   decoration: const InputDecoration(
                     labelText: 'Bio da igreja',
-                    helperText:
-                        'Esta apresentação ficará visível no perfil da igreja · até 280 caracteres.',
+                    helperText: 'Esta apresentação ficará visível no perfil da igreja · até 280 caracteres.',
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: members,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Quantidade de membros'),
+                  decoration: const InputDecoration(
+                    labelText: 'Quantidade de membros',
+                  ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -902,7 +946,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         onPressed: () => Navigator.pop(context, true),
                         style: FilledButton.styleFrom(
                           backgroundColor: AppColors.ember,
-                          foregroundColor: AppColors.slate950,
+                          foregroundColor: AppColors.surface,
                         ),
                         child: const Text('Continuar'),
                       ),
@@ -921,7 +965,9 @@ class _ProfilePageState extends State<ProfilePage> {
         _churchCity = city.text.trim();
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perfil da igreja atualizado com sucesso.')),
+        const SnackBar(
+          content: Text('Perfil da igreja atualizado com sucesso.'),
+        ),
       );
     }
     churchName.dispose();
@@ -944,7 +990,7 @@ class _HeroStat extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 5),
         decoration: BoxDecoration(
-          color: AppColors.slate950,
+          color: AppColors.primaryContainer,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -968,6 +1014,54 @@ class _HeroStat extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProfileLoading extends StatelessWidget {
+  const _ProfileLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 120),
+      children: [
+        Container(
+          height: 12,
+          width: 60,
+          decoration: BoxDecoration(
+            color: AppColors.slate800,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 28,
+          width: 100,
+          decoration: BoxDecoration(
+            color: AppColors.slate800,
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        const SizedBox(height: 24),
+        const ProtoCard(
+          child: Column(
+            children: [
+              CircleAvatar(radius: 34, backgroundColor: AppColors.slate700),
+              SizedBox(height: 14),
+              SizedBox(
+                width: 130,
+                height: 16,
+                child: ColoredBox(color: AppColors.slate700),
+              ),
+              SizedBox(height: 18),
+              SizedBox(height: 42),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        const ProtoCard(child: SizedBox(height: 120)),
+      ],
     );
   }
 }

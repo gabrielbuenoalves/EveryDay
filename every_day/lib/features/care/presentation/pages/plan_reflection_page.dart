@@ -37,13 +37,12 @@ Future<bool> finishDirectedPlan(
       await deps.minutesForPassages(
         plan.readings.map((item) => item.passageLabel).toList(),
       );
+  if (!context.mounted) return false;
   final archived = await showPlanReflectionSheet(
     context,
     planTitle: plan.title,
     minutes: time,
-    commentTitle: plan.isPastoral
-        ? 'Comentário para o pastor'
-        : 'Comentário',
+    commentTitle: plan.isPastoral ? 'Comentário para o pastor' : 'Comentário',
     onSubmit: (reflection) async {
       if (plan.isPastoral) {
         await deps.completeCarePlan(planId: plan.id, reflection: reflection);
@@ -73,11 +72,7 @@ Future<bool> finishCarePlan(
 }) {
   return finishDirectedPlan(
     context,
-    plan: MemberCarePlan(
-      id: planId,
-      title: planTitle,
-      readings: const [],
-    ),
+    plan: MemberCarePlan(id: planId, title: planTitle, readings: const []),
     minutes: minutes,
   );
 }
@@ -120,7 +115,7 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
       backgroundColor: AppColors.slate900,
       appBar: AppBar(title: const Text('Como foi essa leitura')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 14, 16, 36),
         children: [
           ProtoCard(
             challenge: true,
@@ -140,9 +135,21 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
                 const SizedBox(height: 4),
                 Text(
                   'Tempo aproximado: ${widget.minutes} min. Seu pastor usa isso para a próxima leitura.',
-                  style: const TextStyle(color: AppColors.slate300, fontSize: 12),
+                  style: const TextStyle(
+                    color: AppColors.slate300,
+                    fontSize: 12,
+                  ),
                 ),
               ],
+            ),
+          ),
+          const ProtoSection(title: 'Seu check-out'),
+          const Text(
+            'Não existe resposta certa. Essas notas ajudam a próxima conversa e a sua caminhada.',
+            style: TextStyle(
+              color: AppColors.slate400,
+              fontSize: 11,
+              height: 1.35,
             ),
           ),
           const ProtoSection(title: 'Quanto você entendeu o texto?'),
@@ -152,13 +159,14 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
             children: [
               for (var score = 1; score <= 5; score++)
                 _ChoiceChip(
-                  label: '$score · ${switch (score) {
-                    1 => 'Confuso',
-                    2 => 'Pouco',
-                    3 => 'Razoável',
-                    4 => 'Bom',
-                    _ => 'Claro',
-                  }}',
+                  label:
+                      '$score · ${switch (score) {
+                        1 => 'Confuso',
+                        2 => 'Pouco',
+                        3 => 'Razoável',
+                        4 => 'Bom',
+                        _ => 'Claro',
+                      }}',
                   selected: _understanding == score,
                   onTap: () => setState(() => _understanding = score),
                 ),
@@ -190,7 +198,8 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
             controller: _comment,
             maxLines: 4,
             decoration: const InputDecoration(
-              hintText: 'O que você quer que ele saiba sobre esse tempo de leitura.',
+              hintText:
+                  'O que você quer que ele saiba sobre esse tempo de leitura.',
             ),
           ),
           const SizedBox(height: 20),
@@ -201,7 +210,7 @@ class _PlanReflectionPageState extends State<PlanReflectionPage> {
               onPressed: _saving ? null : _submit,
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.ember,
-                foregroundColor: AppColors.slate950,
+                foregroundColor: AppColors.surface,
               ),
               child: Text(
                 _saving ? 'Arquivando…' : 'Encerrar e arquivar o plano',
@@ -263,7 +272,7 @@ class _ChoiceChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? AppColors.slate950 : AppColors.slate100,
+            color: selected ? AppColors.surface : AppColors.textPrimary,
             fontSize: 12,
             fontWeight: FontWeight.w800,
           ),

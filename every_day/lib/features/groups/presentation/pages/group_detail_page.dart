@@ -81,15 +81,30 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
     final done = _plans.where((plan) => plan.isArchived).toList();
     return Scaffold(
       backgroundColor: AppColors.slate900,
-      appBar: AppBar(title: Text(widget.group.name)),
+      appBar: AppBar(
+        title: Text(widget.group.name),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(
+              child: Text(
+                '${widget.group.memberCount}',
+                style: const TextStyle(
+                  color: AppColors.ember,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: _loading
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.ember),
-            )
+          ? const _DetailLoading()
           : ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
               children: [
                 ProtoCard(
+                  challenge: true,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -107,12 +122,14 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Leituras que a liderança direcionou a este grupo.',
+                        '${(widget.group.weekProgress * 100).round()}% do grupo acompanhou a leitura nesta semana.',
                         style: const TextStyle(
                           color: AppColors.slate300,
                           fontSize: 12,
                         ),
                       ),
+                      const SizedBox(height: 13),
+                      EmberProgress(value: widget.group.weekProgress),
                       if (widget.canDirect &&
                           widget.group.inviteCode != null &&
                           widget.group.inviteCode!.isNotEmpty) ...[
@@ -139,6 +156,31 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     onPressed: () => _directReading(),
                   ),
                 ],
+                if (!widget.canDirect) ...[
+                  const SizedBox(height: 12),
+                  const ProtoCard(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.forum_outlined,
+                          color: AppColors.ember,
+                          size: 19,
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Tópicos e pedidos de oração deste grupo aparecerão aqui quando esse recurso estiver disponível.',
+                            style: TextStyle(
+                              color: AppColors.slate400,
+                              fontSize: 11,
+                              height: 1.35,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 ProtoSection(
                   title: 'Em andamento',
                   trailing: '${active.length}',
@@ -159,10 +201,7 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
                     ),
                     const SizedBox(height: 8),
                   ],
-                ProtoSection(
-                  title: 'Concluídas',
-                  trailing: '${done.length}',
-                ),
+                ProtoSection(title: 'Concluídas', trailing: '${done.length}'),
                 if (done.isEmpty)
                   const ProtoCard(
                     child: Text(
@@ -200,5 +239,32 @@ class _GroupDetailPageState extends State<GroupDetailPage> {
       SnackBar(content: Text('Leitura enviada a ${widget.group.name}')),
     );
     await _load();
+  }
+}
+
+class _DetailLoading extends StatelessWidget {
+  const _DetailLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+      children: [
+        const ProtoCard(child: SizedBox(height: 100)),
+        const SizedBox(height: 14),
+        Container(
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.slate800,
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        const SizedBox(height: 28),
+        for (var i = 0; i < 2; i++) ...[
+          const ProtoCard(child: SizedBox(height: 92)),
+          const SizedBox(height: 10),
+        ],
+      ],
+    );
   }
 }

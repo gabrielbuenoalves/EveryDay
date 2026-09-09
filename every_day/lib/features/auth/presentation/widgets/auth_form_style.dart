@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 
 abstract final class AuthFormStyle {
-  static const buttonHeight = 52.0;
+  static const buttonHeight = 48.0;
   static const radius = 12.0;
 
   static InputDecoration decoration(String label) {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: AppColors.slate950,
+      fillColor: AppColors.slate850,
       isDense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 14),
       floatingLabelBehavior: FloatingLabelBehavior.auto,
       labelStyle: const TextStyle(
         fontSize: 14,
@@ -38,11 +38,17 @@ abstract final class AuthFormStyle {
     return FilledButton.styleFrom(
       minimumSize: const Size.fromHeight(buttonHeight),
       backgroundColor: AppColors.ember,
-      foregroundColor: AppColors.slate950,
+      foregroundColor: AppColors.surface,
       disabledBackgroundColor: AppColors.emberDark,
       padding: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, height: 1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+      ),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        height: 1,
+      ),
     );
   }
 
@@ -52,8 +58,14 @@ abstract final class AuthFormStyle {
       foregroundColor: AppColors.slate100,
       padding: EdgeInsets.zero,
       side: const BorderSide(color: AppColors.slate500, width: 1.2),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius)),
-      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, height: 1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(radius),
+      ),
+      textStyle: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w800,
+        height: 1,
+      ),
     );
   }
 }
